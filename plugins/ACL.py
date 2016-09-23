@@ -36,16 +36,21 @@ class ACL(Plugin):
     def activate(self):
         if not self.core.ACL.owner:
             self.key = self.generate_key(32)
-            self.logger.warning("Claim this bot by typing 'arcbot claim {}'".format(self.key))
+            self.logger.warning("Claim this bot by typing 'waddle claim {}'".format(self.key))
+            self.logger.info("Claim this bot by typing 'waddle claim {}'".format(self.key))
 
-    @command('^claim ([A-Za-z0-9])', access=ACCESS["claim"])
+    @command('^claim ([A-Za-z0-9]*)', access=ACCESS["claim"])
     def claim(self, msg):
+        self.logger.info("claimed")
+        self.logger.info("self.key = {}, msg.args = {}".format(self.key, msg.arguments))
         if(msg.arguments[0] == self.key):
             self.logger.critical('Bot has been claimed by: {} UID:{}'.format(msg.sender_name, msg.sender))
+            self.logger.info("old owner: {}".format(self.core.ACL.owner))
             self.core.ACL.owner = msg.sender
+            self.logger.info("new owner: {}".format(self.core.ACL.owner))
             self.whisper(msg.sender, 'You are now my owner! Wooo')
 
-    @command("^whois <@([0-9]+)>", access=50)
+    @command("^whois <@!?([0-9]+)>", access=50)
     def whois(self, msg):
         target = msg.arguments[0]
         access = self.core.ACL.getAccess(target)
@@ -71,7 +76,7 @@ class ACL(Plugin):
 
         self.say(msg.channel, output)
 
-    @command("^delete access <@([0-9]+)>", access=ACCESS["deleteAccess"])
+    @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"])
     def deleteAccess(self, msg):
         requestor = msg.sender
         target = msg.arguments[0]
@@ -87,7 +92,7 @@ class ACL(Plugin):
         else:
             self.reply(msg, "You cannot modify access of a user with more access")
 
-    @command("^set access <@([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"])
+    @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"])
     def setAccess(self, msg):
         requestor = msg.sender
         target = msg.arguments[0]

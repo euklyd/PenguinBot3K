@@ -17,12 +17,14 @@ from abc import *
 import requests
 import json
 import time
+import logging
 
 class Connector():
     __metaclass__ = ABCMeta
 
     def __init__(self):
         self.last_request = time.time()
+        self.logger = logging.getLogger("connector." + __name__)
 
     @abstractmethod
     def connect(self):
@@ -61,6 +63,12 @@ class Connector():
             time.sleep(0.025)
 
         url = 'https://{}/api/{}'.format(domain, request)
+        self.logger.info("url is " + url)
+        self.logger.info("data is ")
+        self.logger.info(data)
+        self.logger.info("headers are")
+        self.logger.info(headers)
+
         response = None
 
         try:
@@ -83,9 +91,15 @@ class Connector():
                 elif(method == "UPDATE"):
                     response = requests.update(url, data, headers=headers)
             else:
+                self.logger.info("Invalid HTTP request method")
                 raise Exception("Invalid HTTP request method")
 
+            if (response):
+                self.logger.info("response is of type {} and is:".format(type(response)))
+                self.logger.info(response)
+
             if response.status_code not in range(200, 206):
+                self.logger.info("API responded with HTTP code  " + str(response.status_code) + "\n\n" + response.text)
                 raise Exception("API responded with HTTP code  " + str(response.status_code) + "\n\n" + response.text)
             else:
                 if response.text:
