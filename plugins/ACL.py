@@ -39,6 +39,7 @@ class ACL(Plugin):
             self.logger.warning("Claim this bot by typing 'waddle claim {}'".format(self.key))
             self.logger.info("Claim this bot by typing 'waddle claim {}'".format(self.key))
 
+    """I would put a docstring for this, but it's not supposed to be used by most users."""
     @command('^claim ([A-Za-z0-9]*)', access=ACCESS["claim"])
     def claim(self, msg):
         self.logger.info("claimed")
@@ -52,19 +53,22 @@ class ACL(Plugin):
 
     @command("^whois <@!?([0-9]+)>", access=50)
     def whois(self, msg):
+        """`whois @<user>`: prints the access level of `<user>`."""
         target = msg.arguments[0]
         access = self.core.ACL.getAccess(target)
 
         self.say(msg.channel, "User ID\t`{}`\nAccess:\t`{}`".format(target, access))
 
-    @command("^whoami", access=50)
+    @command("^whoami", access=-1)
     def whoami(self, msg):
+        """`whoami`: prints your own access level."""
         access = self.core.ACL.getAccess(msg.sender)
 
         self.reply(msg, "\nUser ID\t`{}`\nAccess:\t`{}`".format(msg.sender, access))
 
-    @command('^list users ([0-9]+)( [0-9]+)?( [0-9]+)?', access=100)
+    @command('^list users (-?[0-9]+)( [0-9]+)?( [0-9]+)?', access=100)
     def getUsers(self, msg):
+        """`list users <access>`: list all users with the specified access level."""
         access, limit, offset = msg.arguments
 
         table = []
@@ -78,6 +82,7 @@ class ACL(Plugin):
 
     @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"])
     def deleteAccess(self, msg):
+        """`delete access @<user>`: deletes the access permissions of `<user>`."""
         requestor = msg.sender
         target = msg.arguments[0]
 
@@ -94,6 +99,7 @@ class ACL(Plugin):
 
     @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"])
     def setAccess(self, msg):
+        """`delete access @<user> <access>`: sets the access level of `<user>` to `<access>`."""
         requestor = msg.sender
         target = msg.arguments[0]
 

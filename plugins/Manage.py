@@ -16,10 +16,11 @@
 
 from core.Plugin import Plugin
 from core.Decorators import *
-
 import conf.settings
 
+import sys
 import time
+import inspect
 from tabulate import tabulate
 from collections import namedtuple
 
@@ -34,14 +35,17 @@ ACCESS = {
 class Manage(Plugin):
     @command("^ping", access=ACCESS["ping"])
     def ping(self, msg):
+        """`ping`: prints a simple response."""
         self.say(msg.channel, "Pong")
 
     @command("^trigger$", trigger="?", access=ACCESS['trigger'])
     def trigger(self, msg):
+        """`trigger`: prints the prefix used to tell me that you're using a command."""
         self.say(msg.channel, "My default trigger is `" + config.trigger + "`")
 
     @command("^list plugins$", access=ACCESS["plugin_list"])
     def list_plugins(self, msg):
+        """`list plugins`: lists all of my plugins."""
         plugins = self.core.plugin.list()
 
         table = []
@@ -53,8 +57,51 @@ class Manage(Plugin):
 
         self.say(msg.channel, output)
 
+    @command("^list commands (\w+)")
+    def list_commands(self, msg):
+        """`list commands <plugin>`: lists all commands in `<plugin>`."""
+        plugin = msg.arguments[0]
+        plugin_list = self.core.plugin.list()
+        if (plugin in plugin_list):
+            # command_list = [func for func in dir(plugin) if callable(getattr(plugin, "func"))]
+            # print(command_list)
+            # print(getattr(sys.modules[plugin], "flip"))
+            # print(inspect.getmembers(sys.modules[plugin]))
+            # print(dir(sys.modules[plugin]))
+            command_list = self.core.command.commands
+            command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
+            for command in sorted(command_list.keys()):
+                # self.say(msg.channel, "{}".format(command))
+                # print("{} : {}".format(plugin, command.split('.')))
+
+                if (plugin == command.split('.')[0]):
+                    # print("{}: {}".format(command, command_list[command].callback.__doc__))
+                    # print(command_block + str(command_list[command].callback.__doc__))
+                    command_block += command_list[command].callback.__doc__ + '\n'
+                    # print(command_block)
+                    # self.say(msg.channel, command_list[command].callback.__doc__)
+            self.say(msg.channel, command_block)
+        else:
+            self.say(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.sender, plugin))
+
+    @command("^list commands$")
+    def list_all_commands(self, msg):
+        """`list commands`: lists all commands in all plugins."""
+        command_list = self.core.command.commands
+        print(type(command_list))
+        command_block = "**List of all commands in all plugins:**\n"
+        for command in sorted(command_list.keys()):
+            docstr = command_list[command].callback.__doc__
+            if (docstr is not None):
+                command_block += docstr + '\n'
+        self.say(msg.channel, command_block)
+
     @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$", access=ACCESS["plugin_manage"])
     def manage_plugin(self, msg):
+        """`enable plugin <plugin>`: enables `<plugin>`.
+`disable plugin <plugin>`: disables `<plugin>`.
+`reload plugin <plugin>`: reloads `<plugin>`.
+`status plugin <plugin>`: fetches the status of `<plugin>`."""
         plugins = self.core.plugin.list()
         plugin = msg.arguments[1]
         action = msg.arguments[0]
@@ -87,6 +134,7 @@ class Manage(Plugin):
 
     @command("^uptime$", access=ACCESS['uptime'])
     def uptime(self, msg):
+        """`uptime`: prints the duration that I've been running for."""
         uptime = time.time() - self.login_time
 
         def readable_time(elapsed):

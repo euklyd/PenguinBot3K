@@ -39,6 +39,7 @@ class Bot():
         # Setup logger and load config
         self.setup_logger()
         self.config = self.load_config("settings")
+        self.bot_name = self.config.name
 
         # Setup managers
         self.watchdog = Watchdog(self)
