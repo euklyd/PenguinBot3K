@@ -38,10 +38,11 @@ class Manage(Plugin):
         """`ping`: prints a simple response."""
         self.say(msg.channel, "Pong")
 
-    @command("^trigger$", trigger="?", access=ACCESS['trigger'])
+    #@command("^trigger$", trigger="?", access=ACCESS['trigger'])
+    @command("^trigger$", access=ACCESS['trigger'])
     def trigger(self, msg):
         """`trigger`: prints the prefix used to tell me that you're using a command."""
-        self.say(msg.channel, "My default trigger is `" + config.trigger + "`")
+        self.say(msg.channel, "My default trigger is `" + self.core.config.trigger + "`")
 
     @command("^list plugins$", access=ACCESS["plugin_list"])
     def list_plugins(self, msg):
@@ -95,6 +96,11 @@ class Manage(Plugin):
             if (docstr is not None):
                 command_block += docstr + '\n'
         self.say(msg.channel, command_block)
+
+    @command("^help$")
+    def help(self, msg):
+        """`help`: alias for `list commands`."""
+        self.list_all_commands(msg)
 
     @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$", access=ACCESS["plugin_manage"])
     def manage_plugin(self, msg):
