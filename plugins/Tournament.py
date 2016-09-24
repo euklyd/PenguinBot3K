@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 class Tournament(Plugin):
     def activate(self):
+        self.matches = {}
+        self.active_picks = {}
+        self.tourney_channel = "190782867381420033"
         random.seed()
         marshu = "http://www.marshu.com/articles/images-website/articles/presidents-on-coins/"  # noqa E501
         self.coins = {"heads": [marshu+"penny-cent-coin-head-thumb.jpg",
@@ -61,13 +64,62 @@ class Tournament(Plugin):
         else:
             self.say(msg.channel, "<@!{}> flipped a coin and it came up **tails**!".format(msg.sender))
 
-    @command("^pick-one (.*)", access=-1)
-    def pick_one(self, msg):
-        """`pick-one <list of items>`: Selects one item out of a list of space-separated items."""
-        args = msg.arguments[0]
-        items = args.split(' ')
-        choice = random.choice(items)
-        self.say(msg.channel, "<@!{}>, your selection is **{}**!".format(msg.sender, choice))
-
     # def fake_func(self):
     #     print("don't call this lol")
+
+    @command("^blind pick <@!?([0-9]+)> <@!?([0-9]+)>", access=-1)
+    def blind_pick(self, msg):
+        """`blind pick <@player1> <@player2>`: initiates a blind pick between `<player1>` and `<player2>`"""
+        players = msg.arguments
+        if (players[0] == players[1]):
+            self.say(msg.channel, "**Error:** A blind pick needs two different players!")
+        elif players[0] in self.matches:
+            self.say(msg.channel, "**Error:** <!@{}> is already in a blind pick!".format(players[0]))
+        elif players[1] in self.matches:
+            self.say(msg.channel, "**Error:** <!@{}> is already in a blind pick!".format(players[1]))
+        else:
+            self.active_picks[players[0]] = ""
+            self.active_picks[players[1]] = ""
+            self.matches[players[0]] = players[1]
+            self.matches[players[1]] = players[0]
+            response_str = "Blind pick initiated between **<@!{}>** and **<@!{}>**".format(
+                players[0], players[1]
+            )
+            response_str += "\nWhisper `waddle select <character>` to <@!225429735633715201> to make a selection."
+            response_str += "\ne.g., privately whisper `waddle select King Dedede` to select \U0001F427 **THE \U0001F427 KING \U0001F427 HIMSELF \U0001F427**"
+            self.say(msg.channel, response_str)
+
+    @command("^select (.*)", access=-1)
+    def select_character(self, msg):
+        character = msg.arguments[0]
+        if msg.sender in self.matches:
+            player = msg.sender
+            opponent = self.matches[player]
+            self.active_picks[player] = character
+            self.say(self.tourney_channel, "<@!{}> has selected their character!".format(msg.sender))
+            if self.active_picks[opponent] is not "":
+                pick_str = "**Blind pick complete!**\n<@!{}> has selected **{}**\n<@!{}> has selected **{}**".format(
+                    player, self.active_picks[player],
+                    opponent, self.active_picks[opponent]
+                )
+                self.say(self.tourney_channel, pick_str)
+                self.matches.pop(player)
+                self.matches.pop(opponent)
+                self.active_picks.pop(player)
+                self.active_picks.pop(opponent)
+        else:
+            self.whisper(msg.sender, "**Error:** You are not currently in a blind pick!")
+
+    @command("cancel blind pick$", access=-1)
+    def cancel_blind_pick(self, msg):
+        """`cancel blind pick: cancel the blind pick you're currently a part in."""
+        if msg.sender in self.matches:
+            player = msg.sender
+            opponent = self.matches[player]
+            self.matches.pop(player)
+            self.matches.pop(opponent)
+            self.active_picks.pop(player)
+            self.active_picks.pop(opponent)
+            self.say(self.tourney_channel, "Cancelled the blick pick between <@!{}> and <@!{}>.".format(player, opponent))
+        else:
+            self.say(msg.channel, "**Error:** <@!{}>, you are not currently in a blind pick!".format(msg.sender))
