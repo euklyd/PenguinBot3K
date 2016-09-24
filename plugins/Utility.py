@@ -33,3 +33,11 @@ class Utility(Plugin):
         kingistoptier = u"\U0001F427 **THE \U0001F427 KING \U0001F427 IS \U0001F427 TOP \U0001F427 TIER** \U0001F427"  # noqa E501
         self.say(msg.channel, "{}\n{}".format(dddcopypasta, kingistoptier))
         # self.say(msg.channel, "Waddle waddle, **motherfucker**")
+
+    @command("^pick-one (.*)", access=-1)
+    def pick_one(self, msg):
+        """`pick-one <list of items>`: Selects one item out of a list of space-separated items."""
+        args = msg.arguments[0]
+        items = args.split(' ')
+        choice = random.choice(items)
+        self.say(msg.channel, "<@!{}>, your selection is **{}**!".format(msg.sender, choice))
