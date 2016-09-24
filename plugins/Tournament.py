@@ -64,9 +64,6 @@ class Tournament(Plugin):
         else:
             self.say(msg.channel, "<@!{}> flipped a coin and it came up **tails**!".format(msg.sender))
 
-    # def fake_func(self):
-    #     print("don't call this lol")
-
     @command("^blind pick <@!?([0-9]+)> <@!?([0-9]+)>", access=-1)
     def blind_pick(self, msg):
         """`blind pick <@player1> <@player2>`: initiates a blind pick between `<player1>` and `<player2>`"""

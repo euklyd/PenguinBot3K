@@ -51,7 +51,6 @@ class Bot():
 
         # Setup connection
         self.connection = self.load_connector(self)
-        self.logger.info("'connection' type is {}".format(type(self.connection)))
 
         # Load plugins
         self.logger.info("Loading Plugins")

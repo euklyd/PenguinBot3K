@@ -64,23 +64,11 @@ class Manage(Plugin):
         plugin = msg.arguments[0]
         plugin_list = self.core.plugin.list()
         if (plugin in plugin_list):
-            # command_list = [func for func in dir(plugin) if callable(getattr(plugin, "func"))]
-            # print(command_list)
-            # print(getattr(sys.modules[plugin], "flip"))
-            # print(inspect.getmembers(sys.modules[plugin]))
-            # print(dir(sys.modules[plugin]))
             command_list = self.core.command.commands
             command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
             for command in sorted(command_list.keys()):
-                # self.say(msg.channel, "{}".format(command))
-                # print("{} : {}".format(plugin, command.split('.')))
-
                 if (plugin == command.split('.')[0]):
-                    # print("{}: {}".format(command, command_list[command].callback.__doc__))
-                    # print(command_block + str(command_list[command].callback.__doc__))
                     command_block += command_list[command].callback.__doc__ + '\n'
-                    # print(command_block)
-                    # self.say(msg.channel, command_list[command].callback.__doc__)
             self.say(msg.channel, command_block)
         else:
             self.say(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.sender, plugin))
@@ -89,7 +77,6 @@ class Manage(Plugin):
     def list_all_commands(self, msg):
         """`list commands`: lists all commands in all plugins."""
         command_list = self.core.command.commands
-        print(type(command_list))
         command_block = "**List of all commands in all plugins:**\n"
         for command in sorted(command_list.keys()):
             docstr = command_list[command].callback.__doc__

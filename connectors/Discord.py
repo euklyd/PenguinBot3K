@@ -131,8 +131,7 @@ class Discord(Connector):
         self.logger.info("Disconnected from Discord")
 
     def say(self, channel, message, mentions=[]):
-        # self.logger.debug("Sending message to channel " + channel)
-        self.logger.info("Sending message to channel " + channel)
+        self.logger.debug("Sending message to channel " + channel)
 
         for user in mentions:
             message = "<@{}> ".format(user) + message
@@ -143,7 +142,7 @@ class Discord(Connector):
         try:
             self.request("POST", endpoint, data=data, headers=self.auth_headers)
         except:
-            # self.logger.warning('Send message to channel \'{}\' failed'.format(channel))
+            self.logger.warning('Send message to channel \'{}\' failed'.format(channel))
             self.logger.info('Send message to channel \'{}\' failed'.format(channel))
 
     def reply(self, user, channel, message):

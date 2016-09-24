@@ -63,11 +63,6 @@ class Connector():
             time.sleep(0.025)
 
         url = 'https://{}/api/{}'.format(domain, request)
-        self.logger.info("url is " + url)
-        self.logger.info("data is ")
-        self.logger.info(data)
-        self.logger.info("headers are")
-        self.logger.info(headers)
 
         response = None
 
@@ -95,7 +90,7 @@ class Connector():
                 raise Exception("Invalid HTTP request method")
 
             if (response):
-                self.logger.info("response is of type {} and is:".format(type(response)))
+                self.logger.info("Response is of type {} and is:".format(type(response)))
                 self.logger.info(response)
 
             if response.status_code not in range(200, 206):

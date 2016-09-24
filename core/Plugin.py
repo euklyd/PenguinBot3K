@@ -85,7 +85,6 @@ class Plugin(object):
                 None
         """
         self.logger.info("Plugin.say invoked")
-        self.logger.info(type(self.core))
         self.core.connection.say(channel, message, mentions=mentions)
 
     def whisper(self, user, message):

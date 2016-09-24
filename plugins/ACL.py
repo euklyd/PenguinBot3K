@@ -37,18 +37,13 @@ class ACL(Plugin):
         if not self.core.ACL.owner:
             self.key = self.generate_key(32)
             self.logger.warning("Claim this bot by typing 'waddle claim {}'".format(self.key))
-            self.logger.info("Claim this bot by typing 'waddle claim {}'".format(self.key))
 
     """I would put a docstring for this, but it's not supposed to be used by most users."""
     @command('^claim ([A-Za-z0-9]*)', access=ACCESS["claim"])
     def claim(self, msg):
-        self.logger.info("claimed")
-        self.logger.info("self.key = {}, msg.args = {}".format(self.key, msg.arguments))
         if(msg.arguments[0] == self.key):
             self.logger.critical('Bot has been claimed by: {} UID:{}'.format(msg.sender_name, msg.sender))
-            self.logger.info("old owner: {}".format(self.core.ACL.owner))
             self.core.ACL.owner = msg.sender
-            self.logger.info("new owner: {}".format(self.core.ACL.owner))
             self.whisper(msg.sender, 'You are now my owner! Wooo')
 
     @command("^whois <@!?([0-9]+)>", access=50)
