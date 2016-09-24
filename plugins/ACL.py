@@ -99,7 +99,7 @@ class ACL(Plugin):
 
     @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"])
     def setAccess(self, msg):
-        """`delete access @<user> <access>`: sets the access level of `<user>` to `<access>`."""
+        """`set access @<user> <access>`: sets the access level of `<user>` to `<access>`."""
         requestor = msg.sender
         target = msg.arguments[0]
 
