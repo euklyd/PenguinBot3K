@@ -112,7 +112,7 @@ class Tournament(Plugin):
 
     @command("cancel blind pick$", access=-1)
     def cancel_blind_pick(self, msg):
-        """`cancel blind pick: cancel the blind pick you're currently a part in."""
+        """`cancel blind pick:` cancel the blind pick you're currently a part in."""
         if msg.sender in self.matches:
             player = msg.sender
             opponent = self.matches[player]
