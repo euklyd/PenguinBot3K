@@ -26,7 +26,7 @@ from collections import namedtuple
 
 ACCESS = {
     "ping"          : 50,
-    "trigger"       : 50,
+    "trigger"       : -1,
     "plugin_list"   : 50,
     "plugin_manage" : 1000,
     "uptime"        : 50
