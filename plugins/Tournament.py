@@ -64,6 +64,30 @@ class Tournament(Plugin):
         else:
             self.say(msg.channel, "<@!{}> flipped a coin and it came up **tails**!".format(msg.sender))
 
+    @command("^selection process$", access=-1)
+    def select_help(self, msg):
+        """`selection process`: prints the rules for stage and character selection."""
+        response_str  = "**Stage and character selection process:**"
+        response_str += "\n\n**Game 1:**"
+        response_str += "\n1)  Both players choose their characters, and tell each other their choices."
+        response_str += "\n1a) *If either player wishes, they may opt for a double-blind pick, in which both players select their character secretly, and announce at the same time. The `{}blind pick` command is helpful for this.*".format(self.core.config.trigger)
+        response_str += "\n2)  The first player to strike a stage is determined. The `{}flip` command provides a coin flip for this use.".format(self.core.config.trigger)
+        response_str += "\n3)  The player who won the flip bans a stage from the list of starter stages."
+        response_str += "\n4)  The second player bans two stages from the remaining starter stages."
+        response_str += "\n5)  The first player strikes one more stage."
+        response_str += "\n6)  The remaining stage is the stage on which Game 1 will be played."
+        response_str += "\n\n**Subsequent games:**"
+        response_str += "\n1)  The winner of the previous game bans one stage from the list of starter and counterpick stages."
+        response_str += "\n2)  The loser picks one stage from the remaining stages."
+        response_str += "\n2a) *This cannot be a stage that the loser has won on previously.*"
+        response_str += "\n3)  The winner selects their character (including 'not switching'), and informs the loser. "
+        response_str += "\n4)  The loser selects their character, and the game commences."
+        self.say(msg.channel, response_str)
+
+    @command("^blind pick$", access=-1)
+    def blind_pick_empty(self, msg):
+        self.say(msg.channel, "<@!{}>, please @mention two players as well.".format(msg.sender))
+
     @command("^blind pick <@!?([0-9]+)> <@!?([0-9]+)>", access=-1)
     def blind_pick(self, msg):
         """`blind pick <@player1> <@player2>`: initiates a blind pick between `<player1>` and `<player2>`"""
@@ -82,9 +106,17 @@ class Tournament(Plugin):
             response_str = "Blind pick initiated between **<@!{}>** and **<@!{}>**".format(
                 players[0], players[1]
             )
-            response_str += "\nWhisper `waddle select <character>` to <@!225429735633715201> to make a selection."
-            response_str += "\ne.g., privately whisper `waddle select King Dedede` to select \U0001F427 **THE \U0001F427 KING \U0001F427 HIMSELF \U0001F427**"
+            response_str += "\nFor detailed guidance, use the `{} eyesight to the blind` command.".format(self.core.config.trigger)
             self.say(msg.channel, response_str)
+
+    @command("^eyesight to the blind$", access=-1)
+    def eyesight_to_the_blind(self, msg):
+        response_str  = "**Double-blind character selection:**"
+        response_str += "\nA double-blind pick is when both players choose their character secretly, then both picks are announced at the same time."
+        response_str += "\nThis is frequently done if one or both of the players is concerned about being character counterpicked on the first game."
+        response_str += "\nWhisper `waddle select <character>` to <@!225429735633715201> to make a selection."
+        response_str += "\ne.g., privately whisper `waddle select King Dedede` to select \U0001F427 **THE \U0001F427 KING \U0001F427 HIMSELF \U0001F427**"
+        self.say(msg.channel, response_str)
 
     @command("^select (.*)", access=-1)
     def select_character(self, msg):
