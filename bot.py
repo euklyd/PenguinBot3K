@@ -31,6 +31,10 @@ def main():
         bot.exit()
         logger.debug(u"\U0001F60E I'll be back \U0001F60E")
         sys.exit(0)
+    except:
+        logger.info("Caught error. Exiting")
+        bot.exit()
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
