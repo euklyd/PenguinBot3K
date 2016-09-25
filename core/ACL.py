@@ -117,7 +117,7 @@ class ACL():
         except:
             return -1
 
-    def query_users(self, access, limit=0, offset=0):
+    def query_users(self, access="0", limit=0, offset=0):
         """
             Summary:
                 Gets all the users the bot knows about
@@ -129,7 +129,10 @@ class ACL():
                 (List): User objects defined above
         """
         try:
-            users = ACLUser.select().where(ACLUser.access == access).order_by(ACLUser.access.desc()).limit(limit).offset(offset)
+            if (access != "0"):
+                users = ACLUser.select().where(ACLUser.access == access).order_by(ACLUser.access.desc()).limit(limit).offset(offset)
+            else:
+                users = ACLUser.select().where(ACLUser.access > access).order_by(ACLUser.access.desc()).limit(limit).offset(offset)
             return users
         except:
             return -1

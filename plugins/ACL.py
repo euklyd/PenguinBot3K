@@ -75,6 +75,19 @@ class ACL(Plugin):
 
         self.say(msg.channel, output)
 
+    @command('^list users$', access=100)
+    def getUsers(self, msg):
+        """`list users`: list all users with non-default access levels."""
+
+        table = []
+        for user in self.core.ACL.query_users():
+            table.append([user.id, user.cname, user.access])
+
+        output = "**Users in my database: **\n\n"
+        output += "`{}`".format(tabulate(table, headers=["ID", "Name", "Access"], tablefmt="psql", numalign="left"))
+
+        self.say(msg.channel, output)
+
     @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"])
     def deleteAccess(self, msg):
         """`delete access @<user>`: deletes the access permissions of `<user>`."""
