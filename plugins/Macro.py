@@ -24,13 +24,13 @@ class Macro(Plugin):
     def activate(self):
         pass
 
-    @command("^emojify ([\u263a-\U0001f645]) (.*)", access=-1)
-    # @command(u"^emojify (.) (.*)*", access=-1)
+    @command("^emojify ([\u263a-\U0001f645]|(?:<:.*:\d*>)) (.*)", access=-1)
     def emojify(self, msg):
         """`emojify <emoji> <sentence>`: replace all spaces in <sentence> with <emoji>"""
         logger.info(msg.arguments)
         emoji = msg.arguments[0]
         reply = msg.arguments[1].replace(' ', ' {} '.format(emoji))
+        reply = "<@!{}>: {}".format(msg.sender, reply)
         logger.info(reply)
         self.say(msg.channel, reply)
         self.delete_message(msg)
