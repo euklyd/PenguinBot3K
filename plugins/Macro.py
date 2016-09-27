@@ -33,3 +33,4 @@ class Macro(Plugin):
         reply = msg.arguments[1].replace(' ', ' {} '.format(emoji))
         logger.info(reply)
         self.say(msg.channel, reply)
+        self.delete_message(msg)
