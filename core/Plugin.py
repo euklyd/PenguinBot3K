@@ -102,6 +102,20 @@ class Plugin(object):
         """
         self.core.connection.whisper(user, message)
 
+    def delete_message(self, msg):
+        """
+            Summary:
+                Wrapper method calling the connection's delete_message method
+                Will delete the message object passed as arguments
+
+            Args:
+                msg (Message): Message object describing message to delete.
+
+            Returns:
+                None
+        """
+        self.core.connection.delete_message(msg)
+
     def upload(self, channel, file):
         """
             Summary:

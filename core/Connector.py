@@ -43,6 +43,10 @@ class Connector():
         pass
 
     @abstractmethod
+    def delete_message(self, message):
+        pass
+
+    @abstractmethod
     def whisper(self, user, message):
         pass
 

@@ -156,6 +156,15 @@ class Discord(Connector):
         except:
             self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user, channel))
 
+    def delete_message(self, msg):
+        self.logger.debug("Deleting message with ID: {} from channel: {}".format(msg.id, msg.channel))
+
+        endpoint = "channels/{0}/messages/{1}".format(msg.channel, msg.id)
+        try:
+            self.request("DELETE", endpoint, headers=self.auth_headers)
+        except:
+            self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
+
     def whisper(self, user, message):
         self.logger.debug("Sending reply to " + user)
 
@@ -358,6 +367,7 @@ class Discord(Connector):
 
         if message["t"] == "MESSAGE_CREATE":
             type = messageType.MESSAGE
+            id = message["d"]['id']
             sender = message["d"]["author"]['id']
             sender_name = message["d"]['author']['username']
             channel = message['d']['channel_id']
@@ -370,4 +380,4 @@ class Discord(Connector):
         if sender == self.connectorCache['self']['id']:
             return None
 
-        return Message(type, sender, channel, content=content, sender_name=sender_name, timestamp=time.time())
+        return Message(type, id, sender, channel, content=content, sender_name=sender_name, timestamp=time.time())
