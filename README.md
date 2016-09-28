@@ -4,6 +4,10 @@ The goal of Arcbot is to provide a simple to extend bot that can be used with ma
 
 Arcbot is open source software and released under the GPL v3 license. See LICENCE.txt for more info.
 
+# About PenguinBot3000
+
+This is Euklyd's custom bot to do more or less whatever he wants.
+
 # Installing / Running
 Everything about Arcbot is self contained, meaning that the entire bot is shipped and you run it from there.
 
@@ -37,7 +41,7 @@ Arcbot also ships with a few plugins to get you started.
 Arcbot makes use of thread pools to do it's dirty work. The command and event systems both will offload their work to threaded workers; to allow the bot to handle a very large load at once. This has the added benefit of being extremely responsive. This feature is tuneable in `conf/settings.py`; so you can set it up to best utilize your particular CPU and RAM needs.
 
 ### More features coming soon
-Arcbot is still in active development, and not all design choices have been made. There is still a host of features I want to add before considering it stable; things like: 
+Arcbot is still in active development, and not all design choices have been made. There is still a host of features I want to add before considering it stable; things like:
 * Web hook listeners
 * Web based UI to manage the bot
 * Connectors for other chat providers
