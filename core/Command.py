@@ -53,7 +53,11 @@ class CommandManager():
         commands = list(self.commands.items())
         for key, command in commands:
             if message.content.startswith(command.trigger):
-                content = message.content.replace(command.trigger, "", 1)
+                if type(command.trigger) == tuple:
+                    for trigger in command.trigger:
+                        content = message.content.replace(trigger, "", 1)
+                else:
+                    content = message.content.replace(command.trigger, "", 1)
                 match   = re.search(command.pattern, content)
 
                 if match:
