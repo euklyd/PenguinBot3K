@@ -56,6 +56,8 @@ class CommandManager():
                 if type(command.trigger) == tuple:
                     for trigger in command.trigger:
                         content = message.content.replace(trigger, "", 1)
+                        if content != message.content:
+                            break
                 else:
                     content = message.content.replace(command.trigger, "", 1)
                 match   = re.search(command.pattern, content)
@@ -110,6 +112,7 @@ class CommandManager():
                 access=access,
                 silent=silent
             )
+            logger.debug("Command has trigger: {}".format(trigger))
 
     def unregister(self, command_name):
         """
