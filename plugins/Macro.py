@@ -26,7 +26,7 @@ class Macro(Plugin):
         pass
 
     # @command("^emojify ([\u263a-\U0001f645]|(?:<:.*:\d*>)) (.*)", access=-1)
-    @command("^emojify ([\u2600-\u26FF\u2700-\u27BF\U0001F300-\U0001F5FF\U0001F600-\U0001F64F\U0001F680-\U0001F6FF]|(?:<:.*:\d*>)) (.*)", access=-1)
+    @command("^emojify ([\u2600-\u26FF\u2700-\u27BF\U0001F300-\U0001F5FF\U0001F600-\U0001F64F\U0001F680-\U0001F6FF]|(?:<:[A-Za-z0-9_]*:\d*>)) (.*)", access=-1)
     def emojify(self, msg):
         """`emojify <emoji> <sentence>`: replace all spaces in <sentence> with <emoji>"""
         """
@@ -45,7 +45,7 @@ class Macro(Plugin):
         self.say(msg.channel, reply)
         self.delete_message(msg)
 
-    @command("^emojify-full \"(.|(?:<:.*:\d*>))\" (.*)", access=-1)
+    @command("^emojify-full \"(.*|(?:<:.*:\d*>))\" (.*)", access=-1)
     def emojify_full(self, msg):
         logger.info(msg.arguments)
         emoji = msg.arguments[0]
