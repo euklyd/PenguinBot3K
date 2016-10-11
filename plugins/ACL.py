@@ -24,8 +24,8 @@ import string
 
 ACCESS = {
     "claim": -1,
-    "deleteAccess": 150,
-    "setAccess": 150
+    "deleteAccess": 500,
+    "setAccess": 500
 }
 
 class ACL(Plugin):
