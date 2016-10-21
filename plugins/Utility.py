@@ -1,6 +1,6 @@
 """
     Plugin Name : Utility
-    Plugin Version : 1.0
+    Plugin Version : 1.1
 
     Description:
         Provides basic utility commands, e.g., coin flips.
@@ -33,3 +33,9 @@ class Utility(Plugin):
         items = args.split(' ')
         choice = random.choice(items)
         self.say(msg.channel, "<@!{}>, your selection is **{}**!".format(msg.sender, choice))
+
+
+    @command("^repeat (.*)", access=900)
+    def repeat(self, msg):
+        self.say(msg.channel, msg.arguments[0])
+        self.delete_message(msg)
