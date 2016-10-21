@@ -47,6 +47,10 @@ class Connector():
         pass
 
     @abstractmethod
+    def ban_user(self, message):
+        pass
+
+    @abstractmethod
     def whisper(self, user, message):
         pass
 
@@ -60,6 +64,14 @@ class Connector():
 
     @abstractmethod
     def getUser(self, userID):
+        pass
+
+    @abstractmethod
+    def get_channel(self, message):
+        pass
+
+    @abstractmethod
+    def get_server(self, message):
         pass
 
     def request(self, method, request="?", headers=None, data={}, domain="discordapp.com", files={}):

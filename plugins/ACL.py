@@ -1,12 +1,13 @@
 """
     Plugin Name : ACL
-    Plugin Version : 1.0
+    Plugin Version : 1.1
 
     Description:
         Allows a chat interface to modifying user access
 
     Contributors:
         - Patrick Hennessy
+        - Euklyd / Popguin
 
     License:
         Arcbot is free software: you can redistribute it and/or modify it
@@ -25,7 +26,8 @@ import string
 ACCESS = {
     "claim": -1,
     "deleteAccess": 500,
-    "setAccess": 500
+    "setAccess": 500,
+    "ban": 900
 }
 
 class ACL(Plugin):
@@ -48,11 +50,14 @@ class ACL(Plugin):
 
     @command("^whois <@!?([0-9]+)>", access=50)
     def whois(self, msg):
-        """`whois @<user>`: prints the access level of `<user>`."""
-        target = msg.arguments[0]
-        access = self.core.ACL.getAccess(target)
+        """`whois @<user>`: prints the access level of `<user>`, along with misc. information."""
+        user = self.core.connection.getUser(msg.arguments[0])
+        # target = msg.arguments[0]
+        access = self.core.ACL.getAccess(user["id"])
 
-        self.say(msg.channel, "User ID\t`{}`\nAccess:\t`{}`".format(target, access))
+        self.say(msg.channel, "Username\t`{}#{}`\nUser ID\t`{}`\nAccess:\t`{}`".format(
+            user['user']['username'], user['user']['discriminator'], user['user']['id'], access)
+        )
 
     @command("^whoami", access=-1)
     def whoami(self, msg):

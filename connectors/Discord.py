@@ -9,6 +9,7 @@
     Contributors:
         - Patrick Hennessy
         - Aleksandr Tihomirov
+        - Euklyd / Popguin
 
     License:
         Arcbot is free software: you can redistribute it and/or modify it
@@ -156,6 +157,17 @@ class Discord(Connector):
         except:
             self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user, channel))
 
+    def get_messages(self, msg, number):
+        self.logger.debug("Getting the messages from CID: {}".format(msg.channel))
+
+        endpoint = "channels/{}/messages".format(msg.channel)
+        data     = {"before": msg.id, "limit": number}
+
+        try:
+            return self.request("GET", endpoint, headers=self.auth_headers)
+        except:
+            self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(msg.channel))
+
     def delete_message(self, msg):
         self.logger.debug("Deleting message with ID: {} from channel: {}".format(msg.id, msg.channel))
 
@@ -164,6 +176,19 @@ class Discord(Connector):
             self.request("DELETE", endpoint, headers=self.auth_headers)
         except:
             self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
+
+    def ban_user(self, server_id, user_id, delete_msgs=0):
+        self.logger.info("Banning user `{}` from server `{}`".format(user_id, server_id))
+
+        endpoint = "guilds/{0}/bans/{1}".format(server_id, user_id)
+        data     = {"delete-message-days": delete_msgs}
+        self.logger.debug(endpoint)
+        self.logger.debug(data)
+
+        try:
+            self.request("PUT", endpoint, data=data, headers=self.auth_headers)
+        except:
+            self.logger.warning('Ban of user \'{}\' in server \'{}\' failed'.format(user_id, server_id))
 
     def whisper(self, user, message):
         self.logger.debug("Sending reply to " + user)
@@ -196,10 +221,20 @@ class Discord(Connector):
         user = self.request("GET", "users/{}".format(userID), headers={"authorization": self.token})
 
         return {
+            'user': user,
             'name': user['username'],
             'id': user['id'],
             'expires': time.time() + 600
         }
+
+    def get_channel(self, msg):
+        channel = self.request("GET", "channels/{}".format(msg.channel), headers={"authorization": self.token})
+        return channel
+
+    def get_server(self, msg):
+        channel = self.get_channel(msg)
+        server = self.request("GET", "guilds/{}".format(channel['guild_id']), headers={"authorization": self.token})
+        return server
 
     # Discord Specific
     def leave_guild(self, guild_id):
@@ -380,4 +415,4 @@ class Discord(Connector):
         if sender == self.connectorCache['self']['id']:
             return None
 
-        return Message(type, id, sender, channel, content=content, sender_name=sender_name, timestamp=time.time())
+        return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())

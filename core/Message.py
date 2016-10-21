@@ -20,13 +20,14 @@ class messageType:
     PRESSENCE = 1
 
 class Message():
-    def __init__(self, type, msg_id, sender_id, channel_id, content="", mentions=[], sender_name=None, timestamp=time.time()):
+    def __init__(self, type, msg_id, sender_id, channel_id, message, content="", mentions=[], sender_name=None, timestamp=time.time()):
         self.type = type
         self.id = msg_id
         self.timestamp = timestamp
         self.sender = sender_id
         self.sender_name = sender_name
         self.channel = channel_id
+        self.message = message
         self.content = content
         self.mentions = mentions
 
