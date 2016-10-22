@@ -45,7 +45,7 @@ class Macro(Plugin):
         self.say(msg.channel, reply)
         self.delete_message(msg)
 
-    @command("^emojify-full \"(.*|(?:<:.*:\d*>))\" (.*)", access=-1)
+    @command("^emojify-full \"(.*|(?:<:.*:\d*>)*)\" (.*)", access=-1)
     def emojify_full(self, msg):
         logger.info(msg.arguments)
         emoji = msg.arguments[0]
@@ -53,6 +53,16 @@ class Macro(Plugin):
         reply = "<@!{}>: {}".format(msg.sender, reply)
         logger.info(reply)
         self.say(msg.channel, reply)
+        self.delete_message(msg)
+
+    @command("^emojify-whisper \"(.*|(?:<:.*:\d*>))\" (.*)", access=50)
+    def emojify_whisper(self, msg):
+        logger.info(msg.arguments)
+        emoji = msg.arguments[0]
+        reply = msg.arguments[1].replace(' ', ' {} '.format(emoji))
+        reply = "<@!{}>: {}".format(msg.sender, reply)
+        logger.info(reply)
+        self.whisper(msg.sender, reply)
         self.delete_message(msg)
 
     @command("^waddle$", access=100)
