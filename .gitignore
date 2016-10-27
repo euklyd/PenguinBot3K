@@ -3,3 +3,4 @@ conf/settings.py
 logs/*
 databases/*.db
 *\~
+.DS_Store
