@@ -55,8 +55,9 @@ class Macro(Plugin):
         self.say(msg.channel, reply)
         self.delete_message(msg)
 
-    @command("^emojify-whisper \"(.*|(?:<:.*:\d*>))\" (.*)", access=50)
+    @command("^emojify -w \"(.*|(?:<:.*:\d*>))\" (.*)", access=50)
     def emojify_whisper(self, msg):
+        """`emojify -w <emoji> <sentence>`: as standard `emojify`, but sends output to the user in a DM."""
         logger.info(msg.arguments)
         emoji = msg.arguments[0]
         reply = msg.arguments[1].replace(' ', ' {} '.format(emoji))

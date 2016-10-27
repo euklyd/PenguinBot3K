@@ -3,7 +3,7 @@
     Plugin Version : 1.2
 
     Description:
-        Gives basic commands to the bot
+        Gives basic commands to the bot to manage and examine itself.
 
     Contributors:
         - Patrick Hennessy

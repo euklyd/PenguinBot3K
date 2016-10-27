@@ -3,7 +3,8 @@
     Plugin Version : 0.1
 
     Description:
-        Provides basic utility commands, e.g., coin flips.
+        Provides "fun" user-specific commands. Requested by Nimious,
+        hence the name.
 
     Contributors:
         - Popguin / Euklyd

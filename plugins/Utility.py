@@ -37,5 +37,6 @@ class Utility(Plugin):
 
     @command("^repeat (.*)", access=900)
     def repeat(self, msg):
+        """`repeat <message>`: Sends `<message>` to the channel anonymously."""
         self.say(msg.channel, msg.arguments[0])
         self.delete_message(msg)

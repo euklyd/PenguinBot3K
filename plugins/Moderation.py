@@ -22,12 +22,9 @@ import re
 import string
 
 ACCESS = {
-    "claim": -1,
-    "pushPop": 300,
-    "deleteAccess": 500,
-    "setAccess": 500,
-    "ban": 900,
-    "debug": 1000
+    'pushPop': 300,
+    'ban': 900,
+    'debug': 1000
 }
 
 
@@ -36,7 +33,7 @@ class Moderation(Plugin):
         self.saved_messages = {}
         pass
 
-    @command("^ban <@!?([0-9]+)>", access=ACCESS["ban"])
+    @command("^ban <@!?([0-9]+)>", access=ACCESS['ban'])
     def server_ban(self, msg):
         """`ban @<user>`: bans `<user>` from the current server."""
         user = msg.arguments[0]
@@ -107,6 +104,7 @@ class Moderation(Plugin):
             msg.sender, n_msgs, len(self.saved_messages[msg.sender]))
         )
 
+    # Internal command for use by pop functions.
     def get_longest_sender(self, user_id):
         longest_name = ""
         for message in self.saved_messages[user_id]:
@@ -115,6 +113,7 @@ class Moderation(Plugin):
                 longest_name = sender
         return "<{}>".format(longest_name)
 
+    # Internal command for use by pop functions.
     def format_message_log(self, message, width):
         # Timestamp has format 2016-03-24T23:15:59.605000+00:00
         regex = "([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})"
