@@ -139,7 +139,7 @@ class Discord(Connector):
 
         endpoint = "channels/{}/messages".format(channel)
         data     = {
-            "content":  "{}".format(message),
+            "content":  u"\u200B{}".format(message),    # zero-width space to potential triggers
             "mentions": mentions
         }
 
