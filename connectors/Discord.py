@@ -138,7 +138,10 @@ class Discord(Connector):
             message = "<@{}> ".format(user) + message
 
         endpoint = "channels/{}/messages".format(channel)
-        data     = {"content": "{}".format(message), "mentions":mentions}
+        data     = {
+            "content":  "{}".format(message),
+            "mentions": mentions
+        }
 
         try:
             self.request("POST", endpoint, data=data, headers=self.auth_headers)
@@ -150,7 +153,10 @@ class Discord(Connector):
         self.logger.debug("Sending reply to " + user)
 
         endpoint = "channels/{}/messages".format(channel)
-        data     = {"content": "<@{}> {}".format(user, message), "mentions":[user]}
+        data     = {
+            "content":  "<@{}> {}".format(user, message),
+            "mentions": [user]
+        }
 
         try:
             self.request("POST", endpoint, data=data, headers=self.auth_headers)
@@ -161,10 +167,21 @@ class Discord(Connector):
         self.logger.debug("Getting the messages from CID: {}".format(msg.channel))
 
         endpoint = "channels/{}/messages".format(msg.channel)
-        data     = {"before": msg.id, "limit": number}
+        data     = {
+            "before": msg.id,
+            'limit': int(number)
+        }
+        self.logger.info(data)
+        self.logger.info(endpoint)
 
         try:
-            return self.request("GET", endpoint, headers=self.auth_headers)
+            raw_messages = self.request("GET", endpoint, data=data, headers=self.auth_headers)
+            # self.logger.info("raw:\n{}".format(raw_messages))
+            messages = []
+            for raw_message in raw_messages:
+                messages.append(self._parse_discord_message(raw_message))
+            # self.logger.info("snowflake:\n{}".format(messages))
+            return messages
         except:
             self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(msg.channel))
 
@@ -177,11 +194,29 @@ class Discord(Connector):
         except:
             self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
 
+    def delete_messages(self, msg_array):
+        self.logger.debug("Bulk deleting {} messages from channel: {}".format(len(msg_array), msg_array[0].channel))
+
+        endpoint = "channels/{0}/messages/bulk-delete".format(msg_array[0].channel)
+        data     = {
+            'messages': []
+        }
+        for msg in msg_array:
+            data['messages'].append(msg.message['id'])
+        # self.logger.info(data)
+        # self.logger.info(endpoint)
+        try:
+            self.request("POST", endpoint, data=data, headers=self.auth_headers)
+        except:
+            self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
+
     def ban_user(self, server_id, user_id, delete_msgs=0):
         self.logger.info("Banning user `{}` from server `{}`".format(user_id, server_id))
 
         endpoint = "guilds/{0}/bans/{1}".format(server_id, user_id)
-        data     = {"delete-message-days": delete_msgs}
+        data     = {
+            "delete-message-days": delete_msgs
+        }
         self.logger.debug(endpoint)
         self.logger.debug(data)
 
@@ -195,7 +230,9 @@ class Discord(Connector):
 
         channel = self.get_private_channel(user)
         endpoint = "channels/{}/messages".format(channel)
-        data     = {"content": "{}".format(message)}
+        data     = {
+            "content": "{}".format(message)
+        }
 
         try:
             self.request("POST", endpoint, data=data, headers=self.auth_headers)
@@ -403,10 +440,10 @@ class Discord(Connector):
         if message["t"] == "MESSAGE_CREATE":
             type = messageType.MESSAGE
             id = message["d"]['id']
-            sender = message["d"]["author"]['id']
+            sender = message["d"]['author']['id']
             sender_name = message["d"]['author']['username']
-            channel = message['d']['channel_id']
-            content = message["d"]["content"]
+            channel = message["d"]['channel_id']
+            content = message["d"]['content']
 
             self.logger.info("Message Recieved: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
         else:
@@ -414,5 +451,17 @@ class Discord(Connector):
 
         if sender == self.connectorCache['self']['id']:
             return None
+
+        return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
+
+    def _parse_discord_message(self, message):
+        type = messageType.MESSAGE
+        id = message['id']
+        sender = message['author']['id']
+        sender_name = message['author']['username']
+        channel = message['channel_id']
+        content = message['content']
+
+        self.logger.debug("Message Parsed: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
 
         return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())

@@ -43,7 +43,15 @@ class Connector():
         pass
 
     @abstractmethod
+    def get_messages(self, msg, number):
+        pass
+
+    @abstractmethod
     def delete_message(self, message):
+        pass
+
+    @abstractmethod
+    def delete_messages(self, messages):
         pass
 
     @abstractmethod
