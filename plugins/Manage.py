@@ -42,8 +42,19 @@ class Manage(Plugin):
     #@command("^trigger$", trigger="?", access=ACCESS['trigger'])
     @command("^trigger$", access=ACCESS['trigger'])
     def trigger(self, msg):
-        """`trigger`: prints the prefix used to tell me that you're using a command."""
-        self.say(msg.channel, "My default trigger is `" + self.core.config.trigger + "`")
+        """`trigger`: prints the default prefix used to tell me that you're using a command."""
+        if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
+            self.say(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger[0]))
+        else:
+            self.say(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger))
+
+    @command("^triggers$", access=ACCESS['trigger'])
+    def triggers(self, msg):
+        """`triggers`: prints the prefixes used to tell me that you're using a command, if there exist multiple."""
+        if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
+            self.say(msg.channel, "My default triggers are `{}`".format(self.core.config.trigger))
+        else:
+            self.say(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger))
 
     @command("^list plugins$", access=ACCESS["plugin_list"])
     def list_plugins(self, msg):
@@ -61,31 +72,51 @@ class Manage(Plugin):
 
     @command("^list commands (\w+)")
     def list_commands(self, msg):
-        """`list commands <plugin>`: lists all commands in `<plugin>`."""
+        """`list commands <plugin>`: lists all commands that you have access to in `<plugin>`."""
         plugin = msg.arguments[0]
         plugin_list = self.core.plugin.list()
+        access = self.core.ACL.getAccess(msg.sender)
         if (plugin in plugin_list):
             command_list = self.core.command.commands
             command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
             for command in sorted(command_list.keys()):
-                if (plugin == command.split('.')[0]):
-                    command_block += command_list[command].callback.__doc__ + '\n'
+                if (plugin == command.split('.')[0] and command_list[command].access <= access):
+                    docstr = command_list[command].callback.__doc__
+                    if (docstr is not None and command_list[command].access <= access):
+                        command_block += docstr + '\n'
             self.say(msg.channel, command_block)
         else:
             self.say(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.sender, plugin))
 
-    @command("^list commands$")
-    def list_all_commands(self, msg):
-        """`list commands`: lists all commands in all plugins."""
-        command_list = self.core.command.commands
-        command_block = "**List of all commands in all plugins:**\n"
-        for command in sorted(command_list.keys()):
-            docstr = command_list[command].callback.__doc__
-            if (docstr is not None):
-                command_block += docstr + '\n'
-        self.say(msg.channel, command_block)
+    # @command("^list commands$", access=-1)
+    # def list_all_commands(self, msg):
+    #     """`list commands`: lists all commands that you have access to in all plugins."""
+    #     access = self.core.ACL.getAccess(msg.sender)
+    #     command_list = self.core.command.commands
+    #     command_block = "**List of all commands in all plugins:**\n"
+    #     for command in sorted(command_list.keys()):
+    #         docstr = command_list[command].callback.__doc__
+    #         if (docstr is not None and command_list[command].access <= access):
+    #             command_block += docstr + '\n'
+    #     self.say(msg.channel, command_block)
 
-    @command("^help$")
+    @command("^list commands$", access=-1)
+    def list_all_commands(self, msg):
+        """`list commands <plugin>`: lists all commands that you have access to."""
+        plugin_list = self.core.plugin.list()
+        access = self.core.ACL.getAccess(msg.sender)
+        for plugin in plugin_list:
+            command_list = self.core.command.commands
+            command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
+            for command in sorted(command_list.keys()):
+                if (plugin == command.split('.')[0] and command_list[command].access <= access):
+                    docstr = command_list[command].callback.__doc__
+                    if (docstr is not None and command_list[command].access <= access):
+                        command_block += docstr + '\n'
+            if (command_block.count('\n') > 1):
+                self.say(msg.channel, command_block)
+
+    @command("^help$", access=-1)
     def help(self, msg):
         """`help`: alias for `list commands`."""
         self.list_all_commands(msg)
