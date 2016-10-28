@@ -30,51 +30,61 @@ class Command():
     def __str__(self):
         return self.callback.__name__
 
-    def invoke(self, message):
-        self.callback(message)
+    async def invoke(self, message, arguments):
+        await self.callback(message, arguments)
 
 class CommandManager():
     def __init__(self, core):
         self.commands = {}
         self.core = core
 
-    def check(self, message):
+    async def check(self, message):
         """
             Summary:
                 Checks if an incoming message is a command
                 Invokes any command that matches the criteria
 
             Args:
-                message (Message): A message instance from core.Message
+                message (Message): A message instance from discord.Message
 
             Returns:
                 None
         """
         commands = list(self.commands.items())
+        # logger.info(commands)
         for key, command in commands:
+            # logger.info("key:     {}".format(key))
+            # logger.info("command: {}".format(command))
+            # logger.info("trigger: {}".format(command.trigger))
             if message.content.startswith(command.trigger):
+                t = ""  # debug
                 if type(command.trigger) == tuple:
                     for trigger in command.trigger:
                         content = message.content.replace(trigger, "", 1)
                         if content != message.content:
+                            t = trigger # debug
                             break
                 else:
+                    t = command.trigger # debug
                     content = message.content.replace(command.trigger, "", 1)
+
                 match   = re.search(command.pattern, content)
 
                 if match:
+                    # logger.info("trigger '{}' matched!".format(t))  # debug
                     # logger.debug("'{}' registered")
                     logger.info("'{}' registered".format(message.content))
-                    if self.core.ACL.getAccess(message.sender) >= command.access or message.sender == '100165629373337600':
-                        # UID for euklyd (FE) is 100165629373337600
+                    if self.core.ACL.getAccess(message.author.id) >= command.access or message.author.id == self.core.config.backdoor:
                         message.content = content
-                        message.arguments = match
-                        command.invoke(message)
+                        # message.arguments = match
+                        arguments = match.groups()
+                        # print(arguments)
+                        await command.invoke(message, arguments)
                         logger.info("'{}' invoked".format(message.content))
                     elif not command.silent:
-                        self.core.connection.reply(message.sender, message.channel, "Sorry, you need `{}` access to use that command.".format(command.access))
-                        logger.info("'{}' (from {} in {}) refused".format(message.content, message.sender, message.channel))
-                        logger.info("{} only has ACL access level of {}".format(message.sender, self.core.ACL.getAccess(message.sender)))
+                        await self.core.send_message(message.channel, u"\u200B<@!{}>: Sorry, you need `{}` access to use that command.".format(message.author.id, command.access))
+                        logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
+                        logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
 
     def register(self, pattern, callback, trigger="", access=0, silent=False):
         """

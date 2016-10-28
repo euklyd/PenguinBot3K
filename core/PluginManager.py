@@ -14,9 +14,11 @@
         by the Free Software Foundation
 """
 
+import asyncio
 import sys
 import os
-import imp
+# import imp
+import importlib
 import logging
 import inspect
 
@@ -29,6 +31,7 @@ class PluginManager():
 
         self.logger = logging.getLogger("core.PluginManager")
         self.find_plugins()
+        self.plugin_list = {}
         sys.path.append("plugins")
 
     def find_plugins(self):
@@ -88,7 +91,7 @@ class PluginManager():
         """
         return self.plugins[name]["status"]
 
-    def load(self, module_name):
+    async def load(self, module_name):
         """
             Summary:
                 Loads a plugin,
@@ -103,8 +106,29 @@ class PluginManager():
         """
 
         try:
-            plugin_candidate = imp.find_module(module_name, path=['plugins'])
-            plugin_module = imp.load_module(module_name, *plugin_candidate)
+            # plugin_candidate = imp.find_module(module_name, path=['plugins'])
+            # plugin_module = imp.load_module(module_name, *plugin_candidate)
+            # importlib.import_module(module_name, path=['plugins'])
+
+            # loader = importlib.find_loader(module_name, path=['plugins'])
+            # print(type(loader))
+            # spec = importlib.util.find_spec(module_name)
+            # print(type(spec))
+            # plugin_module = loader.create_module(spec)
+            # print(type(plugin_module))
+            # loader.exec_module(plugin_module)
+
+            # loader = importlib.machinery.SourceFileLoader(module_name, path='plugins/{}.py'.format(module_name))
+            # # loader = importlib.machinery.SourceFileLoader(module_name, path='plugins')
+            # print(type(loader))
+            # print("is package? {}".format(loader.is_package('plugins/{}.py'.format(module_name))))
+            # # loader.load_module()
+            # spec = importlib.util.find_spec(module_name)
+            # loader.create_module()
+
+            plugin_module = importlib.import_module(module_name, package='plugins')
+            self.logger.info(plugin_module)
+
         except ImportError as e:
             self.logger.error(e)
             return
@@ -126,7 +150,9 @@ class PluginManager():
 
         # Call activate() if it exists
         if hasattr(plugin, "activate"):
-            plugin.activate()
+            # print(type(plugin))
+            # self.core.loop.create_task(plugin.activate())
+            await plugin.activate()
 
         # Register plugin commands and events
         for name, callback in inspect.getmembers(plugin, inspect.ismethod):
@@ -151,7 +177,11 @@ class PluginManager():
                 self.core.event.register(getattr(callback, "event"))
 
         # Push plugin to our hashtable
-        self.plugins[plugin.name] = {"instance":plugin, "module": plugin_module, "status": "Enabled"}
+        self.plugins[plugin.name] = {
+            "instance": plugin,
+            "module": plugin_module,
+            "status": "Enabled"
+        }
         self.logger.info("Loaded plugin \"" + plugin.name + "\"")
 
     def unload(self, plugin_name):

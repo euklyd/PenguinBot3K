@@ -20,7 +20,9 @@
 from platform import system
 from ssl import *
 
+import asyncio
 import base64
+import discord
 import json
 import logging
 import threading
@@ -29,7 +31,8 @@ import websocket
 
 from core.Connector import Connector
 from core.Decorators import ttl_cache
-from core.Message import *
+# from core.Message import *
+# from core.Loop import Loop
 
 class Discord(Connector):
     def __init__(self, core, token):
@@ -104,24 +107,27 @@ class Discord(Connector):
         self.core.event.notify('connect')
 
         # Create and start threads
-        self.keep_alive_thread = threading.Thread(target=self._keep_alive, name="keep_alive_thread")
-        self.keep_alive_thread.daemon = True
-        self.keep_alive_thread.start()
+        # self.keep_alive_thread = threading.Thread(target=self._keep_alive, name="keep_alive_thread")
+        # self.keep_alive_thread.daemon = True
+        # self.keep_alive_thread.start()
+        #
+        # self.message_consumer_thread = threading.Thread(target=self._message_consumer, name="message_consumer_thread")
+        # self.message_consumer_thread.daemon = True
+        # self.message_consumer_thread.start()
 
-        self.message_consumer_thread = threading.Thread(target=self._message_consumer, name="message_consumer_thread")
-        self.message_consumer_thread.daemon = True
-        self.message_consumer_thread.start()
+        # self.loop = Loop()
+        # self.loop.start
 
     def disconnect(self):
         self.core.event.notify('disconnect')
         self.connected = False
 
         # Join threads if they exist
-        if isinstance(self.keep_alive_thread, threading.Thread):
-            self.keep_alive_thread.join()
-
-        if isinstance(self.message_consumer_thread, threading.Thread):
-            self.message_consumer_thread.join()
+        # if isinstance(self.keep_alive_thread, threading.Thread):
+        #     self.keep_alive_thread.join()
+        #
+        # if isinstance(self.message_consumer_thread, threading.Thread):
+        #     self.message_consumer_thread.join()
 
         self.logger.debug('Joined message_consumer and keep_alive threads')
 
@@ -131,46 +137,78 @@ class Discord(Connector):
 
         self.logger.info("Disconnected from Discord")
 
-    def say(self, channel, message, mentions=[]):
-        self.logger.debug("Sending message to channel " + channel)
+    def say(self, channel, msg, mentions=[]):
+        """
+            Summary:
+                Posts a message to a channel.
+
+            Args:
+                channel (Channel): The Channel object to post to.
+                msg (str): The message to post.
+                mentions (list[str]): The list of user ids to mention.
+        """
+        self.logger.debug("Sending message to channel " + channel.id)
 
         for user in mentions:
-            message = "<@{}> ".format(user) + message
+            message = "<@{}> ".format(user) + msg
 
-        endpoint = "channels/{}/messages".format(channel)
+        endpoint = "channels/{}/messages".format(channel.id)
         data     = {
-            "content":  u"\u200B{}".format(message),    # zero-width space to potential triggers
+            "content":  u"\u200B{}".format(msg),    # zero-width space to potential triggers
             "mentions": mentions
         }
 
         try:
             self.request("POST", endpoint, data=data, headers=self.auth_headers)
         except:
-            self.logger.warning('Send message to channel \'{}\' failed'.format(channel))
-            self.logger.info('Send message to channel \'{}\' failed'.format(channel))
+            self.logger.warning('Send message to channel \'{}\' failed'.format(channel.id))
+            self.logger.info('Send message to channel \'{}\' failed'.format(channel.id))
 
     def reply(self, user, channel, message):
-        self.logger.debug("Sending reply to " + user)
+        """
+            Summary:
+                Replies to a user in a channel.
 
-        endpoint = "channels/{}/messages".format(channel)
+            Args:
+                user (User): The User object to reply to.
+                channel (Channel): The Channel object to post to.
+                msg (str): The message to post.
+                mentions (list[str]): The list of user ids to mention.
+        """
+        self.logger.debug("Sending reply to " + user.id)
+
+        endpoint = "channels/{}/messages".format(channel.id)
         data     = {
-            "content":  "<@{}> {}".format(user, message),
-            "mentions": [user]
+            "content":  u"\u200B<@{}> {}".format(user.id, message),
+            "mentions": [user.id]
         }
 
         try:
             self.request("POST", endpoint, data=data, headers=self.auth_headers)
         except:
-            self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user, channel))
+            self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user.id, channel.id))
 
-    def get_messages(self, msg, number):
-        self.logger.debug("Getting the messages from CID: {}".format(msg.channel))
+    # def get_messages(self, msg, number):
+    def get_messages(self, channel, limit, before=None):
+        """
+            Summary:
+                Replies to a user in a channel.
 
-        endpoint = "channels/{}/messages".format(msg.channel)
+            Args:
+                channel (Channel): The Channel object to post to.
+                limit (int): The quantity of messages to retrieve.
+            Optional:
+                before (Message): The Message object to start at.
+        """
+        self.logger.debug("Getting the messages from CID: {}".format(channel.id))
+
+        endpoint = "channels/{}/messages".format(channel.id)
         data     = {
-            "before": msg.id,
-            'limit': int(number)
+            'limit': int(limit)
         }
+        if (before is not None):
+            data['before'] = before.id
+
         self.logger.info(data)
         self.logger.info(endpoint)
 
@@ -183,7 +221,7 @@ class Discord(Connector):
             # self.logger.info("snowflake:\n{}".format(messages))
             return messages
         except:
-            self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(msg.channel))
+            self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(channel.id))
 
     def delete_message(self, msg):
         self.logger.debug("Deleting message with ID: {} from channel: {}".format(msg.id, msg.channel))
@@ -365,15 +403,18 @@ class Discord(Connector):
             self.core.workers.queue(self._handleMessage, message)
 
     # Handler Methods
-    def _handleMessage(self, message):
+    async def _handleMessage(self, message):
+        self.logger.info(message.type)
         # If incoming message is a MESSAGE text
-        if message.type == messageType.MESSAGE:
+        if message.type == discord.MessageType.default:
             self.core.event.notify("message",  message=message)
-            self.core.command.check(message)
+            await self.core.command.check(message)
 
         # If incoming message is PRESSENCE update
-        elif type == messageType.PRESSENCE:
+        elif type == discord.MessageType.PRESSENCE:
             self.core.event.notify("pressence", message=message)
+
+        # should check for other message types?
 
     # Socket Methods
     def _write_socket(self, data):

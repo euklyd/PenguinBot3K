@@ -26,8 +26,8 @@ class ttl_cache(object):
 
 def command(pattern, access=0, trigger="", silent=False):
     def decorate(callback):
-        def wrapper(self, msg):
-            return callback(self, msg)
+        def wrapper(self, msg, arguments):
+            return callback(self, msg, arguments)
 
         if not hasattr(wrapper, 'is_command'):
             wrapper.__name__ = callback.__name__

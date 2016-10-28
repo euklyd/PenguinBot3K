@@ -13,7 +13,8 @@
         by the Free Software Foundation
 """
 
-from core.Core import Bot
+# from core.Core import Bot
+from core.Penguin import PenguinBot
 import logging
 import time
 import sys
@@ -22,9 +23,11 @@ logger = logging.getLogger(__name__)
 
 def main():
     try:
-        bot = Bot()
+        # bot = Bot()
+        bot = PenguinBot()
         bot.login()
-        bot.watchdog.start()
+        # bot.watchdog.start()
+        bot.run()
 
     except KeyboardInterrupt:
         logger.info("Caught SIGINT from keyboard. Exiting")
