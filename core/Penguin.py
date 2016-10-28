@@ -13,6 +13,7 @@ from sys import stdout, path, exit
 import logging
 import logging.handlers
 import time
+import inspect
 
 class PenguinBot(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -33,6 +34,7 @@ class PenguinBot(discord.Client):
 
         # Setup connection
         self.connector = self.load_connector(self)
+        self.last_update = time.time()
 
     def run(self, *args):
         """
@@ -217,37 +219,32 @@ class PenguinBot(discord.Client):
             await self.plugin.load(plugin)
             # self.loop.create_task(self.plugin.load(plugin))
 
-    # Additional Discord API methods not found in discord.py
-    async def get_messages(self, channel, limit, before=None):
-        """
-            Summary:
-                Replies to a user in a channel.
-
-            Args:
-                channel (Channel): The Channel object to post to.
-                limit (int): The quantity of messages to retrieve.
-            Optional:
-                before (Message): The Message object to start at.
-        """
-        self.logger.debug("Getting the messages from CID: {}".format(channel.id))
-
-        endpoint = "channels/{}/messages".format(channel.id)
-        data     = {
-            'limit': int(limit)
-        }
-        if (before is not None):
-            data['before'] = before.id
-
-        self.logger.info(data)
-        self.logger.info(endpoint)
-
-        try:
-            raw_messages = self.request("GET", endpoint, data=data, headers=self.auth_headers)
-            # self.logger.info("raw:\n{}".format(raw_messages))
-            messages = []
-            for raw_message in raw_messages:
-                messages.append(self._parse_discord_message(raw_message))
-            # self.logger.info("snowflake:\n{}".format(messages))
-            return messages
-        except:
-            self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(channel.id))
+    """
+    Additional Discord API methods not found in discord.py
+    """
+    # would be client.get_messages() but that doesn't exist
+    # async def get_messages(self, channel, limit, before=None):
+    #     data = await self.http_get_messages(channel.id, limit, before=before)
+    #     self.logger.info(data)
+    #     msg_list = []
+    #     for elem in data:
+    #         msg_list.append(discord.Message(channel=channel, **data))
+    #     # return discord.Message(channel=channel, **data)
+    #     return msg_list
+    #
+    # # would be http.get_messages() but that doesn't exist
+    # async def http_get_messages(self, channel_id, limit=100, before=None):
+    #     url = '{0.CHANNELS}/{1}/messages'.format(self.http, channel_id)
+    #     payload = {
+    #         'limit': int(limit)
+    #     }
+    #     if (before is not None):
+    #         payload['before'] = before.id
+    #     # return self.http_get(url, json=payload, bucket=self.http._func_())
+    #     def _func_():
+    #         # emulate __func__ from C++
+    #         return inspect.currentframe().f_back.f_code.co_name
+    #     return self.http.get(url, json=payload, bucket=_func_())
+    #
+    # # async def http_get(self, *args, **kwargs):
+    # #     return self.request('GET', *args, **kwargs)

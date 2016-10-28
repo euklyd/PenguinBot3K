@@ -27,7 +27,7 @@ class Plugin(object):
 
         # Expose logger for subclasses
         self.logger = logging.getLogger("plugins." + self.name)
-        self.core.plugin.plugin_list[name] = self
+        # self.core.plugin.plugin_list[name] = self
         self.logger.info("{}.__init__".format(self.name))
 
     async def activate(self):
@@ -78,6 +78,7 @@ class Plugin(object):
         await self.core.send_message(
             message.channel, "<@!{}>: {}".format(message.author.id, message_str)
         )
+
     async def send_message(self, destination, message_str):
         """
             Summary:
@@ -98,7 +99,7 @@ class Plugin(object):
     async def send_whisper(self, user, message_str):
         """
             Summary:
-                Wrapper method calling the connection's whisper method.
+                Wrapper method calling the discord.Client's send_message method.
                 Will send a private message that only the recipent can see.
 
             Args:
@@ -109,6 +110,26 @@ class Plugin(object):
                 None
         """
         await self.core.send_message(user, message_str)
+
+    async def get_messages(self, channel, limit, before=None):
+        """
+            Summary:
+                Wrapper method calling the discord.Client's logs_from method.
+                Retrieves some number of messages from a channel.
+
+            Args:
+                channel (Channel): Channel object to read messages from
+                limit (int): Number of messages to Retrieves
+                before (Message): Message to start reading from (exclusive)
+
+            Returns:
+                None
+        """
+        # msg_iterator = await self.core.logs_from(channel, limit, before=before)
+        msg_list = []
+        async for message in self.core.logs_from(channel, int(limit), before=before):
+            msg_list.append(message)
+        return msg_list
 
     async def delete_message(self, msg):
         """
