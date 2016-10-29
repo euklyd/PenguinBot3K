@@ -6,6 +6,7 @@
 
     Contributors:
         - Patrick Hennessy
+        - Euklyd / Popguin
 
     License:
         Arcbot is free software: you can redistribute it and/or modify it
@@ -18,6 +19,7 @@ import re
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class Command():
     def __init__(self, pattern, callback, trigger="", access=0, silent=False):
@@ -32,6 +34,7 @@ class Command():
 
     async def invoke(self, message, arguments):
         await self.callback(message, arguments)
+
 
 class CommandManager():
     def __init__(self, core):
@@ -56,12 +59,12 @@ class CommandManager():
             # logger.info("key:     {}".format(key))
             # logger.info("command: {}".format(command))
             # logger.info("trigger: {}".format(command.trigger))
-            if message.content.startswith(command.trigger):
+            if (message.content.startswith(command.trigger)):
                 t = ""  # debug
                 if type(command.trigger) == tuple:
                     for trigger in command.trigger:
                         content = message.content.replace(trigger, "", 1)
-                        if content != message.content:
+                        if (content != message.content):
                             t = trigger # debug
                             break
                 else:
@@ -70,18 +73,18 @@ class CommandManager():
 
                 match   = re.search(command.pattern, content)
 
-                if match:
+                if (match):
                     # logger.info("trigger '{}' matched!".format(t))  # debug
                     # logger.debug("'{}' registered")
                     logger.info("'{}' registered".format(message.content))
-                    if self.core.ACL.getAccess(message.author.id) >= command.access or message.author.id == self.core.config.backdoor:
+                    if (self.core.ACL.getAccess(message.author.id) >= command.access or message.author.id == self.core.config.backdoor):
                         message.content = content
                         # message.arguments = match
                         arguments = match.groups()
                         # print(arguments)
                         await command.invoke(message, arguments)
                         logger.info("'{}' invoked".format(message.content))
-                    elif not command.silent:
+                    elif (not command.silent):
                         await self.core.send_message(message.channel, u"\u200B<@!{}>: Sorry, you need `{}` access to use that command.".format(message.author.id, command.access))
                         logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
                         logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
@@ -104,15 +107,15 @@ class CommandManager():
         clazz = type(callback.__self__).__name__
         name = clazz + "." + callback.__name__
 
-        if name in self.commands:
+        if (name in self.commands):
             logger.warning("Duplicate command \"" + clazz + "." + name + "\". Skipping registration.")
             return
         else:
             logger.debug("Registered command \"" +  clazz + "." + name + "\"")
 
-            if trigger is None:
+            if (trigger is None):
                 trigger = ""
-            elif trigger == "":
+            elif (trigger == ""):
                 trigger = self.core.config.trigger
 
             self.commands[name] = Command(
@@ -137,7 +140,7 @@ class CommandManager():
             Returns:
                 None
         """
-        if command_name in self.commands:
+        if (command_name in self.commands):
             command = self.commands[command_name]
 
             clazz = type(command.callback.__self__).__name__

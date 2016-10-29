@@ -7,6 +7,7 @@
 
     Contributors:
         - Patrick Hennessy
+        - Euklyd / Popguin
 
     License:
         Arcbot is free software: you can redistribute it and/or modify it
@@ -31,7 +32,7 @@ class PluginManager():
 
         self.logger = logging.getLogger("core.PluginManager")
         self.find_plugins()
-        self.plugin_list = {}
+        # self.plugin_list = {}
         sys.path.append("plugins")
 
     def find_plugins(self):
@@ -106,26 +107,6 @@ class PluginManager():
         """
 
         try:
-            # plugin_candidate = imp.find_module(module_name, path=['plugins'])
-            # plugin_module = imp.load_module(module_name, *plugin_candidate)
-            # importlib.import_module(module_name, path=['plugins'])
-
-            # loader = importlib.find_loader(module_name, path=['plugins'])
-            # print(type(loader))
-            # spec = importlib.util.find_spec(module_name)
-            # print(type(spec))
-            # plugin_module = loader.create_module(spec)
-            # print(type(plugin_module))
-            # loader.exec_module(plugin_module)
-
-            # loader = importlib.machinery.SourceFileLoader(module_name, path='plugins/{}.py'.format(module_name))
-            # # loader = importlib.machinery.SourceFileLoader(module_name, path='plugins')
-            # print(type(loader))
-            # print("is package? {}".format(loader.is_package('plugins/{}.py'.format(module_name))))
-            # # loader.load_module()
-            # spec = importlib.util.find_spec(module_name)
-            # loader.create_module()
-
             plugin_module = importlib.import_module(module_name, package='plugins')
             self.logger.info(plugin_module)
 
@@ -155,6 +136,7 @@ class PluginManager():
             await plugin.activate()
 
         # Register plugin commands and events
+        self.logger.info(plugin)
         for name, callback in inspect.getmembers(plugin, inspect.ismethod):
             if hasattr(callback, "connector"):
                 if not self.core.connection.name == getattr(callback, "connector"):

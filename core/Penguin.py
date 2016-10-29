@@ -1,3 +1,25 @@
+"""
+    Class Name : Penguin
+
+    Description:
+        Provides an extensible engine for plugins to interact with;
+        replaces Core.
+        Features:
+            - Publish / Subscribe Event System
+            - Plugin manager
+            - Configuration manager
+            - User, Channel and Group Date manager
+
+    Contributors:
+        - Patrick Hennessy
+        - Euklyd
+
+    License:
+        Arcbot is free software: you can redistribute it and/or modify it
+        under the terms of the GNU General Public License v3; as published
+        by the Free Software Foundation
+"""
+
 import discord
 
 import conf.settings as config
@@ -15,6 +37,7 @@ import logging.handlers
 import time
 import inspect
 
+
 class PenguinBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,13 +47,10 @@ class PenguinBot(discord.Client):
         self.bot_name = self.config.username
 
         # Setup managers
-        # self.watchdog = Watchdog(self)
         self.plugin = PluginManager(self)
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
-        # self.workers = Workers(self.config.worker_queue_size, self.config.worker_threads)
-        # self.loop = Loop()
 
         # Setup connection
         self.connector = self.load_connector(self)
@@ -41,15 +61,14 @@ class PenguinBot(discord.Client):
             Args:
                 token (str): Bot auth token.
         """
-        # self.loop.run_until_complete(self.start(*args))
-        # print(self.connector.token)
         self.logger.info("Starting event loop")
         self.loop.run_until_complete(self.start(self.connector.token))
 
     def exit(self):
         """
             Summary:
-                Does any nessessary clean up (like killing threads) before the bot exits
+                Does any nessessary clean up (like killing threads)
+                before the bot exits
 
             Args:
                 None
@@ -78,7 +97,6 @@ class PenguinBot(discord.Client):
             profile_args['username'] = self.config.username
         if (self.config.avatar != "" and self.config.avatar is not None):
             profile_args['avatar'] = open(self.config.avatar, 'rb').read()
-        # await self.edit_profile(username=self.config.name, avatar=open(self.config.avatar, 'rb').read())
         await self.edit_profile(**profile_args)
         profile_args['avatar'] = self.config.avatar
         self.logger.info("Set profile to {}".format(profile_args))
@@ -90,7 +108,6 @@ class PenguinBot(discord.Client):
             presence_args['game'] = None
         if (self.config.status != ""):
             presence_args['status'] = self.config.status
-        # await self.change_presence(game=discord.Game(name=game))
         await self.change_presence(**presence_args)
         presence_args['game'] = presence_args['game'].name
         self.logger.info("Set presence to {}".format(presence_args))
@@ -168,7 +185,8 @@ class PenguinBot(discord.Client):
                 name (str): Name of the config module to be loaded
 
             Returns:
-                (Config): instance of Config class, storing all global config options
+                (Config): instance of Config class, storing all global
+                config options
         """
 
         path.append("conf")
@@ -234,34 +252,3 @@ class PenguinBot(discord.Client):
         self.logger.info("Loading Plugins")
         for plugin in config.plugins:
             await self.plugin.load(plugin)
-            # self.loop.create_task(self.plugin.load(plugin))
-
-    """
-    Additional Discord API methods not found in discord.py
-    """
-    # would be client.get_messages() but that doesn't exist
-    # async def get_messages(self, channel, limit, before=None):
-    #     data = await self.http_get_messages(channel.id, limit, before=before)
-    #     self.logger.info(data)
-    #     msg_list = []
-    #     for elem in data:
-    #         msg_list.append(discord.Message(channel=channel, **data))
-    #     # return discord.Message(channel=channel, **data)
-    #     return msg_list
-    #
-    # # would be http.get_messages() but that doesn't exist
-    # async def http_get_messages(self, channel_id, limit=100, before=None):
-    #     url = '{0.CHANNELS}/{1}/messages'.format(self.http, channel_id)
-    #     payload = {
-    #         'limit': int(limit)
-    #     }
-    #     if (before is not None):
-    #         payload['before'] = before.id
-    #     # return self.http_get(url, json=payload, bucket=self.http._func_())
-    #     def _func_():
-    #         # emulate __func__ from C++
-    #         return inspect.currentframe().f_back.f_code.co_name
-    #     return self.http.get(url, json=payload, bucket=_func_())
-    #
-    # # async def http_get(self, *args, **kwargs):
-    # #     return self.request('GET', *args, **kwargs)
