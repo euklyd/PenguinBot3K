@@ -100,7 +100,7 @@ class Discord(Connector):
         self.connectorCache['guilds']             = login_data['d']['guilds']
 
         # Set websocket to nonblocking so we can exit a thread reading from the socket if we need to
-        self.socket.sock.setblocking(0)
+        # self.socket.sock.setblocking(0)
         self.connected = True
 
         self.logger.info("Succesful login to Discord")
@@ -132,61 +132,61 @@ class Discord(Connector):
         self.logger.debug('Joined message_consumer and keep_alive threads')
 
         # Close websocket if it is established
-        if isinstance(self.socket, websocket.WebSocket):
-            self.socket.close()
+        # if isinstance(self.socket, websocket.WebSocket):
+        #     self.socket.close()
 
         self.logger.info("Disconnected from Discord")
 
-    def say(self, channel, msg, mentions=[]):
-        """
-            Summary:
-                Posts a message to a channel.
-
-            Args:
-                channel (Channel): The Channel object to post to.
-                msg (str): The message to post.
-                mentions (list[str]): The list of user ids to mention.
-        """
-        self.logger.debug("Sending message to channel " + channel.id)
-
-        for user in mentions:
-            message = "<@{}> ".format(user) + msg
-
-        endpoint = "channels/{}/messages".format(channel.id)
-        data     = {
-            "content":  u"\u200B{}".format(msg),    # zero-width space to potential triggers
-            "mentions": mentions
-        }
-
-        try:
-            self.request("POST", endpoint, data=data, headers=self.auth_headers)
-        except:
-            self.logger.warning('Send message to channel \'{}\' failed'.format(channel.id))
-            self.logger.info('Send message to channel \'{}\' failed'.format(channel.id))
-
-    def reply(self, user, channel, message):
-        """
-            Summary:
-                Replies to a user in a channel.
-
-            Args:
-                user (User): The User object to reply to.
-                channel (Channel): The Channel object to post to.
-                msg (str): The message to post.
-                mentions (list[str]): The list of user ids to mention.
-        """
-        self.logger.debug("Sending reply to " + user.id)
-
-        endpoint = "channels/{}/messages".format(channel.id)
-        data     = {
-            "content":  u"\u200B<@{}> {}".format(user.id, message),
-            "mentions": [user.id]
-        }
-
-        try:
-            self.request("POST", endpoint, data=data, headers=self.auth_headers)
-        except:
-            self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user.id, channel.id))
+    # def say(self, channel, msg, mentions=[]):
+    #     """
+    #         Summary:
+    #             Posts a message to a channel.
+    #
+    #         Args:
+    #             channel (Channel): The Channel object to post to.
+    #             msg (str): The message to post.
+    #             mentions (list[str]): The list of user ids to mention.
+    #     """
+    #     self.logger.debug("Sending message to channel " + channel.id)
+    #
+    #     for user in mentions:
+    #         message = "<@{}> ".format(user) + msg
+    #
+    #     endpoint = "channels/{}/messages".format(channel.id)
+    #     data     = {
+    #         "content":  u"\u200B{}".format(msg),    # zero-width space to potential triggers
+    #         "mentions": mentions
+    #     }
+    #
+    #     try:
+    #         self.request("POST", endpoint, data=data, headers=self.auth_headers)
+    #     except:
+    #         self.logger.warning('Send message to channel \'{}\' failed'.format(channel.id))
+    #         self.logger.info('Send message to channel \'{}\' failed'.format(channel.id))
+    #
+    # def reply(self, user, channel, message):
+    #     """
+    #         Summary:
+    #             Replies to a user in a channel.
+    #
+    #         Args:
+    #             user (User): The User object to reply to.
+    #             channel (Channel): The Channel object to post to.
+    #             msg (str): The message to post.
+    #             mentions (list[str]): The list of user ids to mention.
+    #     """
+    #     self.logger.debug("Sending reply to " + user.id)
+    #
+    #     endpoint = "channels/{}/messages".format(channel.id)
+    #     data     = {
+    #         "content":  u"\u200B<@{}> {}".format(user.id, message),
+    #         "mentions": [user.id]
+    #     }
+    #
+    #     try:
+    #         self.request("POST", endpoint, data=data, headers=self.auth_headers)
+    #     except:
+    #         self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user.id, channel.id))
 
     # def get_messages(self, msg, number):
     def get_messages(self, channel, limit, before=None):
@@ -223,109 +223,109 @@ class Discord(Connector):
         except:
             self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(channel.id))
 
-    def delete_message(self, msg):
-        self.logger.debug("Deleting message with ID: {} from channel: {}".format(msg.id, msg.channel))
+    # def delete_message(self, msg):
+    #     self.logger.debug("Deleting message with ID: {} from channel: {}".format(msg.id, msg.channel))
+    #
+    #     endpoint = "channels/{0}/messages/{1}".format(msg.channel, msg.id)
+    #     try:
+    #         self.request("DELETE", endpoint, headers=self.auth_headers)
+    #     except:
+    #         self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
+    #
+    # def delete_messages(self, msg_array):
+    #     self.logger.debug("Bulk deleting {} messages from channel: {}".format(len(msg_array), msg_array[0].channel))
+    #
+    #     endpoint = "channels/{0}/messages/bulk-delete".format(msg_array[0].channel)
+    #     data     = {
+    #         'messages': []
+    #     }
+    #     for msg in msg_array:
+    #         data['messages'].append(msg.message['id'])
+    #     # self.logger.info(data)
+    #     # self.logger.info(endpoint)
+    #     try:
+    #         self.request("POST", endpoint, data=data, headers=self.auth_headers)
+    #     except:
+    #         self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
 
-        endpoint = "channels/{0}/messages/{1}".format(msg.channel, msg.id)
-        try:
-            self.request("DELETE", endpoint, headers=self.auth_headers)
-        except:
-            self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
+    # def ban_user(self, server_id, user_id, delete_msgs=0):
+    #     self.logger.info("Banning user `{}` from server `{}`".format(user_id, server_id))
+    #
+    #     endpoint = "guilds/{0}/bans/{1}".format(server_id, user_id)
+    #     data     = {
+    #         "delete-message-days": delete_msgs
+    #     }
+    #     self.logger.debug(endpoint)
+    #     self.logger.debug(data)
+    #
+    #     try:
+    #         self.request("PUT", endpoint, data=data, headers=self.auth_headers)
+    #     except:
+    #         self.logger.warning('Ban of user \'{}\' in server \'{}\' failed'.format(user_id, server_id))
 
-    def delete_messages(self, msg_array):
-        self.logger.debug("Bulk deleting {} messages from channel: {}".format(len(msg_array), msg_array[0].channel))
+    # def whisper(self, user, message):
+    #     self.logger.debug("Sending reply to " + user)
+    #
+    #     channel = self.get_private_channel(user)
+    #     endpoint = "channels/{}/messages".format(channel)
+    #     data     = {
+    #         "content": "{}".format(message)
+    #     }
+    #
+    #     try:
+    #         self.request("POST", endpoint, data=data, headers=self.auth_headers)
+    #     except:
+    #         self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user, channel))
 
-        endpoint = "channels/{0}/messages/bulk-delete".format(msg_array[0].channel)
-        data     = {
-            'messages': []
-        }
-        for msg in msg_array:
-            data['messages'].append(msg.message['id'])
-        # self.logger.info(data)
-        # self.logger.info(endpoint)
-        try:
-            self.request("POST", endpoint, data=data, headers=self.auth_headers)
-        except:
-            self.logger.warning('Deletion of message \'{}\' in channel \'{}\' failed'.format(msg.id, msg.channel))
+    # def upload(self, channel, file):
+    #     self.logger.debug('Sending file to channel ' + channel)
+    #
+    #     endpoint = "channels/{}/messages".format(channel)
+    #     files    = {'file': open(file, 'rb')}
+    #
+    #     try:
+    #         self.request('POST', endpoint,  files=files, headers={"authorization": self.token})
+    #     except:
+    #         self.logger.warning('Upload file \'{}\' to channel {} failed'.format(file, channel))
 
-    def ban_user(self, server_id, user_id, delete_msgs=0):
-        self.logger.info("Banning user `{}` from server `{}`".format(user_id, server_id))
+    # def getUsers(self):
+    #     pass
+    #
+    # @ttl_cache(300)
+    # def getUser(self, userID):
+    #     user = self.request("GET", "users/{}".format(userID), headers={"authorization": self.token})
+    #
+    #     return {
+    #         'user': user,
+    #         'name': user['username'],
+    #         'id': user['id'],
+    #         'expires': time.time() + 600
+    #     }
 
-        endpoint = "guilds/{0}/bans/{1}".format(server_id, user_id)
-        data     = {
-            "delete-message-days": delete_msgs
-        }
-        self.logger.debug(endpoint)
-        self.logger.debug(data)
-
-        try:
-            self.request("PUT", endpoint, data=data, headers=self.auth_headers)
-        except:
-            self.logger.warning('Ban of user \'{}\' in server \'{}\' failed'.format(user_id, server_id))
-
-    def whisper(self, user, message):
-        self.logger.debug("Sending reply to " + user)
-
-        channel = self.get_private_channel(user)
-        endpoint = "channels/{}/messages".format(channel)
-        data     = {
-            "content": "{}".format(message)
-        }
-
-        try:
-            self.request("POST", endpoint, data=data, headers=self.auth_headers)
-        except:
-            self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user, channel))
-
-    def upload(self, channel, file):
-        self.logger.debug('Sending file to channel ' + channel)
-
-        endpoint = "channels/{}/messages".format(channel)
-        files    = {'file': open(file, 'rb')}
-
-        try:
-            self.request('POST', endpoint,  files=files, headers={"authorization": self.token})
-        except:
-            self.logger.warning('Upload file \'{}\' to channel {} failed'.format(file, channel))
-
-    def getUsers(self):
-        pass
-
-    @ttl_cache(300)
-    def getUser(self, userID):
-        user = self.request("GET", "users/{}".format(userID), headers={"authorization": self.token})
-
-        return {
-            'user': user,
-            'name': user['username'],
-            'id': user['id'],
-            'expires': time.time() + 600
-        }
-
-    def get_channel(self, msg):
-        channel = self.request("GET", "channels/{}".format(msg.channel), headers={"authorization": self.token})
-        return channel
-
-    def get_server(self, msg):
-        channel = self.get_channel(msg)
-        server = self.request("GET", "guilds/{}".format(channel['guild_id']), headers={"authorization": self.token})
-        return server
+    # def get_channel(self, msg):
+    #     channel = self.request("GET", "channels/{}".format(msg.channel), headers={"authorization": self.token})
+    #     return channel
+    #
+    # def get_server(self, msg):
+    #     channel = self.get_channel(msg)
+    #     server = self.request("GET", "guilds/{}".format(channel['guild_id']), headers={"authorization": self.token})
+    #     return server
 
     # Discord Specific
-    def leave_guild(self, guild_id):
-        self.request("DELETE", "users/@me/guilds/{}".format(guild_id), headers={"authorization": self.token})
-
-    def get_servers(self):
-        return self.request("GET", "users/@me/guilds", headers={"authorization": self.token})
-
-    def get_private_channel(self, user):
-        for channel in self.connectorCache['private_channels']:
-            if channel['recipient']['id'] == user:
-                return channel['id']
-        else:
-            channel = self.request("POST", "users/@me/channels", data={"recipient_id": "{}".format(user)}, headers={"authorization": self.token})
-            self.connectorCache['private_channels'].append(channel)
-            return channel['id']
+    # def leave_guild(self, guild_id):
+    #     self.request("DELETE", "users/@me/guilds/{}".format(guild_id), headers={"authorization": self.token})
+    #
+    # def get_servers(self):
+    #     return self.request("GET", "users/@me/guilds", headers={"authorization": self.token})
+    #
+    # def get_private_channel(self, user):
+    #     for channel in self.connectorCache['private_channels']:
+    #         if channel['recipient']['id'] == user:
+    #             return channel['id']
+    #     else:
+    #         channel = self.request("POST", "users/@me/channels", data={"recipient_id": "{}".format(user)}, headers={"authorization": self.token})
+    #         self.connectorCache['private_channels'].append(channel)
+    #         return channel['id']
 
     def set_status(self, status):
         self._write_socket({
@@ -367,40 +367,40 @@ class Discord(Connector):
         self.request("PATCH", "users/@me", data={"username": "Arcbot", "avatar": "data:image/png;base64," + base64.b64encode(rawImage).decode('ascii')}, headers={"authorization": self.token})
 
     # Thread Methods
-    def _keep_alive(self):
-        self.logger.debug("Spawning keep_alive thread at interval: " + str(self.connectorCache['heartbeat_interval']))
+    # def _keep_alive(self):
+    #     self.logger.debug("Spawning keep_alive thread at interval: " + str(self.connectorCache['heartbeat_interval']))
+    #
+    #     last_heartbeat = time.time()
+    #     heartbeat_interval = self.connectorCache['heartbeat_interval'] / 1000
+    #
+    #     while self.connected:
+    #         now = time.time()
+    #
+    #         if (now - last_heartbeat) >= heartbeat_interval - 1:
+    #             self._write_socket({"op":1,"d": time.time()})
+    #             self.logger.debug("Keep Alive")
+    #
+    #             last_heartbeat = time.time()
+    #
+    #         time.sleep(1)
 
-        last_heartbeat = time.time()
-        heartbeat_interval = self.connectorCache['heartbeat_interval'] / 1000
-
-        while self.connected:
-            now = time.time()
-
-            if (now - last_heartbeat) >= heartbeat_interval - 1:
-                self._write_socket({"op":1,"d": time.time()})
-                self.logger.debug("Keep Alive")
-
-                last_heartbeat = time.time()
-
-            time.sleep(1)
-
-    def _message_consumer(self):
-        self.logger.debug("Spawning message_consumer thread")
-
-        while self.connected:
-            # Sleep is good for the body; also so we don't hog the CPU polling the socket
-            time.sleep(0.5)
-
-            # Read data off of socket
-            rawMessage = self._read_socket()
-            if not rawMessage: continue
-
-            # Parse raw message
-            message = self._parse_message(rawMessage)
-            if not message: continue
-
-            # Have worker thread take it from here
-            self.core.workers.queue(self._handleMessage, message)
+    # def _message_consumer(self):
+    #     self.logger.debug("Spawning message_consumer thread")
+    #
+    #     while self.connected:
+    #         # Sleep is good for the body; also so we don't hog the CPU polling the socket
+    #         time.sleep(0.5)
+    #
+    #         # Read data off of socket
+    #         rawMessage = self._read_socket()
+    #         if not rawMessage: continue
+    #
+    #         # Parse raw message
+    #         message = self._parse_message(rawMessage)
+    #         if not message: continue
+    #
+    #         # Have worker thread take it from here
+    #         self.core.workers.queue(self._handleMessage, message)
 
     # Handler Methods
     async def _handleMessage(self, message):
@@ -417,92 +417,92 @@ class Discord(Connector):
         # should check for other message types?
 
     # Socket Methods
-    def _write_socket(self, data):
-        try:
-            self.socket.send(json.dumps(data))
-        except socket_error as e:
-            if e.errno == 104:
-                if not self.connected:
-                    return
+    # def _write_socket(self, data):
+    #     try:
+    #         self.socket.send(json.dumps(data))
+    #     except socket_error as e:
+    #         if e.errno == 104:
+    #             if not self.connected:
+    #                 return
+    #
+    #             self.logger.warning("Connection reset by peer.")
+    #             self.connected = False
+    #
+    #         else:
+    #             raise
+    #     except websocket.WebSocketConnectionClosedException:
+    #         if not self.connected:
+    #             return
+    #         self.logger.warning("Websocket unexpectedly closed.")
+    #         self.connected = False
+    #
+    # def _read_socket(self):
+    #     data = ""
+    #     while True:
+    #         try:
+    #             data += self.socket.recv()
+    #
+    #             if data:
+    #                 return json.loads(data.rstrip())
+    #             else:
+    #                 return None
+    #
+    #         except ValueError as e:
+    #             continue
+    #         except SSLError as e:
+    #             # Raised when we can't read the entire buffer at once
+    #             if e.errno == 2:
+    #                 return None
+    #             raise
+    #         except socket_error as e:
+    #             # Raised when connection reset by peer
+    #             if e.errno == 104:
+    #                 if not self.connected:
+    #                     return
+    #
+    #                 self.logger.warning("Connection reset by peer.")
+    #                 self.connected = False
+    #                 return None
+    #
+    #             # Raised when send buffer is full; we must try again
+    #             if e.errno == 11:
+    #                 return None
+    #             raise
+    #         except websocket.WebSocketConnectionClosedException:
+    #             if not self.connected:
+    #                 return
+    #             self.logger.warning("Websocket unexpectedly closed.")
+    #             self.connected = False
 
-                self.logger.warning("Connection reset by peer.")
-                self.connected = False
-
-            else:
-                raise
-        except websocket.WebSocketConnectionClosedException:
-            if not self.connected:
-                return
-            self.logger.warning("Websocket unexpectedly closed.")
-            self.connected = False
-
-    def _read_socket(self):
-        data = ""
-        while True:
-            try:
-                data += self.socket.recv()
-
-                if data:
-                    return json.loads(data.rstrip())
-                else:
-                    return None
-
-            except ValueError as e:
-                continue
-            except SSLError as e:
-                # Raised when we can't read the entire buffer at once
-                if e.errno == 2:
-                    return None
-                raise
-            except socket_error as e:
-                # Raised when connection reset by peer
-                if e.errno == 104:
-                    if not self.connected:
-                        return
-
-                    self.logger.warning("Connection reset by peer.")
-                    self.connected = False
-                    return None
-
-                # Raised when send buffer is full; we must try again
-                if e.errno == 11:
-                    return None
-                raise
-            except websocket.WebSocketConnectionClosedException:
-                if not self.connected:
-                    return
-                self.logger.warning("Websocket unexpectedly closed.")
-                self.connected = False
-
-    # Parser Methods
-    def _parse_message(self, message):
-        type = content = sender = sender_name = channel = content = timestamp = None
-
-        if message["t"] == "MESSAGE_CREATE":
-            type = messageType.MESSAGE
-            id = message["d"]['id']
-            sender = message["d"]['author']['id']
-            sender_name = message["d"]['author']['username']
-            channel = message["d"]['channel_id']
-            content = message["d"]['content']
-
-            self.logger.info("Message Recieved: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
-        else:
-            return None
-
-        if sender == self.connectorCache['self']['id']:
-            return None
-
-        return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
-
-    def _parse_discord_message(self, message):
-        type = messageType.MESSAGE
-        id = message['id']
-        sender = message['author']['id']
-        sender_name = message['author']['username']
-        channel = message['channel_id']
-        content = message['content']
-
-        self.logger.debug("Message Parsed: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
-
-        return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
+    # # Parser Methods
+    # def _parse_message(self, message):
+    #     type = content = sender = sender_name = channel = content = timestamp = None
+    #
+    #     if message["t"] == "MESSAGE_CREATE":
+    #         type = messageType.MESSAGE
+    #         id = message["d"]['id']
+    #         sender = message["d"]['author']['id']
+    #         sender_name = message["d"]['author']['username']
+    #         channel = message["d"]['channel_id']
+    #         content = message["d"]['content']
+    #
+    #         self.logger.info("Message Recieved: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
+    #     else:
+    #         return None
+    #
+    #     if sender == self.connectorCache['self']['id']:
+    #         return None
+    #
+    #     return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
+    #
+    # def _parse_discord_message(self, message):
+    #     type = messageType.MESSAGE
+    #     id = message['id']
+    #     sender = message['author']['id']
+    #     sender_name = message['author']['username']
+    #     channel = message['channel_id']
+    #     content = message['content']
+    #
+    #     self.logger.debug("Message Parsed: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
+    #
+    #     return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
