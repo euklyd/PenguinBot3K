@@ -31,8 +31,7 @@ import websocket
 
 from core.Connector import Connector
 from core.Decorators import ttl_cache
-# from core.Message import *
-# from core.Loop import Loop
+
 
 class Discord(Connector):
     def __init__(self, core, token):
@@ -99,96 +98,19 @@ class Discord(Connector):
         self.connectorCache['private_channels']   = login_data['d']['private_channels']
         self.connectorCache['guilds']             = login_data['d']['guilds']
 
-        # Set websocket to nonblocking so we can exit a thread reading from the socket if we need to
-        # self.socket.sock.setblocking(0)
         self.connected = True
 
         self.logger.info("Succesful login to Discord")
         self.core.event.notify('connect')
 
-        # Create and start threads
-        # self.keep_alive_thread = threading.Thread(target=self._keep_alive, name="keep_alive_thread")
-        # self.keep_alive_thread.daemon = True
-        # self.keep_alive_thread.start()
-        #
-        # self.message_consumer_thread = threading.Thread(target=self._message_consumer, name="message_consumer_thread")
-        # self.message_consumer_thread.daemon = True
-        # self.message_consumer_thread.start()
-
-        # self.loop = Loop()
-        # self.loop.start
-
     def disconnect(self):
         self.core.event.notify('disconnect')
         self.connected = False
 
-        # Join threads if they exist
-        # if isinstance(self.keep_alive_thread, threading.Thread):
-        #     self.keep_alive_thread.join()
-        #
-        # if isinstance(self.message_consumer_thread, threading.Thread):
-        #     self.message_consumer_thread.join()
-
         self.logger.debug('Joined message_consumer and keep_alive threads')
-
-        # Close websocket if it is established
-        # if isinstance(self.socket, websocket.WebSocket):
-        #     self.socket.close()
 
         self.logger.info("Disconnected from Discord")
 
-    # def say(self, channel, msg, mentions=[]):
-    #     """
-    #         Summary:
-    #             Posts a message to a channel.
-    #
-    #         Args:
-    #             channel (Channel): The Channel object to post to.
-    #             msg (str): The message to post.
-    #             mentions (list[str]): The list of user ids to mention.
-    #     """
-    #     self.logger.debug("Sending message to channel " + channel.id)
-    #
-    #     for user in mentions:
-    #         message = "<@{}> ".format(user) + msg
-    #
-    #     endpoint = "channels/{}/messages".format(channel.id)
-    #     data     = {
-    #         "content":  u"\u200B{}".format(msg),    # zero-width space to potential triggers
-    #         "mentions": mentions
-    #     }
-    #
-    #     try:
-    #         self.request("POST", endpoint, data=data, headers=self.auth_headers)
-    #     except:
-    #         self.logger.warning('Send message to channel \'{}\' failed'.format(channel.id))
-    #         self.logger.info('Send message to channel \'{}\' failed'.format(channel.id))
-    #
-    # def reply(self, user, channel, message):
-    #     """
-    #         Summary:
-    #             Replies to a user in a channel.
-    #
-    #         Args:
-    #             user (User): The User object to reply to.
-    #             channel (Channel): The Channel object to post to.
-    #             msg (str): The message to post.
-    #             mentions (list[str]): The list of user ids to mention.
-    #     """
-    #     self.logger.debug("Sending reply to " + user.id)
-    #
-    #     endpoint = "channels/{}/messages".format(channel.id)
-    #     data     = {
-    #         "content":  u"\u200B<@{}> {}".format(user.id, message),
-    #         "mentions": [user.id]
-    #     }
-    #
-    #     try:
-    #         self.request("POST", endpoint, data=data, headers=self.auth_headers)
-    #     except:
-    #         self.logger.warning('Reply to user \'{}\' in channel \'{}\' failed'.format(user.id, channel.id))
-
-    # def get_messages(self, msg, number):
     def get_messages(self, channel, limit, before=None):
         """
             Summary:
@@ -327,16 +249,16 @@ class Discord(Connector):
     #         self.connectorCache['private_channels'].append(channel)
     #         return channel['id']
 
-    def set_status(self, status):
-        self._write_socket({
-            "op":3,
-            "d":{
-                "idle_since":None,
-                "game": {
-                    "name": status
-                }
-            }
-        })
+    # def set_status(self, status):
+    #     self._write_socket({
+    #         "op":3,
+    #         "d":{
+    #             "idle_since":None,
+    #             "game": {
+    #                 "name": status
+    #             }
+    #         }
+    #     })
 
     # User Management
         # Set roles
@@ -354,57 +276,21 @@ class Discord(Connector):
 
         print(json.dumps(self.connectorDict))
 
-    def avatar(self):
-        with open("conf/avatar.png", "rb") as avatarImage:
-            rawImage = avatarImage.read()
-
-        raw = base64.b64encode(rawImage)
-        with open("test", "wb") as file:
-            file.write(raw)
-
-        return
-
-        self.request("PATCH", "users/@me", data={"username": "Arcbot", "avatar": "data:image/png;base64," + base64.b64encode(rawImage).decode('ascii')}, headers={"authorization": self.token})
-
-    # Thread Methods
-    # def _keep_alive(self):
-    #     self.logger.debug("Spawning keep_alive thread at interval: " + str(self.connectorCache['heartbeat_interval']))
+    # def avatar(self):
+    #     with open("conf/avatar.png", "rb") as avatarImage:
+    #         rawImage = avatarImage.read()
     #
-    #     last_heartbeat = time.time()
-    #     heartbeat_interval = self.connectorCache['heartbeat_interval'] / 1000
+    #     raw = base64.b64encode(rawImage)
+    #     with open("test", "wb") as file:
+    #         file.write(raw)
     #
-    #     while self.connected:
-    #         now = time.time()
+    #     return
     #
-    #         if (now - last_heartbeat) >= heartbeat_interval - 1:
-    #             self._write_socket({"op":1,"d": time.time()})
-    #             self.logger.debug("Keep Alive")
-    #
-    #             last_heartbeat = time.time()
-    #
-    #         time.sleep(1)
-
-    # def _message_consumer(self):
-    #     self.logger.debug("Spawning message_consumer thread")
-    #
-    #     while self.connected:
-    #         # Sleep is good for the body; also so we don't hog the CPU polling the socket
-    #         time.sleep(0.5)
-    #
-    #         # Read data off of socket
-    #         rawMessage = self._read_socket()
-    #         if not rawMessage: continue
-    #
-    #         # Parse raw message
-    #         message = self._parse_message(rawMessage)
-    #         if not message: continue
-    #
-    #         # Have worker thread take it from here
-    #         self.core.workers.queue(self._handleMessage, message)
+    #     self.request("PATCH", "users/@me", data={"username": "Arcbot", "avatar": "data:image/png;base64," + base64.b64encode(rawImage).decode('ascii')}, headers={"authorization": self.token})
 
     # Handler Methods
     async def _handleMessage(self, message):
-        self.logger.info(message.type)
+        self.logger.debug(message.type)
         # If incoming message is a MESSAGE text
         if message.type == discord.MessageType.default:
             self.core.event.notify("message",  message=message)
@@ -415,94 +301,3 @@ class Discord(Connector):
             self.core.event.notify("pressence", message=message)
 
         # should check for other message types?
-
-    # Socket Methods
-    # def _write_socket(self, data):
-    #     try:
-    #         self.socket.send(json.dumps(data))
-    #     except socket_error as e:
-    #         if e.errno == 104:
-    #             if not self.connected:
-    #                 return
-    #
-    #             self.logger.warning("Connection reset by peer.")
-    #             self.connected = False
-    #
-    #         else:
-    #             raise
-    #     except websocket.WebSocketConnectionClosedException:
-    #         if not self.connected:
-    #             return
-    #         self.logger.warning("Websocket unexpectedly closed.")
-    #         self.connected = False
-    #
-    # def _read_socket(self):
-    #     data = ""
-    #     while True:
-    #         try:
-    #             data += self.socket.recv()
-    #
-    #             if data:
-    #                 return json.loads(data.rstrip())
-    #             else:
-    #                 return None
-    #
-    #         except ValueError as e:
-    #             continue
-    #         except SSLError as e:
-    #             # Raised when we can't read the entire buffer at once
-    #             if e.errno == 2:
-    #                 return None
-    #             raise
-    #         except socket_error as e:
-    #             # Raised when connection reset by peer
-    #             if e.errno == 104:
-    #                 if not self.connected:
-    #                     return
-    #
-    #                 self.logger.warning("Connection reset by peer.")
-    #                 self.connected = False
-    #                 return None
-    #
-    #             # Raised when send buffer is full; we must try again
-    #             if e.errno == 11:
-    #                 return None
-    #             raise
-    #         except websocket.WebSocketConnectionClosedException:
-    #             if not self.connected:
-    #                 return
-    #             self.logger.warning("Websocket unexpectedly closed.")
-    #             self.connected = False
-
-    # # Parser Methods
-    # def _parse_message(self, message):
-    #     type = content = sender = sender_name = channel = content = timestamp = None
-    #
-    #     if message["t"] == "MESSAGE_CREATE":
-    #         type = messageType.MESSAGE
-    #         id = message["d"]['id']
-    #         sender = message["d"]['author']['id']
-    #         sender_name = message["d"]['author']['username']
-    #         channel = message["d"]['channel_id']
-    #         content = message["d"]['content']
-    #
-    #         self.logger.info("Message Recieved: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
-    #     else:
-    #         return None
-    #
-    #     if sender == self.connectorCache['self']['id']:
-    #         return None
-    #
-    #     return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
-    #
-    # def _parse_discord_message(self, message):
-    #     type = messageType.MESSAGE
-    #     id = message['id']
-    #     sender = message['author']['id']
-    #     sender_name = message['author']['username']
-    #     channel = message['channel_id']
-    #     content = message['content']
-    #
-    #     self.logger.debug("Message Parsed: [Name:{}][UID:{}][CID:{}]: {}".format(sender_name, sender, channel, content))
-    #
-    #     return Message(type, id, sender, channel, message, content=content, sender_name=sender_name, timestamp=time.time())
