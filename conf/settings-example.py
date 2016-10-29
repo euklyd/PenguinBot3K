@@ -3,6 +3,7 @@
 
     Description:
         Contains all global config options needed for the bot to run
+        MAKE SURE TO CHANGE THE backdoor UNLESS YOU WANT YOUR BOT COMPROMISED
 
     Contributors:
         - Patrick Hennessy
@@ -13,24 +14,45 @@
         by the Free Software Foundation
 """
 
+import discord
 import logging
 
-# Name the bot will refer to itself; will change name on server if it is not this
-name = "Arcbot"
-avatar = ""
+"""
+    Profile settings
 
-# Default command trigger. Messages that being with this are considered commands
-trigger = "arcbot "
+    Set by discord.Client.edit_profile()
+"""
+# Name the bot will refer to itself; will change name on server if it is not this
+username = "My Penguin Bot"
+avatar = "conf/king_dedede_icon.png"
+
+"""
+    Presence settings
+
+    Set by discord.Client.change_presence()
+"""
+game = ""
+# options are 'online', 'offline', 'idle', 'do_not_disturb', 'invisible'
+status = discord.Status.online
+
+"""
+    Trigger
+
+    Default command trigger. Messages that begin with any of these are
+    considered commands
+    If you want, you can set it to be a single string rather than a tuple.
+"""
+trigger = ('spikes ', 'Spikes ', '«', '»')
 
 # Log level: https://docs.python.org/3/library/logging.html#logging-levels
-log_level = logging.INFO
+log_level = logging.DEBUG
 
 # Connector to use
-connector = "Discord"
+connector = 'Discord'
+# Set this to your bot's secret token.
 connector_options = {
-    "token": ""
+    'token': ''
 }
-
 # API tokens
 api_tokens = {
     "steam":           "",
@@ -42,26 +64,22 @@ api_tokens = {
 
 # Ranks
 ranks = {
-    "guest": 50,
-    "member": 100,
-    "moderator": 150,
-    "admin": 999
+    'guest': 50,
+    'member': 100,
+    'moderator': 150,
+    'admin': 999
 }
 
-# Names of plugins to be loaded. Will search the "plugin/" directory
+# Backdoor. If you want to override stuff, then set this to
+# your personal user ID snowflake. This is dangerous, as
+# whoever's ID this is will have full conrol over your bot.
+backdoor = ''
+
+# Names of plugins to be loaded. Will search the "plugin/" directory.
 plugins = [
-    "ACL",
-    "Manage"
+    'ACL',
+    'Manage',
+    'Macro',
+    'Moderation',
+    'Utility'
 ]
-
-# Thread Pool Execution
-#   worker_threads - number of worker threads to be spawned that will carry out tasks for the bot
-#   worker_queue_size - size of queue for thread workers to consume from. Big size = more tasks can be queued; but more RAM used
-worker_threads = 12
-worker_queue_size = 100
-
-# Watch Dog settings
-#   connection_retry - number of times watchdog will try to reconnect the bot
-#   connection_timeout - time in seconds to wait before trying to connect again
-connection_retry = 3
-connection_timeout = 900

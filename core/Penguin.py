@@ -21,7 +21,7 @@ class PenguinBot(discord.Client):
         # Setup logger and load config
         self.setup_logger()
         self.config = self.load_config("settings")
-        self.bot_name = self.config.name
+        self.bot_name = self.config.username
 
         # Setup managers
         # self.watchdog = Watchdog(self)
@@ -43,7 +43,7 @@ class PenguinBot(discord.Client):
         """
         # self.loop.run_until_complete(self.start(*args))
         # print(self.connector.token)
-        self.logger.info("Running bot")
+        self.logger.info("Starting event loop")
         self.loop.run_until_complete(self.start(self.connector.token))
 
     def exit(self):
@@ -71,12 +71,29 @@ class PenguinBot(discord.Client):
         """
         self.logger.info("Connected to Discord")
 
-        # await self.add_all_servers()
-        # self.logger.info("Loading Plugins")
-        # for plugin in config.plugins:
-        #     self.plugin.load(plugin)
         await self.load_plugins()
-        await self.change_presence(game=discord.Game(name=self.config.status))
+
+        profile_args = {}
+        if (self.config.username != "" and self.config.username is not None):
+            profile_args['username'] = self.config.username
+        if (self.config.avatar != "" and self.config.avatar is not None):
+            profile_args['avatar'] = open(self.config.avatar, 'rb').read()
+        # await self.edit_profile(username=self.config.name, avatar=open(self.config.avatar, 'rb').read())
+        await self.edit_profile(**profile_args)
+        profile_args['avatar'] = self.config.avatar
+        self.logger.info("Set profile to {}".format(profile_args))
+
+        presence_args = {}
+        if (self.config.game != ""):
+            presence_args['game'] = discord.Game(name=self.config.game)
+        else:
+            presence_args['game'] = None
+        if (self.config.status != ""):
+            presence_args['status'] = self.config.status
+        # await self.change_presence(game=discord.Game(name=game))
+        await self.change_presence(**presence_args)
+        presence_args['game'] = presence_args['game'].name
+        self.logger.info("Set presence to {}".format(presence_args))
 
     async def on_message(self, msg):
         """
