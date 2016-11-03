@@ -62,7 +62,9 @@ class PenguinBot(discord.Client):
                 token (str): Bot auth token.
         """
         self.logger.info("Starting event loop")
-        self.loop.run_until_complete(self.start(self.connector.token))
+        self.loop.run_until_complete(
+            self.start(self.config.connector_options['token'])
+        )
 
     def exit(self):
         """
@@ -119,7 +121,7 @@ class PenguinBot(discord.Client):
 
             Inherited from discord.Client.
         """
-        self.logger.info("Recieved message: {}".format(msg.content))
+        self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
         await self.connector._handleMessage(msg)
 
     def setup_logger(self):
