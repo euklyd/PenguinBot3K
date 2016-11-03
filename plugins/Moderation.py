@@ -93,7 +93,7 @@ class Moderation(Plugin):
             key=lambda message: message.timestamp
         )
         self.logger.info("UID: {} pushed {} messages. Total: {}".format(
-            msg.author, n_msgs, len(self.saved_messages[msg.author.id]))
+            msg.author.id, n_msgs, len(self.saved_messages[msg.author.id]))
         )
 
     @command("^push -d ([0-9]*)$", access=ACCESS['pushPop'])

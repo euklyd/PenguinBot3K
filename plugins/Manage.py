@@ -36,8 +36,6 @@ ACCESS = {
 
 class Manage(Plugin):
     async def activate(self):
-        # print(type(self.core))
-        # asyncio.get_event_loop().run_until_complete(self.core.wait_until_login())
         await self.core.wait_until_login()
         self.login_time = time.time()
 
@@ -46,7 +44,6 @@ class Manage(Plugin):
         """`ping`: prints a simple response."""
         await self.send_message(msg.channel, "Pong")
 
-    #@command("^trigger$", trigger="?", access=ACCESS['trigger'])
     @command("^trigger$", access=ACCESS['trigger'])
     async def trigger(self, msg, arguments):
         """`trigger`: prints the default prefix used to tell me that you're using a command."""
@@ -84,6 +81,12 @@ class Manage(Plugin):
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
         if (plugin in plugin_list):
+
+            # debug stuff
+            # module = plugin_list[plugin]['instance']
+            # for name, callback in inspect.getmembers(module, inspect.ismethod):
+            #     self.logger.debug("{} -> {} : {}".format(module, name, inspect.getdoc(callback)))
+
             command_list = self.core.command.commands
             command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
             for command in sorted(command_list.keys()):
@@ -97,21 +100,9 @@ class Manage(Plugin):
             # self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
             await self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
 
-    # @command("^list commands$", access=-1)
-    # def list_all_commands(self, msg, arguments):
-    #     """`list commands`: lists all commands that you have access to in all plugins."""
-    #     access = self.core.ACL.getAccess(msg.author.id)
-    #     command_list = self.core.command.commands
-    #     command_block = "**List of all commands in all plugins:**\n"
-    #     for command in sorted(command_list.keys()):
-    #         docstr = command_list[command].callback.__doc__
-    #         if (docstr is not None and command_list[command].access <= access):
-    #             command_block += docstr + '\n'
-    #     self.send_message(msg.channel, command_block)
-
     @command("^list commands$", access=-1)
     async def list_all_commands(self, msg, arguments):
-        """`list commands <plugin>`: lists all commands that you have access to."""
+        """`list commands`: lists all commands that you have access to."""
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
         for plugin in plugin_list:

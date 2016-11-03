@@ -82,8 +82,8 @@ class CommandManager():
                         # message.arguments = match
                         arguments = match.groups()
                         # print(arguments)
-                        await command.invoke(message, arguments)
                         logger.info("'{}' invoked".format(message.content))
+                        await command.invoke(message, arguments)
                     elif (not command.silent):
                         await self.core.send_message(message.channel, u"\u200B<@!{}>: Sorry, you need `{}` access to use that command.".format(message.author.id, command.access))
                         logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
