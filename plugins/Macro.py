@@ -73,7 +73,7 @@ class Macro(Plugin):
         kingistoptier = u"\U0001F427 **THE \U0001F427 KING \U0001F427 IS \U0001F427 TOP \U0001F427 TIER** \U0001F427"  # noqa E501
         await self.send_message(msg.channel, "{}\n{}".format(dddcopypasta, kingistoptier))
 
-    @command("^plumber$", access=100)
+    @command("^plumber|cancer$", access=100)
     async def plumber(self, msg, arguments):
         u"""`plumber`: Prints out the dankest of 🚽 Plumber 🚽 memes"""
         mariocopypasta = u"<:mario:234535787117543425> Mario <:mario:234535787117543425> is definitely **not top tier**. The plumber's got nothing; no range ✖  , no power 😩  , mediocre recovery 😐  , and bad matchups <:sunglasses_mewtwo:230828762453770240> ☁ He isn't very fast 🐢 , and he doesn't have any strong kill set ups like other top tiers 🍌 ⬇ 👏 ⬆ ✊ The only reason Ally and ANTi were able to win supermajors with him 🏆 is because of **pure skill** , and we will be blessed 🙏  if we ever see two top players carry an upper mid-tier so far again. Obviously **not** a member of the <:mario:234535787117543425> top tier <:mario:234535787117543425>"
