@@ -1,6 +1,6 @@
 """
     Class Name : Penguin
-    Bot Version : 2.1
+    Bot Version : 2.1.1
 
     Description:
         Provides an extensible engine for plugins to interact with;
@@ -124,7 +124,7 @@ class PenguinBot(discord.Client):
 
             Inherited from discord.Client.
         """
-        self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
+        # self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
         self.log_manager.log_message(msg)
         await self.connector._handleMessage(msg)
 
