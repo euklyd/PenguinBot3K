@@ -24,6 +24,7 @@ import string
 ACCESS = {
     'pushPop': 300,
     'ban': 900,
+    'anonymous': 900,
     'debug': 1000
 }
 
@@ -32,6 +33,19 @@ class Moderation(Plugin):
     async def activate(self):
         self.saved_messages = {}
         pass
+
+    @command("^repeat (.*)", access=ACCESS['anonymous'])
+    async def repeat(self, msg, arguments):
+        """`repeat <message>`: Sends `<message>` to the channel anonymously."""
+        await self.send_message(msg.channel, arguments[0])
+        await self.delete_message(msg)
+
+    @command("^announce <#([0-9]*)> (.*)", access=ACCESS['anonymous'])
+    async def announce(self, msg, arguments):
+        """`announce #<channel> <message>`: Sends `<message>` to `<channel>` anonymously."""
+        channel = self.core.get_channel(arguments[0])
+        await self.send_message(channel, arguments[1])
+        # await self.delete_message(msg)
 
     @command("^ban <@!?([0-9]+)>", access=ACCESS['ban'])
     async def server_ban(self, msg, arguments):
@@ -142,7 +156,8 @@ class Moderation(Plugin):
     @command("^pop <#([0-9]*)>$", access=ACCESS['pushPop'])
     async def pop_messages(self, msg, arguments):
         """`pop #<channel>`: posts all the messages on the stack to `<channel>`, and clears the stack."""
-        channel = await self.core.get_channel(arguments[0])
+        # channel = await self.core.get_channel(arguments[0])
+        channel = self.core.get_channel(arguments[0])
         if (len(self.saved_messages[msg.author.id]) == 0):
             await self.send_message(
                 msg.channel,
