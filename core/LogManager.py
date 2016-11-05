@@ -1,6 +1,6 @@
 """
     Class Name : LogManager
-    Module Version : 0.1
+    Module Version : 0.1.1
 
     Description:
         Provides server-by-server, channel-by-channel logging of messages,
@@ -22,70 +22,19 @@ import time
 from datetime import datetime as dt
 
 
-# class MetaLogger():
-#     def __init__(self, logger, date):
-#         self.logger = logger
-#         self.date = date
-
 class LogManager():
     def __init__(self):
-        # self.core = core
         self.logger_map = {}
-        # for server in os.listdir():
-        #     if (os.path.isdir(server)):
-        #         for channel in os.listdir(server):
-        #             if (os.path.isdir(channel)):
-        #                 logname = "{}_{}".format(
-        #                     channel,
-        #                     dt.utcnow().strftime("%Y-%m-%d")
-        #                 )
-        #                 # self.channel_map[channel] = open(logname, 'a')
-        #                 self.channel_map[channel] = logging.getLogger(channel)
-        #                 log_config = {
-        #                     'version': 1,
-        #                     'formatters': {
-        #                         'verbose': {
-        #                             'class':  "logging.Formatter",
-        #                             'format': "%(levelname)s %(utctime)s %(module)s %(process)d %(thread)d %(message)s"
-        #                         }
-        #                         'chatlog': {
-        #                             'class':  "logging.Formatter",
-        #                             'format': "[{timestamp}] <{username}#{discriminator}> {message}"
-        #                         }
-        #                     },
-        #                     'handlers': {
-        #                         'chatlog_file': {
-        #                             'class': 'logging.FileHandler',
-        #                             'filename': logname,
-        #                             'mode': 'a',
-        #                             'formatter': 'chatlog',
-        #                         }
-        #                     },
-        #                     'loggers': {
-        #                         'chatlog': {
-        #                             'handlers': ['chatlog_file']
-        #                         }
-        #                     }
-        #                     # },
-        #                     # 'root': {
-        #                     #     'level': 'INFO',
-        #                     #     'handlers': ['console', 'file', 'errors']
-        #                     # }
-        #                 }
-        #             else:
-        #                 pass
-        #     else:
-        #         pass
 
     def setup_handler(self, msg):
         formatter = logging.Formatter(
             "[%(asctime)s] %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            datefmt="%Y-%m-%d %H:%M:%S %Z"
         )
         formatter.converter = time.gmtime
 
         if (msg.server is None):
-            # this should never happen, I don't care about logging DMs
+            # This should never happen, I don't care about logging DMs
             log_dir = "logs/private_messages/{channel}".format(
                 channel=msg.channel.id
             )
@@ -116,34 +65,11 @@ class LogManager():
     def setup_logger(self, msg):
         logger = logging.getLogger(msg.channel.id)
 
-        # formatter = logging.Formatter(
-        #     "[%(asctime)s] %(message)s",
-        #     datefmt="%Y-%m-%d %H:%M:%S"
-        # )
-        # formatter.converter = time.gmtime()
-        #
-        # if (msg.server is None):
-        #     # this should never happen, I don't care about logging DMs
-        #     log_file = "logs/private_messages/{channel}/{date}_{name}.txt".format(
-        #         channel=msg.channel.id,
-        #         date=dt.utcnow().t.strftime("%Y-%m-%d"),
-        #         name=msg.author.name
-        #     )
-        # else:
-        #     log_file = "logs/servers/{server}/{channel}/{date}_{name}.txt".format(
-        #         server=msg.server.id,
-        #         channel=msg.channel.id,
-        #         date=dt.utcnow().t.strftime("%Y-%m-%d"),
-        #         name=msg.channel.name
-        #     )
-        # file_handler = logging.FileHandler(log_file, mode='a')
-        # file_handler.setFormatter(formatter)
-
         file_handler = self.setup_handler(msg)
 
         logger.setLevel(logging.INFO)
         logger.addHandler(file_handler)
-        # self.logger_map[msg.channel.id] = logger
+
         return logger
 
     def create_logger(self, msg):
