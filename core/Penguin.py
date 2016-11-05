@@ -1,5 +1,6 @@
 """
     Class Name : Penguin
+    Bot Version : 2.1
 
     Description:
         Provides an extensible engine for plugins to interact with;
