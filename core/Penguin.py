@@ -29,6 +29,7 @@ from core.Command import CommandManager
 from core.Database import Database
 from core.Event import EventManager
 from core.PluginManager import PluginManager
+from core.LogManager import LogManager
 
 from imp import load_module, find_module
 from sys import stdout, path, exit
@@ -51,6 +52,7 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
+        self.log_manager = LogManager()
 
         # Setup connection
         self.connector = self.load_connector(self)
@@ -122,6 +124,7 @@ class PenguinBot(discord.Client):
             Inherited from discord.Client.
         """
         self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
+        self.log_manager.log_message(msg)
         await self.connector._handleMessage(msg)
 
     def setup_logger(self):
