@@ -1,4 +1,5 @@
 */__pycache__/*
+*.pyc
 conf/settings.py
 logs/*
 databases/*.db
