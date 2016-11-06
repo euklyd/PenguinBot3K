@@ -17,6 +17,7 @@ from playhouse.kv import JSONKeyStore
 
 import threading
 
+
 class Database():
     def __init__(self, databaseName="databases/bot.db"):
         self.connection = SqliteDatabase(databaseName)

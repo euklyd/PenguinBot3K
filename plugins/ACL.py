@@ -30,6 +30,7 @@ ACCESS = {
     "ban": 900
 }
 
+
 class ACL(Plugin):
     @staticmethod
     def generate_key(length):
