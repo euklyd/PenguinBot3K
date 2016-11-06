@@ -2,5 +2,6 @@
 conf/settings.py
 logs/*
 databases/*.db
+databases/*.json
 *\~
 .DS_Store

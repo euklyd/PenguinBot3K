@@ -53,7 +53,7 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
-        self.log_manager = LogManager()
+        self.log_manager = LogManager(self)
 
         # Setup connection
         self.connector = self.load_connector(self)
@@ -94,6 +94,7 @@ class PenguinBot(discord.Client):
             Inherited from discord.Client.
         """
         self.logger.info("Connected to Discord")
+        self.log_manager.update_info()
 
         await self.load_plugins()
 
@@ -127,6 +128,32 @@ class PenguinBot(discord.Client):
         # self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
         self.log_manager.log_message(msg)
         await self.connector._handleMessage(msg)
+
+    # async def on_server_update(self, before, after):
+    #     """
+    #         Summary:
+    #             Called when the bot is notified that a channel is modified
+    #
+    #         Args:
+    #             before (Server): The server object before being updated
+    #             after (Server): The server object after being updated
+    #
+    #         Inherited from discord.Client.
+    #     """
+    #     pass  # I don't actually want to be updating the server filetree during operation
+
+    async def on_channel_update(self, before, after):
+        """
+            Summary:
+                Called when the bot is notified that a channel is modified
+
+            Args:
+                before (Channel): The channel object before being updated
+                after (Channel): The channel object after being updated
+
+            Inherited from discord.Client.
+        """
+        self.log_manager.update_channel(after)
 
     def setup_logger(self):
         """
