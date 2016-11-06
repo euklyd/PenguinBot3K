@@ -271,6 +271,7 @@ class LogManager():
 
         logger.setLevel(logging.INFO)
         logger.addHandler(file_handler)
+        logger.propagate = False
 
         return logger
 
