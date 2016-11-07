@@ -51,29 +51,31 @@ class Utility(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
-    @command("^(?:get[- ])?info <@!?([0-9]*)>$", access=50)
+    # @command("^(?:get[- ])?info <@!?([0-9]*)>$", access=50)
+    @command("^info <@!?([0-9]*)>$", access=50)
     async def get_info(self, msg, arguments):
         user = msg.server.get_member(arguments[0])
         # user = await self.core.get_member(arguments[0])
         if (user is None):
             user = await self.core.get_user_info(arguments[0])
-            reply =  "**Info for {}#{}:**".format(user.name, user.discriminator)
-            reply += "\n\t`ID:          `{}".format(user.id)
-            reply += "\n\t`Avatar:      `{}".format(user.avatar_url)
-            reply += "\n\t`Created:     `{}".format(user.created_at)
+            reply =  "**Info for {}#{}**".format(user.name, user.discriminator)
+            if (user.bot is True):
+                reply += u"\u00A0`\u200B\U0001F1E7\u200B\U0001F1F4\u200B\U0001F1F9`"
+            reply += "\n\t`ID:          \u00A0`{}".format(user.id)
+            reply += "\n\t`Created:     \u00A0`{}".format(user.created_at)
         else:
-            reply =  "**Info for {}#{}:**".format(user.name, user.discriminator)
+            reply =  "**Info for {}#{}**".format(user.name, user.discriminator)
+            if (user.bot is True):
+                reply += u"\u00A0`\u200B\U0001F1E7\u200B\U0001F1F4\u200B\U0001F1F9`"
             if (user.nick != user.name):
-                reply += "\n\t`Nick:        `{}".format(user.nick)
-            reply += "\n\t`ID:          `{}".format(user.id)
-            reply += "\n\t`Avatar:      `{}".format(user.avatar_url)
-            reply += "\n\t`Created:     `{}".format(user.created_at)
-            reply += "\n\t`Joined:      `{}".format(user.joined_at)
+                reply += "\n\t`Nick:        \u00A0`{}".format(user.nick)
+            reply += "\n\t`ID:          \u00A0`{}".format(user.id)
+            reply += "\n\t`Created:     \u00A0`{}".format(user.created_at)
+            reply += "\n\t`Joined:      \u00A0`{}".format(user.joined_at)
             if (user.color != discord.Colour.default):
-                reply += "\n\t`Color:       `{} (`{}`)".format(
+                reply += "\n\t`Color:       \u00A0`{} (`{}`)".format(
                     user.color.to_tuple(), str(user.color)
                 )
-            reply += "\n\t`Role:        `{}".format(user.top_role)
-        if (user.bot is True):
-            reply += "\n\t`Bot account: `True".format(user.id)
+            reply += "\n\t`Role:        \u00A0`{}".format(user.top_role)
+        reply += "\n\t`Avatar:`\n{}".format(user.avatar_url)
         await self.send_message(msg.channel, reply)
