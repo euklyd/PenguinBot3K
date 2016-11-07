@@ -51,7 +51,7 @@ class Utility(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
-    @command("^info <@!?([0-9]*)>$", access=50)
+    @command("^(?:get[- ])?info <@!?([0-9]*)>$", access=50)
     async def get_info(self, msg, arguments):
         user = msg.server.get_member(arguments[0])
         # user = await self.core.get_member(arguments[0])
