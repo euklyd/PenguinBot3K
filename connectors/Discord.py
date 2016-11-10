@@ -107,44 +107,45 @@ class Discord(Connector):
         self.core.event.notify('disconnect')
         self.connected = False
 
-        self.logger.debug('Joined message_consumer and keep_alive threads')
+        # self.logger.debug('Joined message_consumer and keep_alive threads')
 
         self.logger.info("Disconnected from Discord")
 
-    def get_messages(self, channel, limit, before=None):
-        """
-            Summary:
-                Replies to a user in a channel.
-
-            Args:
-                channel (discord.Channel):  The Channel object to post to.
-                limit (int):                The quantity of messages to retrieve.
-
-            Optional:
-                before (discord.Message):   The Message object to start at.
-        """
-        self.logger.debug("Getting the messages from CID: {}".format(channel.id))
-
-        endpoint = "channels/{}/messages".format(channel.id)
-        data     = {
-            'limit': int(limit)
-        }
-        if (before is not None):
-            data['before'] = before.id
-
-        self.logger.info(data)
-        self.logger.info(endpoint)
-
-        try:
-            raw_messages = self.request("GET", endpoint, data=data, headers=self.auth_headers)
-            # self.logger.info("raw:\n{}".format(raw_messages))
-            messages = []
-            for raw_message in raw_messages:
-                messages.append(self._parse_discord_message(raw_message))
-            # self.logger.info("snowflake:\n{}".format(messages))
-            return messages
-        except:
-            self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(channel.id))
+    # Phased out in favor of discord.py's client.logs_from() method.
+    # def get_messages(self, channel, limit, before=None):
+    #     """
+    #         Summary:
+    #             Replies to a user in a channel.
+    #
+    #         Args:
+    #             channel (discord.Channel):  The Channel object to post to.
+    #             limit (int):                The quantity of messages to retrieve.
+    #
+    #         Optional:
+    #             before (discord.Message):   The Message object to start at.
+    #     """
+    #     self.logger.debug("Getting the messages from CID: {}".format(channel.id))
+    #
+    #     endpoint = "channels/{}/messages".format(channel.id)
+    #     data     = {
+    #         'limit': int(limit)
+    #     }
+    #     if (before is not None):
+    #         data['before'] = before.id
+    #
+    #     self.logger.info(data)
+    #     self.logger.info(endpoint)
+    #
+    #     try:
+    #         raw_messages = self.request("GET", endpoint, data=data, headers=self.auth_headers)
+    #         # self.logger.info("raw:\n{}".format(raw_messages))
+    #         messages = []
+    #         for raw_message in raw_messages:
+    #             messages.append(self._parse_discord_message(raw_message))
+    #         # self.logger.info("snowflake:\n{}".format(messages))
+    #         return messages
+    #     except:
+    #         self.logger.warning('Retrieval of messages in CID \'{}\' failed'.format(channel.id))
 
     # def gatherFacts(self):
     #
