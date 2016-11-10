@@ -99,12 +99,22 @@ class PenguinBot(discord.Client):
         await self.load_plugins()
 
         profile_args = {}
+        avatarfile = None
         if (self.config.username != "" and self.config.username is not None):
             profile_args['username'] = self.config.username
-        if (self.config.avatar != "" and self.config.avatar is not None):
-            profile_args['avatar'] = open(self.config.avatar, 'rb').read()
+
+        try:
+            if (self.config.avatar != "" and self.config.avatar is not None):
+                profile_args['avatar'] = open(self.config.avatar, 'rb').read()
+                avatarfile = self.config.avatar
+        except FileNotFoundError:
+            profile_args['avatar'] = open("conf/avatar.png", 'rb').read()
+            avatarfile = "conf/avatar.png"
+
         await self.edit_profile(**profile_args)
-        profile_args['avatar'] = self.config.avatar
+
+        if (avatarfile is not None):
+            profile_args['avatar'] = avatarfile
         self.logger.info("Set profile to {}".format(profile_args))
 
         presence_args = {}
