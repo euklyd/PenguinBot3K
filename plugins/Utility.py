@@ -42,7 +42,7 @@ class Utility(Plugin):
 
     @command("^avatar <@!?([0-9]*)>$", access=-1)
     async def get_avatar(self, msg, arguments):
-        """`avatar @<user>`: posts a link to `<user>`'s avatar'"""
+        """`avatar @<user>`: posts a link to `<user>`'s avatar"""
         user = await self.core.get_user_info(arguments[0])
         reply = "**Avatar for {}#{}:**\n{}".format(
             user.name,
@@ -76,6 +76,13 @@ class Utility(Plugin):
                 reply += "\n\t`Color:       \u00A0`{} (`{}`)".format(
                     user.color.to_tuple(), str(user.color)
                 )
-            reply += "\n\t`Role:        \u00A0`{}".format(user.top_role)
+            if (user.top_role.name != "@everyone"):
+                # print(user.top_role)
+                # print(user.top_role == "@everyone")
+                # print(type(user.top_role))
+                # print(type(user.top_role.name))
+                reply += "\n\t`Role:        \u00A0`{}".format(user.top_role)
+            else:
+                reply += "\n\t`Role:        \u00A0`{}".format(u"@\u200Beveryone")
         reply += "\n\t`Avatar:`\n{}".format(user.avatar_url)
         await self.send_message(msg.channel, reply)
