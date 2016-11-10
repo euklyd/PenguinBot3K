@@ -37,6 +37,14 @@ class LogManager():
         self.channel_map = {}
         self.core = core
 
+    def close(self):
+        for logger in self.logger_map:
+            logger.info(self.format_system(
+                content="Logger closed at {name} shutdown.".format(
+                    name=self.core.config.username
+                )
+            ))
+
     def update_info(self):
         """
             Summary:
@@ -268,15 +276,13 @@ class LogManager():
         if (self.channel_map[after.id]['name'] != after.name):
             # 1) log message to logfile
             if (after.server is not None and self.logger_map.get(after.id) is not None):
-                log_string = "<{name}#{discriminator}> {content}".format(
-                    name="System",
-                    discriminator="0000",
+                self.logger_map[after.id]['logger'].info(self.format_system(
+                    name="System", discriminator="0000",
                     content="Channel name changed from #{oldname} to #{newname}.".format(
                         oldname=self.channel_map[after.id]['name'],
                         newname=after.name
-                    )
+                    ))
                 )
-                self.logger_map[after.id]['logger'].info(log_string)
             # 2) change logger handler
                 self.update_logger(after)
             # 3) update channel_map
@@ -438,10 +444,59 @@ class LogManager():
             # If it's not the same day as when the logger was created, open
             # a new log file.
             self.update_channel(msg.channel)
+        # log_string = "<{name}#{discriminator}> {content}".format(
+        #     name=msg.author.name,
+        #     discriminator=msg.author.discriminator,
+        #     content=msg.content
+        # )
+        # self.logger_map[msg.channel.id]['logger'].info(log_string)
+        self.logger_map[msg.channel.id]['logger'].info(self.format_message(msg))
+
+    def format_message(self, msg):
+        """
+            Summary:
+                Formats a Message object into a log message string.
+                Format is
+                    "<name#discriminator> content",
+                e.g.,
+                    "<euklyd#1234> This is an example message."
+                (quotes not included). This is then fed to a logger object,
+                so the line in the file will look something like
+                    [2016-11-10 04:14:09 GMT] <euklyd#1234> This is an example message.
+
+            Args:
+                msg (discord.Message):  The message which is to be logged.
+
+            Returns:
+                (str):  The formatted message string.
+        """
         log_string = "<{name}#{discriminator}> {content}".format(
             name=msg.author.name,
             discriminator=msg.author.discriminator,
             content=msg.content
         )
+        return log_string
 
-        self.logger_map[msg.channel.id]['logger'].info(log_string)
+    def format_system(self, name="System", discriminator="0000", content="<null>"):
+        """
+            Summary:
+                Like `format_message(msg)`, but it takes up to three str
+                rather than a single discord.Message.
+                The default is to output a sytem message for events such
+                as the channel name changing, but one can customize the
+                name and discriminator if desired.
+
+            Args:
+                name (str):             Username.
+                discriminator (str):    4-digit discriminator.
+                content (str):          The content of the message itself.
+
+            Returns:
+                (str):  The formatted message string.
+        """
+        log_string = "<{name}#{discriminator}> {content}".format(
+            name=name,
+            discriminator=discriminator,
+            content=content
+        )
+        return log_string
