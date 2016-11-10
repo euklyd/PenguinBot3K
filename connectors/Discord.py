@@ -117,10 +117,11 @@ class Discord(Connector):
                 Replies to a user in a channel.
 
             Args:
-                channel (Channel): The Channel object to post to.
-                limit (int): The quantity of messages to retrieve.
+                channel (discord.Channel):  The Channel object to post to.
+                limit (int):                The quantity of messages to retrieve.
+
             Optional:
-                before (Message): The Message object to start at.
+                before (discord.Message):   The Message object to start at.
         """
         self.logger.debug("Getting the messages from CID: {}".format(channel.id))
 
@@ -155,6 +156,16 @@ class Discord(Connector):
 
     # Handler Methods
     async def _handleMessage(self, message):
+        """
+            Summary:
+                Do these things on a message receipt event.
+
+            Args:
+                message (discord.Message): The Message object received.
+
+            Returns:
+                None
+        """
         self.logger.debug(message.type)
         # If incoming message is a MESSAGE text
         if message.type == discord.MessageType.default:

@@ -7,6 +7,10 @@
         using the logging stdlib module.
         Information about where logging folders and files are is stored in
         databases/servers.json and databases/channels.json
+        Does not handle info, warning, or debug messages for the bot itself.
+
+        Structure of self.channel_map and self.server_map (and their
+        corresponding JSON files) can be found in LogManager.md
 
     Contributors:
         - Euklyd / Popguin
@@ -32,34 +36,25 @@ class LogManager():
         self.server_map = {}
         self.channel_map = {}
         self.core = core
-        """
-        Structure of servers.json and channels.json will look like this:
-        """
-        """
-        {
-            <server.id>: {
-                'name': server.name
-            }
 
-            ...
-        }
-        """
-        """
-        {
-            <channel.id>: {
-                'name': channel.name
-                'server_id': server.id (of parent); should never change
-                'server_name': server.name (of parent)
-            }
-
-            ...
-        }
-        """
     def update_info(self):
+        """
+            Summary:
+                Initializes self.channel_map and self.server_map to
+                their last known state, and updates to their latest
+                unknown information.
+
+            Args:
+                None
+
+            Returns:
+                None
+        """
         try:
             server_fp = open("databases/servers.json", 'r')
             self.server_map = json.load(server_fp)
         except FileNotFoundError:
+            # Create a blank file if doesn't exist.
             server_fp = open("databases/servers.json", 'w')
             server_fp.write("None")
             server_fp.close()
@@ -67,12 +62,27 @@ class LogManager():
             channel_fp = open("databases/channels.json", 'r')
             self.channel_map = json.load(channel_fp)
         except FileNotFoundError:
+            # Create a blank file if doesn't exist.
             channel_fp = open("databases/channels.json", 'w')
             channel_fp.write("None")
             channel_fp.close()
         self.init_log_tree()
 
     def init_log_tree(self):
+        """
+            Summary:
+                For all channels and servers the bot is connected to,
+                update the info about them to their current states.
+                If a new server or channel has been added, then add those
+                to the maps and filetree as appropriate.
+                Finally, write the new dictionaries to disk.
+
+            Args:
+                None
+
+            Returns:
+                None
+        """
         self.core.logger.info("Initializing chatlog tree.")
         self.core.logger.debug("Servers: {}".format(self.core.servers))
         self.core.logger.debug("Channels: {}".format(self.core.get_all_channels()))
@@ -88,6 +98,20 @@ class LogManager():
         self.update_jsons(smod=True, cmod=True)
 
     def update_server_map(self, server):
+        """
+            Summary:
+                Update the server map if a server has been modified
+                or created. If modified, then moves and renames
+                directories as appropriate.
+
+            Args:
+                server (discord.Server):
+                    The server whose entry in self.server_map is
+                    to be updated.
+
+            Returns:
+                None
+        """
         if (self.server_map.get(server.id) is None):
             self.server_map[server.id] = {
                 'name': server.name
@@ -122,15 +146,32 @@ class LogManager():
             self.server_map[server.id]['name'] = server.name
 
     def update_channel_map(self, channel):
+        """
+            Summary:
+                Update the channel map if a channel has been modified
+                or created. If modified, then moves and renames log files
+                and directories as appropriate.
+
+            Args:
+                channel (discord.Channel):
+                    The channel whose entry in self.channel_map is
+                    to be updated .
+
+            Returns:
+                None
+        """
         if (self.channel_map.get(channel.id) is None):
+            # Create an entry for an unknown channel
             self.channel_map[channel.id] = {
                 'name': channel.name,
                 'server_id': channel.server.id,
                 'server_name': channel.server.name
             }
         if (channel.name != self.channel_map[channel.id]['name']):
+            # If the channel's name has changed, update the stored filename
+            # and move the channel's log directory.
             old_channel = self.channel_map[channel.id]
-            """update filetree here"""
+            # """update filetree here"""
             for log in os.listdir(
                 "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(
                     old_server=old_channel['server_name'],
@@ -139,6 +180,7 @@ class LogManager():
                     ch_id=channel.id
                 )
             ):
+                # Move the logs to the new directory.
                 shutil.move(
                     "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}/{log}".format(
                         old_server=old_channel['server_name'],
@@ -154,6 +196,7 @@ class LogManager():
                         ch_id=channel.id
                     )
                 )
+            # Delete the old directory.
             os.rmdir(
                 "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(
                     old_server=old_channel['server_name'],
@@ -177,11 +220,25 @@ class LogManager():
             #         ch_id=channel.id
             #     )
             # )
-            """update channel here"""
+
+            # Update channel map.
+            # """update channel here"""
             self.channel_map[channel.id]['name'] = channel.name
             self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']
 
     def update_jsons(self, smod=False, cmod=False):
+        """
+            Summary:
+                Writes self.server_map and/or self.channel_map to their
+                config files.
+
+            Args:
+                cmod (bool): Update the channels config?
+                smod (bool): Update the servers config?
+
+            Returns:
+                None
+        """
         if (smod is True):
             server_fp = open("databases/servers.json", 'w')
             json.dump(self.server_map, server_fp)
@@ -190,6 +247,24 @@ class LogManager():
             json.dump(self.channel_map, channel_fp)
 
     def update_channel(self, after):
+        """
+            Summary:
+                Updates everything corresponding to the specified channel.
+                This includes:
+                1)  If the name has changed, log a message reflecting that to
+                    the old output file.
+                2)  Update the logger in self.logger_map
+                3)  Update the channel map and log the new one to the
+                    config file.
+
+            Args:
+                after (Discord.channel):
+                    The new Channel object that things need to be updated
+                    to match.
+
+            Returns:
+                None
+        """
         if (self.channel_map[after.id]['name'] != after.name):
             # 1) log message to logfile
             if (after.server is not None and self.logger_map.get(after.id) is not None):
@@ -211,6 +286,18 @@ class LogManager():
             pass
 
     def setup_handler(self, channel):
+        """
+            Summary:
+                Returns a logger handler configured to the specified channel.
+
+            Args:
+                channel (Discord.channel):
+                    The Channel object corresponding to the handler that
+                    is to be configured.
+
+            Returns:
+                (logging.Handler):  A configured handler.
+        """
         formatter = logging.Formatter(
             "[%(asctime)s] %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S %Z"
@@ -265,6 +352,18 @@ class LogManager():
         return file_handler
 
     def setup_logger(self, channel):
+        """
+            Summary:
+                Returns a logger configured to the specified channel.
+
+            Args:
+                channel (Discord.channel):
+                    The Channel object corresponding to the logger that
+                    is to be configured.
+
+            Returns:
+                (logging.Logger):   A configured logger.
+        """
         logger = logging.getLogger(channel.id)
 
         file_handler = self.setup_handler(channel)
@@ -276,6 +375,19 @@ class LogManager():
         return logger
 
     def create_logger(self, channel):
+        """
+            Summary:
+                Creates a logger for the specified channel and adds it
+                to self.logger_map
+
+            Args:
+                channel (Discord.channel):
+                    The Channel object corresponding to the logger that
+                    is to be created.
+
+            Returns:
+                None
+        """
         self.logger_map[channel.id] = {
             'logger': self.setup_logger(channel),
             'date': dt.utcnow()
@@ -287,18 +399,44 @@ class LogManager():
     #     self.logger_map[msg.channel.id]['logger'].addHandler(file_handler)
     #     self.logger_map[msg.channel.id]['date'] = dt.utcnow()
     def update_logger(self, channel):
+        """
+            Summary:
+                Updates the logger for the specified channel.
+
+            Args:
+                channel (Discord.channel):
+                    The Channel object corresponding to the logger that
+                    is to be updated.
+
+            Returns:
+                None
+        """
         file_handler = self.setup_handler(channel)
         self.logger_map[channel.id]['logger'].handlers = []
         self.logger_map[channel.id]['logger'].addHandler(file_handler)
         self.logger_map[channel.id]['date'] = dt.utcnow()
 
     def log_message(self, msg):
+        """
+            Summary:
+                Logs a message to the corresponding output file.
+
+            Args:
+                msg (discord.Message):  The Message object to be logged.
+
+            Returns:
+                None
+        """
+
         if (msg.server is None):
+            # Discard private messages.
             return
         if (self.logger_map.get(msg.channel.id) is None):
+            # If a logger isn't open for that channel yet, create one.
             self.create_logger(msg.channel)
         if (dt.utcnow().date() != self.logger_map[msg.channel.id]['date'].date()):
-            # self.update_logger(msg) ##
+            # If it's not the same day as when the logger was created, open
+            # a new log file.
             self.update_channel(msg.channel)
         log_string = "<{name}#{discriminator}> {content}".format(
             name=msg.author.name,
