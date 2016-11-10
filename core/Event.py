@@ -14,12 +14,12 @@
 """
 
 import logging
-logger = logging.getLogger(__name__)
 
 class EventManager():
     def __init__(self, core):
         self.core = core
         self.events = {}
+        self.logger = logging.getLogger(__name__)
 
     def list(self):
         """
@@ -46,7 +46,7 @@ class EventManager():
                 None
         """
         if event in self.events:
-            logger.warning("Event \"{}\" has already been registered".format(event))
+            self.logger.warning("Event \"{}\" has already been registered".format(event))
         else:
             self.events[event] = []
 
@@ -63,7 +63,7 @@ class EventManager():
                 None
         """
         if event not in self.events:
-            logger.warning("Event \"{}\" does not exist.".format(event))
+            self.logger.warning("Event \"{}\" does not exist.".format(event))
         else:
             self.events.pop(event, None)
 
@@ -96,7 +96,7 @@ class EventManager():
         if(callback not in self.events[event]):
             self.events[event].append(callback)
         else:
-            logger.warning("Callback \"{}\" was already subscribed to {}.".format(callback, event))
+            self.logger.warning("Callback \"{}\" was already subscribed to {}.".format(callback, event))
 
     def unsubscribe(self, event, callback):
         """
@@ -113,4 +113,4 @@ class EventManager():
         if callback in self.events[event]:
             self.events[event].remove(callback)
         else:
-            logger.warning("Callback \"{}\" was not subscribed to any event.".format(callback))
+            self.logger.warning("Callback \"{}\" was not subscribed to any event.".format(callback))

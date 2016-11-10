@@ -140,7 +140,7 @@ class PluginManager():
         for name, callback in inspect.getmembers(plugin, inspect.ismethod):
             if hasattr(callback, "connector"):
                 if not self.core.connection.name == getattr(callback, "connector"):
-                    logger.debug("Command \"" + clazz + "." + name + "\" does not meet connector requirements. Skipping registration.")
+                    self.logger.debug("Command \"" + clazz + "." + name + "\" does not meet connector requirements. Skipping registration.")
                     continue
 
             if hasattr(callback, "is_command"):

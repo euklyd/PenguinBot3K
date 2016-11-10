@@ -18,8 +18,6 @@ import threading
 import re
 import logging
 
-logger = logging.getLogger(__name__)
-
 
 class Command():
     def __init__(self, pattern, callback, trigger="", access=0, silent=False):
@@ -28,6 +26,8 @@ class Command():
         self.callback = callback
         self.trigger  = trigger
         self.silent   = silent
+
+        self.logger = logging.getLogger(__name__)
 
     def __str__(self):
         return self.callback.__name__
@@ -54,11 +54,11 @@ class CommandManager():
                 None
         """
         commands = list(self.commands.items())
-        # logger.info(commands)
+        # self.logger.info(commands)
         for key, command in commands:
-            # logger.info("key:     {}".format(key))
-            # logger.info("command: {}".format(command))
-            # logger.info("trigger: {}".format(command.trigger))
+            # self.logger.info("key:     {}".format(key))
+            # self.logger.info("command: {}".format(command))
+            # self.logger.info("trigger: {}".format(command.trigger))
             if (message.content.startswith(command.trigger)):
                 t = ""  # debug
                 if type(command.trigger) == tuple:
@@ -74,20 +74,20 @@ class CommandManager():
                 match   = re.search(command.pattern, content)
 
                 if (match):
-                    # logger.info("trigger '{}' matched!".format(t))  # debug
-                    # logger.debug("'{}' registered")
-                    logger.info("'{}' registered".format(message.content))
+                    # self.logger.info("trigger '{}' matched!".format(t))  # debug
+                    # self.logger.debug("'{}' registered")
+                    self.logger.info("'{}' registered".format(message.content))
                     if (self.core.ACL.getAccess(message.author.id) >= command.access or message.author.id == self.core.config.backdoor):
                         message.content = content
                         # message.arguments = match
                         arguments = match.groups()
                         # print(arguments)
-                        logger.info("'{}' invoked".format(message.content))
+                        self.logger.info("'{}' invoked".format(message.content))
                         await command.invoke(message, arguments)
                     elif (not command.silent):
                         await self.core.send_message(message.channel, u"\u200B<@!{}>: Sorry, you need `{}` access to use that command.".format(message.author.id, command.access))
-                        logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
-                        logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
+                        self.logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
+                        self.logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
 
     def register(self, pattern, callback, trigger="", access=0, silent=False):
         """
@@ -108,10 +108,10 @@ class CommandManager():
         name = clazz + "." + callback.__name__
 
         if (name in self.commands):
-            logger.warning("Duplicate command \"" + clazz + "." + name + "\". Skipping registration.")
+            self.logger.warning("Duplicate command \"" + clazz + "." + name + "\". Skipping registration.")
             return
         else:
-            logger.debug("Registered command \"" +  clazz + "." + name + "\"")
+            self.logger.debug("Registered command \"" +  clazz + "." + name + "\"")
 
             if (trigger is None):
                 trigger = ""
@@ -125,7 +125,7 @@ class CommandManager():
                 access=access,
                 silent=silent
             )
-            logger.debug("Command has trigger: {}".format(trigger))
+            self.logger.debug("Command has trigger: {}".format(trigger))
 
     def unregister(self, command_name):
         """
@@ -147,7 +147,7 @@ class CommandManager():
             name = clazz + "." + command.callback.__name__
 
             del self.commands[command_name]
-            logger.debug("Unregistered command \"" + name + "\"")
+            self.logger.debug("Unregistered command \"" + name + "\"")
 
         else:
-            logger.warning("Cannot unregister \"" + command_name + "\", command not found.")
+            self.logger.warning("Cannot unregister \"" + command_name + "\", command not found.")
