@@ -2,7 +2,8 @@
 *.pyc
 *.png
 conf/settings.py
-logs/*
+logs/botlog*
+logs/servers*
 databases/*.db
 databases/*.json
 *\~
