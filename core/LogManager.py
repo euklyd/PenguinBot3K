@@ -1,6 +1,6 @@
 """
     Class Name : LogManager
-    Module Version : 0.2.0
+    Module Version : 1.0.1
 
     Description:
         Provides server-by-server, channel-by-channel logging of messages,
@@ -36,6 +36,7 @@ class LogManager():
         self.server_map = {}
         self.channel_map = {}
         self.core = core
+        self.logger = logging.getLogger(__name__)
 
     def close(self):
         for logger in self.logger_map:
@@ -391,10 +392,19 @@ class LogManager():
         if (self.logger_map.get(msg.channel.id) is None):
             # If a logger isn't open for that channel yet, create one.
             self.create_logger(msg.channel)
+        self.logger.debug(
+            "\n\tdate: {utcdate}\n\tlogger['{cid}']['date']: {logdate}".format(
+                utcdate=dt.utcnow().date(),
+                cid=msg.channel.id,
+                logdate=self.logger_map[msg.channel.id]['date'].date()
+            )
+        )
         if (dt.utcnow().date() != self.logger_map[msg.channel.id]['date'].date()):
             # If it's not the same day as when the logger was created, open
             # a new log file.
-            self.update_channel(msg.channel)
+            self.logger("Updating with new date")
+            # self.update_channel(msg.channel)
+            self.update_logger(msg.channel)
         self.logger_map[msg.channel.id]['logger'].info(self.format_message(msg))
 
     def format_message(self, msg):
