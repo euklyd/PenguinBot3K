@@ -42,8 +42,8 @@ class Macro(Plugin):
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
         reply = "<@!{}>: {}".format(msg.author.id, reply)
         self.logger.info(reply)
-        await self.send_message(msg.channel, reply)
         await self.delete_message(msg)
+        await self.send_message(msg.channel, reply)
 
     @command("^emojify -f \"(.*|(?:<:.*:\d*>)*)\" (.*)", access=-1)
     async def emojify_full(self, msg, arguments):
@@ -52,8 +52,8 @@ class Macro(Plugin):
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
         reply = "<@!{}>: {}".format(msg.author.id, reply)
         self.logger.info(reply)
-        await self.send_message(msg.channel, reply)
         await self.delete_message(msg)
+        await self.send_message(msg.channel, reply)
 
     @command("^emojify -w \"(.*|(?:<:.*:\d*>))\" (.*)", access=50)
     async def emojify_whisper(self, msg, arguments):
@@ -63,8 +63,8 @@ class Macro(Plugin):
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
         reply = "<@!{}>: {}".format(msg.author.id, reply)
         self.logger.info(reply)
-        await self.send_whisper(msg.author, reply)
         await self.delete_message(msg)
+        await self.send_whisper(msg.author, reply)
 
     @command("^waddle$", access=100)
     async def waddle(self, msg, arguments):
@@ -78,3 +78,32 @@ class Macro(Plugin):
         u"""`plumber`: Prints out the dankest of 🚽 Plumber 🚽 memes"""
         mariocopypasta = u"<:mario:234535787117543425> Mario <:mario:234535787117543425> is definitely **not top tier**. The plumber's got nothing; no range ✖  , no power 😩  , mediocre recovery 😐  , and bad matchups <:sunglasses_mewtwo:230828762453770240> ☁ He isn't very fast 🐢 , and he doesn't have any strong kill set ups like other top tiers 🍌 ⬇ 👏 ⬆ ✊ The only reason Ally and ANTi were able to win supermajors with him 🏆 is because of **pure skill** , and we will be blessed 🙏  if we ever see two top players carry an upper mid-tier so far again. Obviously **not** a member of the <:mario:234535787117543425> top tier <:mario:234535787117543425>"
         await self.send_message(msg.channel, mariocopypasta)
+
+    @command("^YEAH[_ ]WEED", access=100)
+    async def yeah_weed(self, msg, arguments):
+        w_char = """
+<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
+"""
+        e_char = """
+<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
+"""
+        d_char = """
+<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
+<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
+"""
+        await self.delete_message(msg)
+        await self.send_message(msg.channel, w_char)
+        await self.send_message(msg.channel, e_char)
+        await self.send_message(msg.channel, e_char)
+        await self.send_message(msg.channel, d_char)
