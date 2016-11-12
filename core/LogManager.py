@@ -213,21 +213,6 @@ class LogManager():
                     ch_id=channel.id
                 )
             )
-            # os.rename(
-            # shutil.move(
-            #     "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(
-            #         old_server=old_channel['server_name'],
-            #         srv_id=old_channel['server_id'],
-            #         old_channel=old_channel['name'],
-            #         ch_id=channel.id
-            #     ),
-            #     "logs/servers/{new_server}-{srv_id}/{new_channel}-{ch_id}".format(
-            #         new_server=self.server_map[old_channel['server_id']]['name'],
-            #         srv_id=channel.server.id,
-            #         new_channel=channel.name,
-            #         ch_id=channel.id
-            #     )
-            # )
 
             # Update channel map.
             # """update channel here"""
@@ -310,36 +295,7 @@ class LogManager():
         )
         formatter.converter = time.gmtime
 
-        # if (msg.server is None):
-        #     # This should never happen, I don't care about logging DMs
-        #     log_dir = "logs/private_messages/{channel}".format(
-        #         # channel=msg.channel.id
-        #         channel=msg.channel.name
-        #     )
-        #     if (path.isdir(log_dir) is False):
-        #         os.makedirs(log_dir)
-        #     log_file = "{dir}/{date}_{name}.txt".format(
-        #         dir=log_dir,
-        #         date=dt.utcnow().strftime("%Y-%m-%d"),
-        #         name=msg.author.name
-        #     )
-        #
-        #     self.update_maps(msg, log_dir) ##FIX
-        # else:
-        #     log_dir = "logs/servers/{server}/{channel}".format(
-        #         server=server.id,
-        #         channel=channel.id
-        #     )
-        #     if (path.isdir(log_dir) is False):
-        #         os.makedirs(log_dir)
-        #     log_file = "{dir}/{date}_{name}.txt".format(
-        #         dir=log_dir,
-        #         date=dt.utcnow().strftime("%Y-%m-%d"),
-        #         name=channel.name
-        #     )
         log_dir = "logs/servers/{server}-{srv_id}/{channel}-{ch_id}".format(
-            # server=channel.server.id,
-            # channel=channel.id
             server=channel.server.name,
             srv_id=channel.server.id,
             channel=channel.name,
@@ -399,11 +355,6 @@ class LogManager():
             'date': dt.utcnow()
         }
 
-    # def update_logger(self, msg):
-    #     file_handler = self.setup_handler(msg)
-    #     self.logger_map[msg.channel.id]['logger'].handlers = []
-    #     self.logger_map[msg.channel.id]['logger'].addHandler(file_handler)
-    #     self.logger_map[msg.channel.id]['date'] = dt.utcnow()
     def update_logger(self, channel):
         """
             Summary:
@@ -444,12 +395,6 @@ class LogManager():
             # If it's not the same day as when the logger was created, open
             # a new log file.
             self.update_channel(msg.channel)
-        # log_string = "<{name}#{discriminator}> {content}".format(
-        #     name=msg.author.name,
-        #     discriminator=msg.author.discriminator,
-        #     content=msg.content
-        # )
-        # self.logger_map[msg.channel.id]['logger'].info(log_string)
         self.logger_map[msg.channel.id]['logger'].info(self.format_message(msg))
 
     def format_message(self, msg):
