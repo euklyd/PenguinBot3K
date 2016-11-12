@@ -1,6 +1,6 @@
 """
     Plugin Name : Moderation
-    Plugin Version : 2.0
+    Plugin Version : 2.1.1
 
     Description:
         Provides some moderation commands, e.g., banning users.
@@ -20,6 +20,7 @@ from core.Decorators import *
 import random
 import re
 import string
+import discord
 
 ACCESS = {
     'pushPop': 300,
@@ -46,6 +47,34 @@ class Moderation(Plugin):
         channel = self.core.get_channel(arguments[0])
         await self.send_message(channel, arguments[1])
         # await self.delete_message(msg)
+
+    @command("^get roles$", access=500)
+    async def list_all_roles(self, msg, arguments):
+        """`list roles`: Lists all roles on the current server in an IM."""
+        roles = msg.server.roles
+        roles.sort(key=lambda role: role.position)
+        role_block = "**List of roles on {}:**".format(msg.server.name)
+        for role in roles:
+            role_block += "\n{}) {}: `{}`".format(
+                role.position, role.name, role.permissions
+            )
+            if (len(role_block) >= 1700):
+                self.logger.info(role_block)
+                try:
+                    await self.send_whisper(msg.author, role_block)
+                except discord.HTTPException:
+                    self.logger("well fuck: discord.HTTPException")
+                role_block = "**List of roles on {}:**".format(msg.server.name)
+        self.logger.info(reply)
+        try:
+            if (role_block.count('\n') > 1):
+                await self.send_whisper(msg.author, role_block)
+        except discord.HTTPException:
+            self.logger("well fuck: discord.HTTPException")
+        except:
+            # await self.core.start_private_message(msg.author)
+            await self.send_whisper(msg.author, "sup")
+            await self.send_message(msg.channel, role_block)
 
     @command("^ban <@!?([0-9]+)>", access=ACCESS['ban'])
     async def server_ban(self, msg, arguments):
