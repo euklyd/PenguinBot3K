@@ -40,6 +40,7 @@ class CommandManager():
     def __init__(self, core):
         self.commands = {}
         self.core = core
+        self.logger = logging.getLogger(__name__)
 
     async def check(self, message):
         """
