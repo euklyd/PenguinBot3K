@@ -135,14 +135,14 @@ class PenguinBot(discord.Client):
 
             Inherited from discord.Client.
         """
-        self.logger.info(
-            "Message Recieved: [Name:{}][UID:{}][CID:{}]: {}".format(
-                msg.author.name,
-                msg.author.id,
-                msg.channel,
-                msg.content
-            )
-        )
+        # self.logger.info(
+        #     "Message Recieved: [Name:{}][UID:{}][CID:{}]: {}".format(
+        #         msg.author.name,
+        #         msg.author.id,
+        #         msg.channel.id,
+        #         msg.content
+        #     )
+        # )
         # self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
         self.log_manager.log_message(msg)
         await self.connector._handleMessage(msg)

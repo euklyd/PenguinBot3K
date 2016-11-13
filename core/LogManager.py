@@ -351,6 +351,10 @@ class LogManager():
             Returns:
                 None
         """
+        self.logger.info("Creating logger for {name} CID: {id}".format(
+            name=channel.name,
+            id=channel.id
+        ))
         self.logger_map[channel.id] = {
             'logger': self.setup_logger(channel),
             'date': dt.utcnow()
@@ -385,7 +389,15 @@ class LogManager():
             Returns:
                 None
         """
-
+        self.logger.info(
+            "Message Recieved: [Name:{}][UID:{}][CID:{}][CName:{}]: {}".format(
+                msg.author.name,
+                msg.author.id,
+                msg.channel.id,
+                msg.channel.name,
+                msg.content
+            )
+        )
         if (msg.server is None):
             # Discard private messages.
             return
@@ -402,10 +414,11 @@ class LogManager():
         if (dt.utcnow().date() != self.logger_map[msg.channel.id]['date'].date()):
             # If it's not the same day as when the logger was created, open
             # a new log file.
-            self.logger("Updating with new date")
+            self.logger.info("Updating with new date")
             # self.update_channel(msg.channel)
             self.update_logger(msg.channel)
         self.logger_map[msg.channel.id]['logger'].info(self.format_message(msg))
+        self.logger.info("Message logged")
 
     def format_message(self, msg):
         """
