@@ -18,6 +18,7 @@ import asyncio
 import logging
 from core.Database import *
 
+
 class Plugin(object):
     def __init__(self, core, name):
         # Expose core and plugin name for subclasses

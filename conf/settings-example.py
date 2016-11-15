@@ -46,7 +46,8 @@ status = discord.Status.online
 trigger = ('spikes ', 'Spikes ', '«', '»')
 
 # Log level: https://docs.python.org/3/library/logging.html#logging-levels
-log_level = logging.DEBUG
+log_level = logging.INFO
+channel_logging = False
 
 # Connector to use
 connector = 'Discord'

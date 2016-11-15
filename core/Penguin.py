@@ -34,10 +34,10 @@ from core.LogManager import LogManager
 
 from imp import load_module, find_module
 from sys import stdout, path, exit
+import inspect
 import logging
 import logging.handlers
 import time
-import inspect
 
 
 class PenguinBot(discord.Client):
@@ -144,7 +144,18 @@ class PenguinBot(discord.Client):
         #     )
         # )
         # self.logger.info("<{}>  {}".format(msg.author.name, msg.content))
-        self.log_manager.log_message(msg)
+        if (self.config.channel_logging is True):
+            self.log_manager.log_message(msg)
+        else:
+            self.logger.info(
+                "Message Recieved: [Name:{}][UID:{}][CName:{}][CID:{}]: {}".format(  # noqa E501
+                    msg.author.name,
+                    msg.author.id,
+                    msg.channel.id,
+                    msg.channel.name,
+                    msg.content
+                )
+            )
         await self.connector._handleMessage(msg)
 
     # async def on_server_update(self, before, after):
@@ -196,7 +207,7 @@ class PenguinBot(discord.Client):
         # Create console handler
         console_hdlr = logging.StreamHandler(stdout)
         console_formatter = ColoredFormatter(
-            "%(asctime)s %(log_color)s%(levelname)-8s%(reset)s %(blue)s%(name)-25.25s%(reset)s %(white)s%(message)s%(reset)s",
+            "%(asctime)s %(log_color)s%(levelname)-8s%(reset)s %(blue)s%(name)-25.25s%(reset)s %(white)s%(message)s%(reset)s",  # noqa E501
             datefmt="[%m/%d/%Y %H:%M:%S]",
             reset=True,
             log_colors={
@@ -212,7 +223,9 @@ class PenguinBot(discord.Client):
         log.addHandler(console_hdlr)
 
         # Create log file handler
-        file_hdlr = logging.handlers.TimedRotatingFileHandler("logs/botlog", when="midnight")
+        file_hdlr = logging.handlers.TimedRotatingFileHandler(
+            "logs/botlog", when="midnight"
+        )
         file_formatter = logging.Formatter(
             "%(asctime)s %(levelname)-8s %(name)-25.25s %(message)s",
             datefmt="[%m/%d/%Y %H:%M:%S]"
@@ -246,7 +259,9 @@ class PenguinBot(discord.Client):
             config_canadiate = find_module(name, path=['conf'])
             config_module = load_module(name, *config_canadiate)
 
-            self.logger.info("Loaded configuration from \"" + config_canadiate[1] + "\"")
+            self.logger.info("Loaded configuration from \"\"".format(
+                config_canadiate[1]
+            ))
             logging.getLogger('').setLevel(config_module.log_level)
 
             return config_module
@@ -257,7 +272,6 @@ class PenguinBot(discord.Client):
         except AttributeError as e:
             self.logger.critical("Config class not found in conf/" + name)
             exit(1)
-
 
     def load_connector(self, core):
         """
@@ -274,19 +288,29 @@ class PenguinBot(discord.Client):
         path.append("connectors")
 
         try:
-            connector_candidate = find_module(config.connector, path=["connectors"])
-            connector_module = load_module(config.connector, *connector_candidate)
-            connector = getattr(connector_module, config.connector)(core, **config.connector_options)
-            self.logger.info("Loaded connector from: \"" +  connector_candidate[1] + "\"")
+            connector_candidate = find_module(
+                config.connector, path=["connectors"]
+            )
+            connector_module = load_module(
+                config.connector, *connector_candidate
+            )
+            connector = getattr(connector_module, config.connector)(
+                core, **config.connector_options
+            )
+            self.logger.info("Loaded connector from: \"\"".format(
+                connector_candidate[1]
+            ))
 
             return connector
 
         except ImportError as e:
-            self.logger.critical("ImportError: " + str(e))
+            self.logger.critical("ImportError: {}".format(str(e)))
             exit(1)
         except AttributeError as e:
             print(e)
-            self.logger.critical("Could not find connector class: " + config.connector)
+            self.logger.critical("Could not find connector class: {}".format(
+                config.connector
+            ))
             exit(1)
 
     async def load_plugins(self):
