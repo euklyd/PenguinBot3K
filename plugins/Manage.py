@@ -1,6 +1,6 @@
 """
     Plugin Name : Manage
-    Plugin Version : 2.0
+    Plugin Version : 3.0
 
     Description:
         Gives basic commands to the bot to manage and examine itself.
@@ -39,12 +39,18 @@ class Manage(Plugin):
         await self.core.wait_until_login()
         self.login_time = time.time()
 
-    @command("^ping", access=ACCESS["ping"])
+    @command(
+        "^ping", access=ACCESS["ping"], name='ping',
+        doc_brief="`ping`: prints a simple response."
+    )
     async def ping(self, msg, arguments):
         """`ping`: prints a simple response."""
         await self.send_message(msg.channel, "Pong")
 
-    @command("^trigger$", access=ACCESS['trigger'])
+    @command(
+        "^trigger$", access=ACCESS['trigger'], name='trigger',
+        doc_brief="`trigger`: prints the default prefix used to tell me that you're using a command."
+    )
     async def trigger(self, msg, arguments):
         """`trigger`: prints the default prefix used to tell me that you're using a command."""
         if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
@@ -52,7 +58,10 @@ class Manage(Plugin):
         else:
             await self.send_message(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger))
 
-    @command("^triggers$", access=ACCESS['trigger'])
+    @command(
+        "^triggers$", access=ACCESS['trigger'], name='triggers',
+        doc_brief="`triggers`: prints the prefixes used to tell me that you're using a command, if there exist multiple."
+    )
     async def triggers(self, msg, arguments):
         """`triggers`: prints the prefixes used to tell me that you're using a command, if there exist multiple."""
         if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
@@ -60,7 +69,10 @@ class Manage(Plugin):
         else:
             await self.send_message(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger))
 
-    @command("^list plugins$", access=ACCESS["plugin_list"])
+    @command(
+        "^list plugins$", access=ACCESS["plugin_list"], name='list plugins',
+        doc_brief="`list plugins`: lists all of my plugins."
+    )
     async def list_plugins(self, msg, arguments):
         """`list plugins`: lists all of my plugins."""
         plugins = self.core.plugin.list()
@@ -74,7 +86,10 @@ class Manage(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command("^list commands (\w+)")
+    @command(
+        "^list commands (\w+)", name='list commands',
+        doc_brief="`list commands <plugin>`: lists all commands that you have access to in `<plugin>`."
+    )
     async def list_commands(self, msg, arguments):
         """`list commands <plugin>`: lists all commands that you have access to in `<plugin>`."""
         plugin = arguments[0]
@@ -85,43 +100,71 @@ class Manage(Plugin):
             # debug stuff
             # module = plugin_list[plugin]['instance']
             # for name, callback in inspect.getmembers(module, inspect.ismethod):
-            #     self.logger.debug("{} -> {} : {}".format(module, name, inspect.getdoc(callback)))
+            #     self.logger.info("{} -> {} : {}".format(module, name, inspect.getdoc(callback)))
 
             command_list = self.core.command.commands
             command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
-            for command in sorted(command_list.keys()):
-                if (plugin == command.split('.')[0] and command_list[command].access <= access):
-                    docstr = command_list[command].callback.__doc__
-                    if (docstr is not None and command_list[command].access <= access):
-                        command_block += docstr + '\n'
+            for command in sorted(command_list.values(), key=lambda cmd: str(cmd.name)):
+                # self.logger.info("{}.{}:  {}".format(command.plugin, command.name, command.doc_brief))
+                if (plugin == command.plugin and command.access <= access):
+                    # self.logger.info("{}.{}:  {}".format(command.plugin, command.name, command.doc_brief))
+                    blurb = command.doc_brief
+                    if (blurb is not None):
+                        command_block += blurb + '\n'
+            # for command in sorted(command_list.keys()):
+            #     if (plugin == command.split('.')[0] and command_list[command].access <= access):
+            #         docstr = command_list[command].callback.__doc__
+            #         if (docstr is not None and command_list[command].access <= access):
+            #             command_block += docstr + '\n'
             # self.send_message(msg.channel, command_block)
             await self.send_message(msg.channel, command_block)
         else:
             # self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
             await self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
 
-    @command("^list commands$", access=-1)
+    @command(
+        "^list commands$", access=-1, name='list commands', doc_brief="`list commands`: lists all commands that you have access to."
+    )
     async def list_all_commands(self, msg, arguments):
         """`list commands`: lists all commands that you have access to."""
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
         for plugin in plugin_list:
             command_list = self.core.command.commands
+            # self.logger.info(command_list)
+            # for cmd in command_list.values():
+            #     self.logger.info(cmd.name)
             command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
-            for command in sorted(command_list.keys()):
-                if (plugin == command.split('.')[0] and command_list[command].access <= access):
-                    docstr = command_list[command].callback.__doc__
-                    if (docstr is not None and command_list[command].access <= access):
-                        command_block += docstr + '\n'
+            for command in sorted(command_list.values(), key=lambda cmd: str(cmd.name)):
+                if (plugin == command.plugin and command.access <= access):
+                    blurb = command.doc_brief
+                    if (blurb is not None):
+                        command_block += blurb + '\n'
+            # for command in sorted(command_list.keys()):
+            #     if (plugin == command.split('.')[0] and command_list[command].access <= access):
+            #         docstr = command_list[command].callback.__doc__
+            #         if (docstr is not None and command_list[command].access <= access):
+            #             command_block += docstr + '\n'
             if (command_block.count('\n') > 1):
                 await self.send_message(msg.channel, command_block)
 
-    @command("^help$", access=-1)
+    @command(
+        "^help$", access=-1, name='help',
+        doc_brief="`help`: alias for `list commands`."
+    )
     async def help(self, msg, arguments):
         """`help`: alias for `list commands`."""
         await self.list_all_commands(msg, arguments)
 
-    @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$", access=ACCESS["plugin_manage"])
+    @command(
+        "^(enable|disable|reload|status) plugin ([A-Za-z]+)$",
+        access=ACCESS["plugin_manage"], name='toggle plugin',
+        doc_brief=("`enable plugin <plugin>`: enables `<plugin>`.\n"
+                   "`disable plugin <plugin>`: disables `<plugin>`.\n"
+                   "`reload plugin <plugin>`: reloads `<plugin>`.\n"
+                   "`status plugin <plugin>`: fetches the status of `<plugin>`."
+                   )
+    )
     async def manage_plugin(self, msg, arguments):
         """`enable plugin <plugin>`: enables `<plugin>`.
 `disable plugin <plugin>`: disables `<plugin>`.
@@ -157,7 +200,10 @@ class Manage(Plugin):
     # def on_connect(self, *args, **kwargs):
     #     self.login_time = time.time()
 
-    @command("^uptime$", access=ACCESS['uptime'])
+    @command(
+        "^uptime$", access=ACCESS['uptime'], name='uptime',
+        doc_brief="`uptime`: prints the duration that I've been running for."
+    )
     async def uptime(self, msg, arguments):
         """`uptime`: prints the duration that I've been running for."""
         uptime = time.time() - self.login_time

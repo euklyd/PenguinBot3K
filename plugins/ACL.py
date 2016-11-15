@@ -1,6 +1,6 @@
 """
     Plugin Name : ACL
-    Plugin Version : 2.0
+    Plugin Version : 3.0
 
     Description:
         Allows a chat interface to modifying user access
@@ -45,17 +45,21 @@ class ACL(Plugin):
                 )
             )
 
-    """I would put a docstring for this, but it's not supposed to be used by most users."""
-    @command('^claim ([A-Za-z0-9]*)', access=ACCESS["claim"])
+    # I would put a doc_brief or doc_detail for this, but it's not supposed
+    # to be used by most users.
+    @command('^claim ([A-Za-z0-9]*)', access=ACCESS["claim"], name='claim')
     async def claim(self, msg, arguments):
         if(arguments[0] == self.key):
             self.logger.critical('Bot has been claimed by: {} UID:{}'.format(
                 msg.author.name, msg.author.id)
             )
-            self.core.ACL.owner = msg.author.id ##FIX?
+            self.core.ACL.owner = msg.author.id  ##FIX?
             await self.send_whisper(msg.author, 'You are now my owner! Wooo')
 
-    @command("^whois <@!?([0-9]+)>", access=50)
+    @command(
+        "^whois <@!?([0-9]+)>", access=50, name='whois',
+        doc_brief="`whois @<user>`: prints the access level of `<user>`, along with misc. information."
+    )
     async def whois(self, msg, arguments):
         """`whois @<user>`: prints the access level of `<user>`, along with misc. information."""
         user = await self.get_user_info(arguments[0])
@@ -70,7 +74,10 @@ class ACL(Plugin):
             )
         )
 
-    @command("^whoami", access=-1)
+    @command(
+        "^whoami", access=-1, name="whoami",
+        doc_brief="`whoami`: prints your own access level."
+    )
     async def whoami(self, msg, arguments):
         """`whoami`: prints your own access level."""
         access = self.core.ACL.getAccess(msg.author.id)
@@ -79,7 +86,17 @@ class ACL(Plugin):
             msg.author, access)
         )
 
-    @command('^list users (-?[0-9]+)(?: ([0-9]+))?(?: ([0-9]+))?', access=100)
+    @command(
+        '^list users (-?[0-9]+)(?: ([0-9]+))?(?: ([0-9]+))?$', access=100,
+        name='list users',
+        doc_brief=("`list users <access>`: list all users with the specified "
+                   "access level."),
+        doc_detail=("`list users <access>`: list all users with the specified "
+                    "access level.\n"
+                    "More specifically, if `access` != 0, then a maximum of "
+                    "`limit` users with access equal to `access`, offset by "
+                    "`offset`, are returned.")
+    )
     async def get_some_users(self, msg, arguments):
         """`list users <access>`: list all users with the specified access level."""
         """
@@ -94,11 +111,22 @@ class ACL(Plugin):
             table.append([user.id, user.cname, user.access])
 
         output = "**Users in my database: **\n\n"
-        output += "`{}`".format(tabulate(table, headers=["ID", "Name", "Access"], tablefmt="psql", numalign="left"))
+        output += "`{}`".format(
+            tabulate(
+                table,
+                headers=["ID", "Name", "Access"],
+                tablefmt="psql",
+                numalign="left"
+            )
+        )
 
         await self.send_message(msg.channel, output)
 
-    @command('^list users$', access=100)
+    @command(
+        '^list users$', access=100,
+        # name='list users',
+        doc_brief="`list users`: list all users with non-default access levels."
+    )
     async def list_users(self, msg, arguments):
         """`list users`: list all users with non-default access levels."""
 
@@ -107,11 +135,20 @@ class ACL(Plugin):
             table.append([user.id, user.cname, user.access])
 
         output = "**Users in my database: **\n\n"
-        output += "`{}`".format(tabulate(table, headers=["ID", "Name", "Access"], tablefmt="psql", numalign="left"))
+        output += "`{}`".format(
+            tabulate(
+                table,
+                headers=["ID", "Name", "Access"],
+                tablefmt="psql",
+                numalign="left"
+            )
+        )
 
         await self.send_message(msg.channel, output)
 
-    @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"])
+    @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"],
+        doc_brief="`delete access @<user>`: deletes the access permissions of `<user>`."
+    )
     async def deleteAccess(self, msg, arguments):
         """`delete access @<user>`: deletes the access permissions of `<user>`."""
         requestor = msg.author.id
@@ -122,16 +159,28 @@ class ACL(Plugin):
             return
 
         # Check if requestor is allowed to do this
-        if (self.core.ACL.getAccess(requestor) >= self.core.ACL.getAccess(target) or requestor != self.core.config.backdoor):
+        if (self.core.ACL.getAccess(requestor) >= self.core.ACL.getAccess(target) or
+                requestor != self.core.config.backdoor):
             user = await self.get_user_info(target)
             if (self.core.ACL.deleteUser(user) is True):
-                await self.send_message(msg.channel, "Removed UID:`{}` from access list".format(target))
+                await self.send_message(
+                    msg.channel,
+                    "Removed UID:`{}` from access list".format(target)
+                )
             else:
-                await self.send_message(msg.channel, "Failed to remove UID:`{}` from access list".format(target))
+                await self.send_message(
+                    msg.channel,
+                    "Failed to remove UID:`{}` from access list".format(target)
+                )
         else:
-            await self.send_reply(msg, "You cannot modify access of a user with more access")
+            await self.send_reply(
+                msg,
+                "You cannot modify access of a user with more access"
+            )
 
-    @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"])
+    @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"],
+        doc_brief="`set access @<user> <access>`: sets the access level of `<user>` to `<access>`."
+    )
     async def setAccess(self, msg, arguments):
         """`set access @<user> <access>`: sets the access level of `<user>` to `<access>`."""
         requestor = msg.author.id
@@ -142,16 +191,26 @@ class ACL(Plugin):
             await self.send_reply(msg, "You cannot modify your own access")
             return
 
-        if (self.core.ACL.getAccess(requestor) > self.core.ACL.getAccess(target) or requestor == self.core.config.backdoor):
+        if (self.core.ACL.getAccess(requestor) > self.core.ACL.getAccess(target) or
+                requestor == self.core.config.backdoor):
             access = int(arguments[1])
-            if (access >= 0 and access < 1000 or requestor == self.core.config.backdoor):
+            if (access >= 0 and access < 1000 or
+                    requestor == self.core.config.backdoor):
                 # name = self.core.connection.getUser(target)["name"]
                 user = await self.get_user_info(target)
 
                 self.core.ACL.setAccess(user, access)
-                await self.send_message(msg.channel, "Set **{}** UID:`{}` to access level: `{}`".format(user.name, target, access))
+                await self.send_message(
+                    msg.channel,
+                    "Set **{}** UID:`{}` to access level: `{}`".format(
+                        user.name, target, access
+                    )
+                )
             else:
                 await self.send_reply(msg, "Access must be between 0 and 999")
 
         else:
-            await self.send_reply(msg, "You cannot modify access of a user with more access")
+            await self.send_reply(
+                msg,
+                "You cannot modify access of a user with more access"
+            )

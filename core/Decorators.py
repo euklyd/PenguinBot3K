@@ -1,5 +1,6 @@
 import time
 
+
 class ttl_cache(object):
     def __init__(self, ttl):
         self.cache = {}
@@ -24,7 +25,8 @@ class ttl_cache(object):
         return wrapper
 
 
-def command(pattern, access=0, trigger="", silent=False):
+def command(pattern, access=0, trigger="", silent=False, name=None,
+            doc_brief=None, doc_detail=None):
     def decorate(callback):
         def wrapper(self, msg, arguments):
             return callback(self, msg, arguments)
@@ -38,9 +40,13 @@ def command(pattern, access=0, trigger="", silent=False):
             setattr(wrapper, 'trigger', trigger)
             setattr(wrapper, 'access', access)
             setattr(wrapper, 'silent', silent)
+            setattr(wrapper, 'name', name)
+            setattr(wrapper, 'doc_brief', doc_brief)
+            setattr(wrapper, 'doc_detail', doc_brief)
 
         return wrapper
     return decorate
+
 
 def connector(requirement):
     def decorate(callback):
@@ -52,6 +58,7 @@ def connector(requirement):
 
         return wrapper
     return decorate
+
 
 def subscribe(event):
     def decorate(callback):

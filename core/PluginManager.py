@@ -149,7 +149,10 @@ class PluginManager():
                     callback,
                     trigger=getattr(callback, "trigger"),
                     access=getattr(callback, "access"),
-                    silent=getattr(callback, "silent")
+                    silent=getattr(callback, "silent"),
+                    cmdname=getattr(callback, "name"),
+                    doc_brief=getattr(callback, "doc_brief"),
+                    doc_detail=getattr(callback, "doc_detail")
                 )
 
             if hasattr(callback, "is_subscriber"):

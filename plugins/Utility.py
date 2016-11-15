@@ -1,6 +1,6 @@
 """
     Plugin Name : Utility
-    Plugin Version : 2.1
+    Plugin Version : 3.0
 
     Description:
         Provides basic utility commands, e.g., random selectors
@@ -28,7 +28,11 @@ class Utility(Plugin):
     async def activate(self):
         pass
 
-    @command("^pick(?:[- ]one)? (.*)", access=-1)
+    @command(
+        "^pick(?:[- ]one)? (.*)", access=-1, name='pick',
+        doc_brief=("`pick one <list of items>`: Selects one item out of a"
+                   "list of space-separated items.")
+    )
     async def pick_one(self, msg, arguments):
         """`pick one <list of items>`: Selects one item out of a list of space-separated items."""
         # args = arguments[0]
@@ -40,7 +44,10 @@ class Utility(Plugin):
             "<@!{}>, your selection is **{}**!".format(msg.author.id, choice)
         )
 
-    @command("^avatar <@!?([0-9]*)>$", access=-1)
+    @command(
+        "^avatar <@!?([0-9]*)>$", access=-1, name='avatar',
+        doc_brief="`avatar @<user>`: posts a link to `<user>`'s avatar"
+    )
     async def get_avatar(self, msg, arguments):
         """`avatar @<user>`: posts a link to `<user>`'s avatar"""
         user = await self.core.get_user_info(arguments[0])
@@ -52,7 +59,11 @@ class Utility(Plugin):
         await self.send_message(msg.channel, reply)
 
     # @command("^(?:get[- ])?info <@!?([0-9]*)>$", access=50)
-    @command("^info <@!?([0-9]*)>$", access=50)
+    @command(
+        "^info <@!?([0-9]*)>$", access=50, name='info',
+        doc_brief=("`info @<user>`: Gets assorted info about the specified "
+                   "<user>.")
+    )
     async def get_info(self, msg, arguments):
         user = msg.server.get_member(arguments[0])
         # user = await self.core.get_member(arguments[0])

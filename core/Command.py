@@ -20,12 +20,20 @@ import logging
 
 
 class Command():
-    def __init__(self, pattern, callback, trigger="", access=0, silent=False):
-        self.pattern  = pattern
-        self.access   = access
-        self.callback = callback
-        self.trigger  = trigger
-        self.silent   = silent
+    def __init__(self, pattern, callback, trigger="", access=0, silent=False,
+                 name=None, plugin=None, doc_brief=None, doc_detail=None):
+        self.pattern   = pattern
+        self.access    = access
+        self.callback  = callback
+        self.trigger   = trigger
+        self.silent    = silent
+        self.name      = name
+        self.plugin    = plugin
+        self.doc_brief = doc_brief
+        if (doc_detail is None):
+            self.doc_detail = doc_brief
+        else:
+            self.doc_detail = doc_detail
 
         self.logger = logging.getLogger(__name__)
 
@@ -66,18 +74,18 @@ class CommandManager():
                     for trigger in command.trigger:
                         content = message.content.replace(trigger, "", 1)
                         if (content != message.content):
-                            t = trigger # debug
+                            t = trigger  # debug
                             break
                 else:
-                    t = command.trigger # debug
+                    t = command.trigger  # debug
                     content = message.content.replace(command.trigger, "", 1)
 
                 match   = re.search(command.pattern, content)
 
                 if (match):
                     # self.logger.info("trigger '{}' matched!".format(t))  # debug
-                    # self.logger.debug("'{}' registered")
-                    self.logger.info("'{}' registered".format(message.content))
+                    # self.logger.debug("'{}' detected")
+                    self.logger.info("'{}' detected".format(message.content))
                     if (self.core.ACL.getAccess(message.author.id) >= command.access or message.author.id == self.core.config.backdoor):
                         message.content = content
                         # message.arguments = match
@@ -90,7 +98,8 @@ class CommandManager():
                         self.logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
                         self.logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
 
-    def register(self, pattern, callback, trigger="", access=0, silent=False):
+    def register(self, pattern, callback, trigger="", access=0, silent=False,
+                 cmdname=None, doc_brief=None, doc_detail=None):
         """
             Summary:
                 Pushes command instance to command list
@@ -113,6 +122,7 @@ class CommandManager():
             return
         else:
             self.logger.debug("Registered command \"" +  clazz + "." + name + "\"")
+            # self.logger.info("Registered command \"" +  clazz + "." + name + "\"")
 
             if (trigger is None):
                 trigger = ""
@@ -124,8 +134,13 @@ class CommandManager():
                 callback,
                 trigger=trigger,
                 access=access,
-                silent=silent
+                silent=silent,
+                name=cmdname,
+                plugin=clazz,
+                doc_brief=doc_brief,
+                doc_detail=doc_detail
             )
+            # self.logger.info(self.commands[name])
             self.logger.debug("Command has trigger: {}".format(trigger))
 
     def unregister(self, command_name):
