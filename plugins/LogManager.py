@@ -33,17 +33,14 @@ class Moderation(Plugin):
         self.log_manager = self.core.log_manager
         pass
 
-    @command(
-        "^gimme logs(?: ([0-9]+))", access=ACCESS['retrieve'],
-        doc_brief="`gimme logs`: Retrieve log files for the curent channel.",
-        doc_detail=("`gimme logs`: Uploads the current log file for the "
-                    "current channel privately to the requestor.\n\t"
-                    "**Optional:** Specify a number after `gimme logs` to "
-                    "request that many days in the past in addition to "
-                    "today's file.")
-    )
+    @command("^gimme logs(?: ([0-9]+))", access=ACCESS['retrieve'],
+             doc_brief="`gimme logs`: Retrieve log files for the curent channel.",
+             doc_detail=("`gimme logs`: Uploads the current log file for the "
+                         "current channel privately to the requestor.\n\t"
+                         "**Optional:** Specify a number after `gimme logs` to "
+                         "request that many days in the past in addition to "
+                         "today's file."))
     async def put_logs(self, msg, arguments):
-        """`gimme logs`: Uploads the current log file for the current channel privately to the requestor.\n\t**Optional:** Specify a number after `gimme logs` to request that many days in the past in addition to today's file."""
         if (len(arguments) == 1):
             if (arguments[0] < 0):
                 await self.send_message(

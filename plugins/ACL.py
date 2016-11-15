@@ -56,12 +56,9 @@ class ACL(Plugin):
             self.core.ACL.owner = msg.author.id  ##FIX?
             await self.send_whisper(msg.author, 'You are now my owner! Wooo')
 
-    @command(
-        "^whois <@!?([0-9]+)>", access=50, name='whois',
-        doc_brief="`whois @<user>`: prints the access level of `<user>`, along with misc. information."
-    )
+    @command("^whois <@!?([0-9]+)>", access=50, name='whois',
+             doc_brief="`whois @<user>`: prints the access level of `<user>`, along with misc. information.")
     async def whois(self, msg, arguments):
-        """`whois @<user>`: prints the access level of `<user>`, along with misc. information."""
         user = await self.get_user_info(arguments[0])
         access = self.core.ACL.getAccess(user.id)
 
@@ -74,35 +71,25 @@ class ACL(Plugin):
             )
         )
 
-    @command(
-        "^whoami", access=-1, name="whoami",
-        doc_brief="`whoami`: prints your own access level."
-    )
+    @command("^whoami", access=-1, name="whoami",
+             doc_brief="`whoami`: prints your own access level.")
     async def whoami(self, msg, arguments):
-        """`whoami`: prints your own access level."""
         access = self.core.ACL.getAccess(msg.author.id)
 
         await self.send_reply(msg, "\nUser ID\t`{}`\nAccess:\t`{}`".format(
             msg.author, access)
         )
 
-    @command(
-        '^list users (-?[0-9]+)(?: ([0-9]+))?(?: ([0-9]+))?$', access=100,
-        name='list users',
-        doc_brief=("`list users <access>`: list all users with the specified "
-                   "access level."),
-        doc_detail=("`list users <access>`: list all users with the specified "
-                    "access level.\n"
-                    "More specifically, if `access` != 0, then a maximum of "
-                    "`limit` users with access equal to `access`, offset by "
-                    "`offset`, are returned.")
-    )
+    @command('^list users (-?[0-9]+)(?: ([0-9]+))?(?: ([0-9]+))?$', access=100,
+             name='list users',
+             doc_brief=("`list users <access>`: list all users with the specified "
+             "access level."),
+             doc_detail=("`list users <access>`: list all users with the specified "
+             "access level.\n"
+             "More specifically, if `access` != 0, then a maximum of `limit` "
+             "users with access equal to `access`, offset by `offset`, are "
+             "returned."))
     async def get_some_users(self, msg, arguments):
-        """`list users <access>`: list all users with the specified access level."""
-        """
-            More specifically, `access` != 0, then it gets a maximum of `limit`
-            users with access equal to `access`, offset by `offset`.
-        """
         access, limit, offset = arguments
         self.logger.info(arguments)
 
@@ -122,14 +109,10 @@ class ACL(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command(
-        '^list users$', access=100,
-        # name='list users',
-        doc_brief="`list users`: list all users with non-default access levels."
-    )
+    @command('^list users$', access=100, name='list users',
+             doc_brief=("`list users`: list all users with non-default access "
+             "levels."))
     async def list_users(self, msg, arguments):
-        """`list users`: list all users with non-default access levels."""
-
         table = []
         for user in self.core.ACL.query_users():
             table.append([user.id, user.cname, user.access])
@@ -147,10 +130,9 @@ class ACL(Plugin):
         await self.send_message(msg.channel, output)
 
     @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"],
-        doc_brief="`delete access @<user>`: deletes the access permissions of `<user>`."
-    )
+             doc_brief=("`delete access @<user>`: deletes the access "
+             "permissions of `<user>`."))
     async def deleteAccess(self, msg, arguments):
-        """`delete access @<user>`: deletes the access permissions of `<user>`."""
         requestor = msg.author.id
         target = arguments[0]
 
@@ -179,10 +161,9 @@ class ACL(Plugin):
             )
 
     @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"],
-        doc_brief="`set access @<user> <access>`: sets the access level of `<user>` to `<access>`."
-    )
+             doc_brief=("`set access @<user> <access>`: sets the access level "
+             "of `<user>` to `<access>`."))
     async def setAccess(self, msg, arguments):
-        """`set access @<user> <access>`: sets the access level of `<user>` to `<access>`."""
         requestor = msg.author.id
         target = arguments[0]
 

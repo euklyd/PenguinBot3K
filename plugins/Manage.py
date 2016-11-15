@@ -39,42 +39,32 @@ class Manage(Plugin):
         await self.core.wait_until_login()
         self.login_time = time.time()
 
-    @command(
-        "^ping", access=ACCESS["ping"], name='ping',
-        doc_brief="`ping`: prints a simple response."
-    )
+    @command("^ping", access=ACCESS["ping"], name='ping',
+             doc_brief="`ping`: prints a simple response.")
     async def ping(self, msg, arguments):
-        """`ping`: prints a simple response."""
         await self.send_message(msg.channel, "Pong")
 
-    @command(
-        "^trigger$", access=ACCESS['trigger'], name='trigger',
-        doc_brief="`trigger`: prints the default prefix used to tell me that you're using a command."
-    )
+    @command("^trigger$", access=ACCESS['trigger'], name='trigger',
+             doc_brief=("`trigger`: prints the default prefix used to tell "
+             "me that you're using a command."))
     async def trigger(self, msg, arguments):
-        """`trigger`: prints the default prefix used to tell me that you're using a command."""
         if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
             await self.send_message(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger[0]))
         else:
             await self.send_message(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger))
 
-    @command(
-        "^triggers$", access=ACCESS['trigger'], name='triggers',
-        doc_brief="`triggers`: prints the prefixes used to tell me that you're using a command, if there exist multiple."
-    )
+    @command("^triggers$", access=ACCESS['trigger'], name='triggers',
+             doc_brief=("`triggers`: prints the prefixes used to tell me that "
+             "you're using a command, if there exist multiple."))
     async def triggers(self, msg, arguments):
-        """`triggers`: prints the prefixes used to tell me that you're using a command, if there exist multiple."""
         if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
             await self.send_message(msg.channel, "My default triggers are `{}`".format(self.core.config.trigger))
         else:
             await self.send_message(msg.channel, "My default trigger is `{}`".format(self.core.config.trigger))
 
-    @command(
-        "^list plugins$", access=ACCESS["plugin_list"], name='list plugins',
-        doc_brief="`list plugins`: lists all of my plugins."
-    )
+    @command("^list plugins$", access=ACCESS["plugin_list"], name='list plugins',
+             doc_brief="`list plugins`: lists all of my plugins.")
     async def list_plugins(self, msg, arguments):
-        """`list plugins`: lists all of my plugins."""
         plugins = self.core.plugin.list()
 
         table = []
@@ -86,12 +76,10 @@ class Manage(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command(
-        "^list commands (\w+)", name='list commands',
-        doc_brief="`list commands <plugin>`: lists all commands that you have access to in `<plugin>`."
-    )
+    @command("^list commands (\w+)", name='list commands',
+             doc_brief=("`list commands <plugin>`: lists all commands that "
+             "you have access to in `<plugin>`."))
     async def list_commands(self, msg, arguments):
-        """`list commands <plugin>`: lists all commands that you have access to in `<plugin>`."""
         plugin = arguments[0]
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
@@ -122,11 +110,9 @@ class Manage(Plugin):
             # self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
             await self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
 
-    @command(
-        "^list commands$", access=-1, name='list commands', doc_brief="`list commands`: lists all commands that you have access to."
-    )
+    @command("^list commands$", access=-1, name='list commands',
+             doc_brief="`list commands`: lists all commands that you have access to.")
     async def list_all_commands(self, msg, arguments):
-        """`list commands`: lists all commands that you have access to."""
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
         for plugin in plugin_list:
@@ -148,28 +134,18 @@ class Manage(Plugin):
             if (command_block.count('\n') > 1):
                 await self.send_message(msg.channel, command_block)
 
-    @command(
-        "^help$", access=-1, name='help',
-        doc_brief="`help`: alias for `list commands`."
-    )
+    @command("^help$", access=-1, name='help',
+             doc_brief="`help`: alias for `list commands`.")
     async def help(self, msg, arguments):
-        """`help`: alias for `list commands`."""
         await self.list_all_commands(msg, arguments)
 
-    @command(
-        "^(enable|disable|reload|status) plugin ([A-Za-z]+)$",
-        access=ACCESS["plugin_manage"], name='toggle plugin',
-        doc_brief=("`enable plugin <plugin>`: enables `<plugin>`.\n"
-                   "`disable plugin <plugin>`: disables `<plugin>`.\n"
-                   "`reload plugin <plugin>`: reloads `<plugin>`.\n"
-                   "`status plugin <plugin>`: fetches the status of `<plugin>`."
-                   )
-    )
+    @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$",
+             access=ACCESS["plugin_manage"], name='toggle plugin',
+             doc_brief=("`enable plugin <plugin>`: enables `<plugin>`.\n"
+                        "`disable plugin <plugin>`: disables `<plugin>`.\n"
+                        "`reload plugin <plugin>`: reloads `<plugin>`.\n"
+                        "`status plugin <plugin>`: fetches the status of `<plugin>`."))
     async def manage_plugin(self, msg, arguments):
-        """`enable plugin <plugin>`: enables `<plugin>`.
-`disable plugin <plugin>`: disables `<plugin>`.
-`reload plugin <plugin>`: reloads `<plugin>`.
-`status plugin <plugin>`: fetches the status of `<plugin>`."""
         plugins = self.core.plugin.list()
         plugin = arguments[1]
         action = arguments[0]
@@ -200,12 +176,9 @@ class Manage(Plugin):
     # def on_connect(self, *args, **kwargs):
     #     self.login_time = time.time()
 
-    @command(
-        "^uptime$", access=ACCESS['uptime'], name='uptime',
-        doc_brief="`uptime`: prints the duration that I've been running for."
-    )
+    @command("^uptime$", access=ACCESS['uptime'], name='uptime',
+             doc_brief="`uptime`: prints the duration that I've been running for.")
     async def uptime(self, msg, arguments):
-        """`uptime`: prints the duration that I've been running for."""
         uptime = time.time() - self.login_time
 
         def readable_time(elapsed):
