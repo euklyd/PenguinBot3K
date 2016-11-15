@@ -1,6 +1,6 @@
 """
     Plugin Name : Moderation
-    Plugin Version : 2.1.1
+    Plugin Version : 2.2.0
 
     Description:
         Provides some moderation commands, e.g., banning users.
@@ -46,7 +46,13 @@ class Moderation(Plugin):
         """`announce #<channel> <message>`: Sends `<message>` to `<channel>` anonymously."""
         channel = self.core.get_channel(arguments[0])
         await self.send_message(channel, arguments[1])
-        # await self.delete_message(msg)
+
+    @command("^announce -d <#([0-9]*)> (.*)", access=ACCESS['anonymous'])
+    async def announce_delete(self, msg, arguments):
+        """`announce #<channel> <message>`: Sends `<message>` to `<channel>` anonymously."""
+        channel = self.core.get_channel(arguments[0])
+        await self.send_message(channel, arguments[1])
+        await self.delete_message(msg)
 
     @command("^get roles$", access=500)
     async def list_all_roles(self, msg, arguments):
