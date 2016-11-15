@@ -94,7 +94,9 @@ class LogManager():
         """
         self.core.logger.info("Initializing chatlog tree.")
         self.core.logger.debug("Servers: {}".format(self.core.servers))
-        self.core.logger.debug("Channels: {}".format(self.core.get_all_channels()))
+        self.core.logger.debug("Channels: {}".format(
+            self.core.get_all_channels()
+        ))
         for server in self.core.servers:
             self.core.logger.info(server.name)
             self.update_server_map(server)
@@ -182,7 +184,7 @@ class LogManager():
             old_channel = self.channel_map[channel.id]
             # """update filetree here"""
             for log in os.listdir(
-                "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(
+                "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
                     old_server=old_channel['server_name'],
                     srv_id=old_channel['server_id'],
                     old_channel=old_channel['name'],
@@ -191,15 +193,15 @@ class LogManager():
             ):
                 # Move the logs to the new directory.
                 shutil.move(
-                    "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}/{log}".format(
+                    "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}/{log}".format(    # noqa E501
                         old_server=old_channel['server_name'],
                         srv_id=old_channel['server_id'],
                         old_channel=old_channel['name'],
                         ch_id=channel.id,
                         log=log
                     ),
-                    "logs/servers/{new_server}-{srv_id}/{new_channel}-{ch_id}".format(
-                        new_server=self.server_map[old_channel['server_id']]['name'],
+                    "logs/servers/{new_server}-{srv_id}/{new_channel}-{ch_id}".format(  # noqa E501
+                        new_server=self.server_map[old_channel['server_id']]['name'],   # noqa E501
                         srv_id=channel.server.id,
                         new_channel=channel.name,
                         ch_id=channel.id
@@ -207,7 +209,7 @@ class LogManager():
                 )
             # Delete the old directory.
             os.rmdir(
-                "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(
+                "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
                     old_server=old_channel['server_name'],
                     srv_id=old_channel['server_id'],
                     old_channel=old_channel['name'],
@@ -218,7 +220,7 @@ class LogManager():
             # Update channel map.
             # """update channel here"""
             self.channel_map[channel.id]['name'] = channel.name
-            self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']
+            self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']  # noqa E501
 
     def update_jsons(self, smod=False, cmod=False):
         """
@@ -261,12 +263,12 @@ class LogManager():
         """
         if (self.channel_map[after.id]['name'] != after.name):
             # 1) log message to logfile
-            if (after.server is not None and self.logger_map.get(after.id) is not None):
+            if (after.server is not None and self.logger_map.get(after.id) is not None):        # noqa E501
                 self.logger_map[after.id]['logger'].info(self.format_system(
                     name="System", discriminator="0000",
-                    content="Channel name changed from #{oldname} to #{newname}.".format(
-                        oldname=self.channel_map[after.id]['name'],
-                        newname=after.name
+                    content="Channel name changed from #{old_name} to #{new_name}.".format(     # noqa E501
+                        old_name=self.channel_map[after.id]['name'],
+                        new_name=after.name
                     ))
                 )
             # 2) change logger handler
@@ -390,7 +392,7 @@ class LogManager():
                 None
         """
         self.logger.info(
-            "Message Recieved: [Name:{}][UID:{}][CID:{}][CName:{}]: {}".format(
+            "Message Recieved: [Name:{}][UID:{}][CName:{}][CID:{}]: {}".format(
                 msg.author.name,
                 msg.author.id,
                 msg.channel.id,
@@ -411,13 +413,14 @@ class LogManager():
                 logdate=self.logger_map[msg.channel.id]['date'].date()
             )
         )
-        if (dt.utcnow().date() != self.logger_map[msg.channel.id]['date'].date()):
+        if (dt.utcnow().date() !=
+                self.logger_map[msg.channel.id]['date'].date()):
             # If it's not the same day as when the logger was created, open
             # a new log file.
             self.logger.info("Updating with new date")
             # self.update_channel(msg.channel)
             self.update_logger(msg.channel)
-        self.logger_map[msg.channel.id]['logger'].info(self.format_message(msg))
+        self.logger_map[msg.channel.id]['logger'].info(self.format_message(msg))    # noqa E501
         self.logger.info("Message logged")
 
     def format_message(self, msg):
@@ -445,7 +448,8 @@ class LogManager():
         )
         return log_string
 
-    def format_system(self, name="System", discriminator="0000", content="<null>"):
+    def format_system(self, name="System", discriminator="0000",
+                      content="⸢empty message⸥"):
         """
             Summary:
                 Like `format_message(msg)`, but it takes up to three str
@@ -468,3 +472,37 @@ class LogManager():
             content=content
         )
         return log_string
+
+    def get_logs(self, channel, days):
+        """
+            Summary:
+                Returns a list of filenames for the logs in `channel`
+                for the past `days` days.
+
+            Args:
+                channel (discord.Channel):
+                                Channel whose logs are to be retrieved.
+                days (int):     Number of days to retrieve.
+
+            Returns:
+                (list(str)):    The names of the log files, relative to the
+                                top-level directory of the bot (whereever
+                                bot.py resides).
+        """
+        ch = self.channel_map[channel.id]
+
+        channel_dir = "logs/servers/{srv}-{srv_id}/{ch}-{chan_id}/".format(
+            srv=ch['server_name'],
+            srv_id=ch['server_id'],
+            ch=ch['name'],
+            ch_id=channel.id
+        )
+
+        files = os.listdir(channel_dir)
+        return_files = []
+        for i in range(0, days+1):
+            past_date_dt = dt.utcnow() - datetime.timedelta(days=days)
+            past_date_str = past_date_dt.strftime("%Y-%m-%d")
+            for logfile in files:
+                if (logfile.startswith(past_date_str)):
+                    return_files.append("{}/{}".format(channel_dir, logfile))
