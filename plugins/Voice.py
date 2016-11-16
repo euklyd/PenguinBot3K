@@ -89,7 +89,7 @@ class Voice(Plugin):
         self.player = await self.voice.create_ytdl_player(arguments[0])
         await self.delete_message(msg)
         self.player.start()
-        reply = ("**Now playing:** *{title}* [{min}:{sec}] by {uploader}\n"
+        reply = ("**Now playing:** *{title}* [{min:0>2.0f}:{sec:0>2d}] by {uploader}\n"
                  "*Requested by {user}*").format(
             title=msg.embeds[0]['title'],
             min=self.player.duration / 60,
