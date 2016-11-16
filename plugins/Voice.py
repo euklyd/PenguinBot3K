@@ -39,7 +39,7 @@ class Voice(Plugin):
         if (self.voice is not None):
             self.voice.disconnect()
 
-    @command("^vc joinvc <#([0-9]+)>", access=ACCESS['conductor'], name='joinvc',
+    @command("^vc joinvc <#([0-9]+)>$", access=ACCESS['conductor'], name='joinvc',
              doc_brief=("`vc joinvc #<channel>`: Joins the voice channel "
              "`<channel>`."))
     async def joinvc(self, msg, arguments):
@@ -73,7 +73,7 @@ class Voice(Plugin):
         self.player = self.voice.create_ffmpeg_player(tokusentai_src)
         self.player.start()
 
-    @command("^vc yt play (https:\/\/www\.youtube\.com\/watch\?v=.*)$",
+    @command("^vc yt play (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
              access=ACCESS['maestro'], name='yt play',
              doc_brief="`vc yt play <youtube_url>`: Plays the audio from a "
              "YouTube vido specified by `<youtube_url>`.")
@@ -86,8 +86,18 @@ class Voice(Plugin):
             return
         if (self.player is not None and self.player.is_playing()):
             self.player.stop()
-        self.player = self.voice.create_ytdl_player(arguments[0])
+        self.player = await self.voice.create_ytdl_player(arguments[0])
+        await self.delete_message(msg)
         self.player.start()
+        reply = ("**Now playing:** *{title}* [{min}:{sec}] by {uploader}\n"
+                 "*Requested by {user}*").format(
+            title=msg.embeds[0]['title'],
+            min=self.player.duration / 60,
+            sec=self.player.duration % 60,
+            uploader=msg.embeds[0]['author']['name'],
+            user=msg.author.name
+        )
+        await self.send_message(msg.channel, reply)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
              doc_brief="`vc pause`: Pause the music.")
