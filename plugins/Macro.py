@@ -1,6 +1,6 @@
 """
     Plugin Name : Macro
-    Plugin Version : 3.0
+    Plugin Version : 3.1
 
     Description:
         Transforms text into text with a macro applied.
@@ -73,6 +73,28 @@ class Macro(Plugin):
         self.logger.info(reply)
         await self.delete_message(msg)
         await self.send_whisper(msg.author, reply)
+
+    @command("^cloud$", access=100, name='cloud',
+             doc_brief="`cloud`: Prints out the dankest of ☁ memes")
+    async def cloud(self, msg, arguments):
+        cloudcopypasta = (
+            "║\\\n"
+            "║▒\\  IT'S DANGEROUS\n"
+            "║▒▒\\\n"
+            "║░▒║ TO LOSE GAME 1,\n"
+            "║░▒║\n"
+            "║░▒║ TAKE THIS!\n"
+            "║░▒║\n"
+            "║░▒║\n"
+            "║░▒║\n"
+            "║░▒║\n"
+            "║░▒║\n"
+            "▓▓▓▓\n"
+            "[█▓]\n"
+            "[█▓]\n"
+            "[█▓]"
+        )
+        await self.send_message(msg.channel, cloudcopypasta)
 
     @command("^waddle$", access=100, name='waddle',
              doc_brief=(u"`waddle`: Prints out the dankest of \U0001F427 "
