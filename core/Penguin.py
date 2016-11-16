@@ -82,7 +82,11 @@ class PenguinBot(discord.Client):
                 None
         """
         for plugin in config.plugins:
-            self.plugin.unload(plugin)
+            self.loop.run_until_complete(
+                self.plugin.unload(plugin)
+            )
+        # for plugin in config.plugins:
+        #     self.plugin.unload(plugin)
 
         self.logout()
 

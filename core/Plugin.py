@@ -44,7 +44,7 @@ class Plugin(object):
         """
         pass
 
-    def deactivate(self):
+    async def deactivate(self):
         """
             Summary:
                 This method is invoked when a plugin is disabled.

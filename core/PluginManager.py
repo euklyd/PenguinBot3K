@@ -169,7 +169,7 @@ class PluginManager():
         }
         self.logger.info("Loaded plugin \"" + plugin.name + "\"")
 
-    def unload(self, plugin_name):
+    async def unload(self, plugin_name):
         """
             Summary:
                 Unloads a plugin,
@@ -193,7 +193,7 @@ class PluginManager():
         clazz = plugin.__class__.__name__
 
         if hasattr(plugin, "deactivate"):
-            plugin.deactivate()
+            await plugin.deactivate()
 
         # Unregister plugin commands and events
         for name, callback in inspect.getmembers(plugin, inspect.ismethod):
