@@ -53,7 +53,8 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
-        self.log_manager = LogManager(self)
+        if (self.config.channel_logging is True):
+            self.log_manager = LogManager(self)
 
         # Setup connection
         self.connector = self.load_connector(self)
@@ -98,7 +99,8 @@ class PenguinBot(discord.Client):
             Inherited from discord.Client.
         """
         self.logger.info("Connected to Discord")
-        self.log_manager.update_info()
+        if (self.config.channel_logging is True):
+            self.log_manager.update_info()
 
         await self.load_plugins()
 
@@ -186,7 +188,10 @@ class PenguinBot(discord.Client):
 
             Inherited from discord.Client.
         """
-        self.log_manager.update_channel(after)
+        if (self.config.channel_logging is True):
+            self.log_manager.update_channel(after)
+        else:
+            pass
 
     def setup_logger(self):
         """
