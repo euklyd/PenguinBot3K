@@ -29,8 +29,8 @@ ACCESS = {
 class Voice(Plugin):
     async def activate(self):
         # This shouldn't be needed; Linux should load the lib automatically.
-        # discord.opus.load_opus(//some lib name)
-        # discord.opus.load_opus("/Users/et/Documents/Code/virtualenv/py_standard/lib/python3.5/site-packages/discord/bin/libopus-0.x64.dll")
+        # discord.opus.load_opus("libopus-0.x64.dll")
+        discord.opus.load_opus("/usr/lib/x86_64-linux-gnu/libopus.so.0")
         self.voice = None
         self.player = None
         pass
@@ -39,15 +39,15 @@ class Voice(Plugin):
         if (self.voice is not None):
             self.voice.disconnect()
 
-    @command("^joinvc <#([0-9]+)>", access=ACCESS['conductor'], name='joinvc',
-             doc_brief=("`joinvc #<channel>`: Joins the voice channel "
+    @command("^vc joinvc <#([0-9]+)>", access=ACCESS['conductor'], name='joinvc',
+             doc_brief=("`vc joinvc #<channel>`: Joins the voice channel "
              "`<channel>`."))
     async def joinvc(self, msg, arguments):
         # vc = await self.core.get_channel(arguments[0])
         vc = self.core.get_channel(arguments[0])
         try:
             if (self.voice is not None and self.voice.is_connected()):
-                await self.core.move_to(vc)
+                await self.voice.move_to(vc)
             else:
                 self.voice = await self.core.join_voice_channel(vc)
         except discord.InvalidArgument:
@@ -56,10 +56,10 @@ class Voice(Plugin):
                 "**ERROR:** The channel you specified is not a voice channel."
             )
 
-    @command("^tokusentai|TOKUSENTAI|\*\*TOKUSENTAI\*\*$",
-             access=ACCESS['conductor'], name='joinvc',
-             doc_brief=("`tokusentai`: Tokusentai\t*Tokusentai*\tTOKUSENTAI\t"
-             "**TOKUSENTAI**"))
+    @command("^vc tokusentai|TOKUSENTAI|\*\*TOKUSENTAI\*\*$",
+             access=ACCESS['maestro'], name='tokusentai',
+             doc_brief=("`vc tokusentai`: Tokusentai\t*Tokusentai*\t"
+             "TOKUSENTAI\t**TOKUSENTAI**"))
     async def tokusentai(self, msg, arguments):
         if (self.voice is None or self.voice.is_connected() is False):
             await self.send_message(
@@ -67,6 +67,35 @@ class Voice(Plugin):
                 "**ERROR:** I'm not connected to voice right now."
             )
             return
+        if (self.player.is_playing()):
+            self.player.stop()
         tokusentai_src = "resources/music/05-sanjou-ginyu-tokusentai.mp3"
         self.player = self.voice.create_ffmpeg_player(tokusentai_src)
         self.player.start()
+
+    @command("^vc pause$", access=ACCESS['maestro'], name='pause',
+             doc_brief="`vc pause`: Pause the music.")
+    async def pause(self, msg, arguments):
+        if (self.voice is None or self.voice.is_connected() is False):
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** I'm not connected to voice right now."
+            )
+        elif (self.player.is_playing()):
+            self.player.pause()
+        else:
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** I'm not even playing anything right now smh"
+            )
+
+    @command("^vc resume$", access=ACCESS['maestro'], name='resume',
+             doc_brief="`vc resume`: Resume the music.")
+    async def resume(self, msg, arguments):
+        if (self.voice is None or self.voice.is_connected() is False):
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** I'm not connected to voice right now."
+            )
+        else:
+            self.player.resume()
