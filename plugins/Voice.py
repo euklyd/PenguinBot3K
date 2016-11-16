@@ -67,7 +67,7 @@ class Voice(Plugin):
                 "**ERROR:** I'm not connected to voice right now."
             )
             return
-        if (self.player.is_playing()):
+        if (self.player is not None and self.player.is_playing()):
             self.player.stop()
         tokusentai_src = "resources/music/05-sanjou-ginyu-tokusentai.mp3"
         self.player = self.voice.create_ffmpeg_player(tokusentai_src)
