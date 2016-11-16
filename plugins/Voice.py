@@ -73,6 +73,22 @@ class Voice(Plugin):
         self.player = self.voice.create_ffmpeg_player(tokusentai_src)
         self.player.start()
 
+    @command("^vc yt play (https:\/\/www\.youtube\.com\/watch\?v=.*)$",
+             access=ACCESS['maestro'], name='yt play',
+             doc_brief="`vc yt play <youtube_url>`: Plays the audio from a "
+             "YouTube vido specified by `<youtube_url>`.")
+    async def yt_play(self, msg, arguments):
+        if (self.voice is None or self.voice.is_connected() is False):
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** I'm not connected to voice right now."
+            )
+            return
+        if (self.player is not None and self.player.is_playing()):
+            self.player.stop()
+        self.player = self.voice.create_ytdl_player(arguments[0])
+        self.player.start()
+
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
              doc_brief="`vc pause`: Pause the music.")
     async def pause(self, msg, arguments):

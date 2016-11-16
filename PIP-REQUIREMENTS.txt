@@ -4,3 +4,4 @@ requests==2.9.1
 websocket-client==0.35.0
 tabulate==0.7.5
 discord.py
+youtube_dl
