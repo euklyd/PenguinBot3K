@@ -106,7 +106,6 @@ class Voice(Plugin):
              doc_brief="`vc yt queue <youtube_url>`: Queues the audio from a "
              "YouTube video specified by `<youtube_url>`.")
     async def yt_queue(self, msg, arguments):
-        await self.delete_message(msg)
         try:
             response = await self.music_manager.yt_add(
                 arguments[0], msg.embeds[0], msg.author, msg.channel
@@ -117,6 +116,7 @@ class Voice(Plugin):
                 msg.channel,
                 "ERROR: Error in parsing the video embed; please try again"
             )
+        await self.delete_message(msg)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
              doc_brief="`vc pause`: Pause the music.")
