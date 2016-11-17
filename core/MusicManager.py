@@ -141,10 +141,10 @@ class MusicManager():
                 yt_url, after=self.advance_queue
             )
         except:
-            return "ERROR: Couldn't proncess request"
+            return {'type': "error", 'response': "ERROR: Couldn't process request"}
         else:
             announcement = ("**Now playing:** *{title}* "
-                            "[{min:0>2.0f}:{sec:0>2d}] by {uploader}\n"
+                            "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
                             "*Requested by {user}*").format(
                 title=song.title,
                 min=player.duration / 60,
@@ -155,6 +155,16 @@ class MusicManager():
             playlist_entry = PlaylistEntry(player, announcement, song)
             # self.yt_queue.put(song)
             self.yt_queue.put(playlist_entry)
+            response = ("Added *{title}* [{min:0>2.0f}:{sec:0>2d}], "
+                        "by {uploader} to the playlist\n"
+                        "*Requested by {user}*").format(
+                title=song.title,
+                min=player.duration / 60,
+                sec=player.duration % 60,
+                uploader=song.uploader,
+                user=song.requestor.name
+            )
+            return {'type': "success", 'response': response}
 
     # async def play_yt_song(self):
     #     if (self.yt_queue.empty is False):
