@@ -108,6 +108,7 @@ class MusicManager():
             else:
                 self.logger.info("playlist_loop: playing next song")
                 self.play_next.clear()
+                self.logger.info("getting next song")
                 self.current_song = await self.yt_queue.get()
                 await self.core.send_message(
                     self.current_song.channel, self.current_song.announcement
