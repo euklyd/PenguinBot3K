@@ -44,7 +44,7 @@ class YouTubeSong():
 
 
 class PlaylistEntry():
-    def __int__(self, player, announcement, yt_song):
+    def __init__(self, player, announcement, yt_song):
         self.player = player
         self.announcement = announcement
         self.yt_song = yt_song
