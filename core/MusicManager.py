@@ -178,7 +178,7 @@ class MusicManager():
     async def resume(self):
         if (self.is_connected() is False):
             return "**ERROR:** I'm not connected to voice right now."
-        else if (self.is_active() is False):
+        elif (self.is_active() is False):
             # self.player.resume()
             self.current_song.player.resume()
             # self.paused = False
