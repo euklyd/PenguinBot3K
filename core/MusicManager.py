@@ -115,8 +115,8 @@ class MusicManager():
     def close(self):
         if (self.voice is not None):
             self.voice.disconnect()
-        self.yt_loop.stop()
-        self.yt_loop.close()
+        # self.yt_loop.stop()
+        # self.yt_loop.close()
 
     async def yt_add(self, yt_url, yt_embed, requestor, channel):
         song = YouTubeSong(
@@ -136,11 +136,11 @@ class MusicManager():
             announcement = ("**Now playing:** *{title}* "
                             "[{min:0>2.0f}:{sec:0>2d}] by {uploader}\n"
                             "*Requested by {user}*").format(
-                title=yt_vid.title,
+                title=song.title,
                 min=player.duration / 60,
                 sec=player.duration % 60,
-                uploader=yt_vid.uploader,
-                user=yt_vid.requestor.name
+                uploader=song.uploader,
+                user=song.requestor.name
             )
             playlist_entry = PlaylistEntry(player, announcement, song)
             # self.yt_queue.put(song)
