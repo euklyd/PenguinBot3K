@@ -31,6 +31,7 @@ from core.Database import Database
 from core.Event import EventManager
 from core.PluginManager import PluginManager
 from core.LogManager import LogManager
+from core.MusicManager import MusicManager
 
 from imp import load_module, find_module
 from sys import stdout, path, exit
@@ -56,6 +57,9 @@ class PenguinBot(discord.Client):
         if (self.config.channel_logging is True):
             self.log_manager = LogManager(self)
 
+        if ("Voice" in self.config.plugins):
+            self.music_manager = MusicManager(self)
+
         # Setup connection
         self.connector = self.load_connector(self)
         self.last_update = time.time()
@@ -69,6 +73,7 @@ class PenguinBot(discord.Client):
         self.loop.run_until_complete(
             self.start(self.config.connector_options['token'])
         )
+        self.loop.close()
 
     def exit(self):
         """
