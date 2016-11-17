@@ -97,13 +97,17 @@ class MusicManager():
             return not self.current_song.player.is_done()
 
     def advance_queue(self):
+        self.logger.info("advancing queue")
         self.core.loop.call_soon_threadsafe(self.play_next.set)
 
     async def playlist_loop(self):
         while (True):
+            # self.logger.info("playlist_loop looped")
             if (self.is_connected() is False):
+                self.logger.info("playlist_loop: slept, not connected")
                 await asyncio.sleep(1)
             else:
+                self.logger.info("playlist_loop: playing next song")
                 self.play_next.clear()
                 self.current_song = await self.yt_queue.get()
                 await self.core.send_message(
@@ -187,6 +191,7 @@ class MusicManager():
 
     async def skip(self):
         if (self.is_active):
+            self.logger.info("skipping song")
             self.current_song.player.stop()
 
     async def join_voice_channel(self, channel):
