@@ -116,7 +116,8 @@ class MusicManager():
                 self.current_song = self.yt_queue.get()
                 self.logger.info("got next song")
                 await self.core.send_message(
-                    self.current_song.channel, self.current_song.announcement
+                    self.current_song.yt_song.channel,
+                    self.current_song.announcement
                 )
                 self.current_song.player.start()
                 await self.play_next.wait()
