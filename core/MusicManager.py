@@ -84,14 +84,13 @@ class MusicManager():
 
     def is_connected(self):
         if (self.voice is None or
-                self.current_song is None or
                 self.voice.is_connected() is False):
             return False
         else:
             return True
 
     def is_active(self):
-        if (self.is_connected is False):
+        if (self.is_connected is False or self.current_song is None):
             return False
         else:
             return not self.current_song.player.is_done()
