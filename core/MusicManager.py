@@ -105,11 +105,15 @@ class MusicManager():
             if (self.is_connected() is False):
                 self.logger.info("playlist_loop: slept, not connected")
                 await asyncio.sleep(1)
+            elif (self.yt_queue.empty()):
+                self.logger.info("playlist_loop: queue is empty, sleeping")
+                await asyncio.sleep(1)
             else:
                 self.logger.info("playlist_loop: playing next song")
                 self.play_next.clear()
                 self.logger.info("getting next song")
                 self.current_song = await self.yt_queue.get()
+                self.logger.info("got next song")
                 await self.core.send_message(
                     self.current_song.channel, self.current_song.announcement
                 )
