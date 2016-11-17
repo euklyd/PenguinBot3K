@@ -76,7 +76,7 @@ class Voice(Plugin):
     @command("^vc yt play (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
              access=ACCESS['maestro'], name='yt play',
              doc_brief="`vc yt play <youtube_url>`: Plays the audio from a "
-             "YouTube vido specified by `<youtube_url>`.")
+             "YouTube video specified by `<youtube_url>`.")
     async def yt_play(self, msg, arguments):
         if (self.voice is None or self.voice.is_connected() is False):
             await self.send_message(
