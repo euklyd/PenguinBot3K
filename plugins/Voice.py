@@ -116,7 +116,8 @@ class Voice(Plugin):
         except IndexError:
             await self.send_message(
                 msg.channel,
-                "ERROR: Error in parsing the video embed; please try again"
+                ("**ERROR:** Error in parsing the video embed; please try again\n"
+                 "Request: `{}`").format(msg.content)
             )
         await self.delete_message(msg)
 
@@ -161,8 +162,14 @@ class Voice(Plugin):
     @command("^vc playlist$", access=-1, name='playlist',
              doc_brief="`vc playlist`: Show current playlist.")
     async def show_playlist(self, msg, arguments):
-        playlist = await self.music_manager.list_playlist()
-        reply = "**Current YouTube Playlist:**"
+        current_song, playlist = await self.music_manager.list_playlist()
+        reply = "**Current YouTube Playlist:**\n"
+        reply += ("🔊 ** -*{song}***, by {uploader} "
+                  "(requested by {requestor})\n").format(
+            song=current_song.yt_song.title,
+            uploader=current_song.yt_song.uploader,
+            requestor=current_song.yt_song.requestor
+        )
         for song in playlist:
             reply += ("** -*{song}***, by {uploader} "
                       "(requested by {requestor})\n").format(
@@ -171,6 +178,12 @@ class Voice(Plugin):
                 requestor=song.yt_song.requestor
             )
         await self.send_message(msg.channel, reply)
+
+    @command("^vc url$", access=-1, name='show url',
+             doc_brief="`vc url`: Shows the URL of the current song.")
+    async def show_url(self, msg, arguments):
+        url = self.music_manager.get_current_url
+        self.send_message(msg.channel, "Current URL: {}".format(url))
 
     @command("^vc reset$", access=ACCESS['composer'], name='reset',
              doc_brief="`vc reset`: Resets the entire music module.")

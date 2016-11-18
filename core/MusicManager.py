@@ -60,7 +60,7 @@ class PlaylistEntry():
                 self.yt_song.url, after=after
             )
         except:
-            error_msg = "ERROR: Couldn't process request for {}".format(
+            error_msg = "**ERROR:** Couldn't process request for {}".format(
                 self.yt_song.title
             )
             return {'type': "error", 'response': error_msg}
@@ -255,7 +255,12 @@ class MusicManager():
             self.current_song.player.stop()
 
     async def list_playlist(self):
-        return list(self.yt_queue.queue)
+        # playlist = list(self.yt_queue.queue)
+        # playlist.insert(0, self.current_song)
+        return self.current_song, list(self.yt_queue.queue)
+
+    def get_current_url(self):
+        return self.current_song.yt_song.url
 
     async def join_voice_channel(self, channel):
         if (self.voice is not None and self.voice.is_connected()):
