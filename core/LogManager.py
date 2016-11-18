@@ -192,7 +192,7 @@ class LogManager():
                 )
             ):
                 # Move the logs to the new directory.
-                shutil.move(
+                shutil.copy(
                     "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}/{log}".format(    # noqa E501
                         old_server=old_channel['server_name'],
                         srv_id=old_channel['server_id'],
@@ -208,14 +208,14 @@ class LogManager():
                     )
                 )
             # Delete the old directory.
-            os.rmdir(
-                "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
-                    old_server=old_channel['server_name'],
-                    srv_id=old_channel['server_id'],
-                    old_channel=old_channel['name'],
-                    ch_id=channel.id
-                )
-            )
+            # os.rmdir(
+            #     "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
+            #         old_server=old_channel['server_name'],
+            #         srv_id=old_channel['server_id'],
+            #         old_channel=old_channel['name'],
+            #         ch_id=channel.id
+            #     )
+            # )
 
             # Update channel map.
             # """update channel here"""
