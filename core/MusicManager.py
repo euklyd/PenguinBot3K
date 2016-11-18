@@ -118,7 +118,7 @@ class MusicManager():
     async def close(self):
         self.logger.info("Closing MusicManager")
         if (self.voice is not None):
-            self.voice.disconnect()
+            await self.voice.disconnect()
         self.reset = True
         await self.skip()
         await self.loop_closed
