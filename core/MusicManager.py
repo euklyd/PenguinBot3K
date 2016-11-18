@@ -54,7 +54,7 @@ class PlaylistEntry():
         self.announcement = None
         self.yt_song = yt_song
 
-    async def load(voice, after=None):
+    async def load(voice, after):
         try:
             self.player = await voice.create_ytdl_player(
                 self.yt_song.url, after=after
@@ -160,7 +160,8 @@ class MusicManager():
                 self.current_song = self.yt_queue.get()
                 self.logger.debug("got next song")
                 announcement = await self.current_song.load(
-                    voice=self.voice, after=self.advance_queue
+                    # voice=self.voice, after=self.advance_queue
+                    self.voice, self.advance_queue
                 )
                 await self.core.send_message(
                     self.current_song.yt_song.channel,
