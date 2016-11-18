@@ -212,4 +212,14 @@ class Voice(Plugin):
                 type(self.music_manager).__name__)
         )
         await self.music_manager.close()
+        await self.send_message(
+            msg.channel,
+            "Successfully closed {}".format(
+                type(self.music_manager).__name__)
+        )
         self.music_manager.start()
+        await self.send_message(
+            msg.channel,
+            "Successfully restarted {}".format(
+                type(self.music_manager).__name__)
+        )
