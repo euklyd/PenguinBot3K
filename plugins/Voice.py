@@ -25,6 +25,8 @@ ACCESS = {
     'composer': 900
 }
 
+# module_trigger = "vc "
+
 
 class Voice(Plugin):
     async def activate(self):
@@ -102,7 +104,7 @@ class Voice(Plugin):
     #     await self.send_message(msg.channel, reply)
 
     @command("^vc yt queue (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
-             access=ACCESS['maestro'], name='yt queue',
+             access=-1, name='yt queue',
              doc_brief="`vc yt queue <youtube_url>`: Queues the audio from a "
              "YouTube video specified by `<youtube_url>`.")
     async def yt_queue(self, msg, arguments):
@@ -155,3 +157,23 @@ class Voice(Plugin):
              doc_brief="`vc skip`: Move to next song in the playlist.")
     async def skip(self, msg, arguments):
         await self.music_manager.skip()
+
+    @command("^vc playlist$", access=-1, name='playlist',
+             doc_brief="`vc playlist`: Show current playlist.")
+    async def show_playlist(self, msg, arguments):
+        playlist = self.music_manager.list_playlist()
+        reply = "**Current YouTube Playlist:**"
+        for song in playlist:
+            reply += ("** -*{song}***, by {uploader} "
+                      "(requested by {requestor})\n").format(
+                song=song.yt_song.title,
+                uploader=song.yt_song.uploader,
+                requestor=song.yt_song.requestor
+            )
+        await self.send_message(msg.channel, reply)
+
+    @command("^vc reset$", access=ACCESS['composer'], name='reset',
+             doc_brief="`vc reset`: Resets the entire music module.")
+    async def reset(self, msg, arguments):
+        await self.music_manager.close()
+        self.music_manager.start()
