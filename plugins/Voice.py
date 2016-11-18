@@ -207,7 +207,9 @@ class Voice(Plugin):
              doc_brief="`vc reset`: Resets the entire music module.")
     async def reset(self, msg, arguments):
         self.send_message(
-            msg.channel, "Attempting to restart {}".format(self.__name__)
+            msg.channel,
+            "Attempting to restart {}".format(
+                type(self.music_manager).__name__)
         )
         await self.music_manager.close()
         self.music_manager.start()
