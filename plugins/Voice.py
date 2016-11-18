@@ -206,7 +206,7 @@ class Voice(Plugin):
     @command("^vc reset$", access=ACCESS['composer'], name='reset',
              doc_brief="`vc reset`: Resets the entire music module.")
     async def reset(self, msg, arguments):
-        self.send_message(
+        await self.send_message(
             msg.channel,
             "Attempting to restart {}".format(
                 type(self.music_manager).__name__)
