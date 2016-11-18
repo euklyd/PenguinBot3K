@@ -44,11 +44,37 @@ class YouTubeSong():
 
 
 class PlaylistEntry():
-    def __init__(self, player, announcement, yt_song):
-        self.player = player
-        self.announcement = announcement
+    # def __init__(self, player, announcement, yt_song):
+    #     self.player = player
+    #     self.announcement = announcement
+    #     self.yt_song = yt_song
+
+    def __init__(self, yt_song):
+        self.player = None
+        self.announcement = None
         self.yt_song = yt_song
 
+    def load(after=None):
+        try:
+            self.player = await self.voice.create_ytdl_player(
+                self.yt_song.url, after=after
+            )
+        except:
+            error_msg = "ERROR: Couldn't process request for {}".format(
+                self.yt_song.title
+            )
+            return {'type': "error", 'response': error_msg}
+        else:
+            self.announcement = ("**Now playing:** *{title}* "
+                                 "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
+                                 "*Requested by {user}*").format(
+                title=song.title,
+                min=self.player.duration / 60,
+                sec=self.player.duration % 60,
+                uploader=self.yt_song.uploader,
+                user=self.yt_song.requestor.name
+            )
+            return {'type': "success", 'response': announcement}
 
 class MusicManager():
     def __init__(self, core):
@@ -56,19 +82,20 @@ class MusicManager():
         self.logger = logging.getLogger("core.MusicManager")
         discord.opus.load_opus("/usr/lib/x86_64-linux-gnu/libopus.so.0")
 
-        self.voice = None
-        self.current_song = None
-        # self.player = None
-        # self.paused = False
-        self.yt_queue = queue.Queue()
-        # self.yt_loop = asyncio.get_event_loop()
+        # self.voice = None
+        # self.current_song = None
+        # # self.player = None
+        # # self.paused = False
+        # self.yt_queue = queue.Queue()
+        # # self.yt_loop = asyncio.get_event_loop()
+        #
+        # self.reset = False
+        # self.loop_closed = asyncio.Future()
+        # self.play_next = asyncio.Event()
+        #
+        # self.core.loop.create_task(self.playlist_loop())
 
-        self.play_next = asyncio.Event()
-
-        self.core.loop.create_task(self.playlist_loop())
-
-        # self.yt_loop.run_in_executor(None, target=loop_player)
-        # self.logger.info("Started MusicManager event loop")
+        self.start()
 
     # async def loop_player(self):
     #     while (true):
@@ -78,9 +105,24 @@ class MusicManager():
     #                 self.player.is_playing() is False):
     #             await self.play_yt_song()
 
-    def close(self):
+    def start(self):
+        self.logger.info("Starting MusicManager")
+        self.voice = None
+        self.current_song = None
+        self.yt_queue = queue.Queue()
+        self.reset = False
+        self.loop_closed = asyncio.Future()
+        self.play_next = asyncio.Event()
+        self.core.loop.create_task(self.playlist_loop())
+
+    async def close(self):
+        self.logger.info("Closing MusicManager")
         if (self.voice is not None):
             self.voice.disconnect()
+        self.reset = True
+        self.skip()
+        await self.loop_closed
+        self.logger.info("playlist_loop finished")
 
     def is_connected(self):
         if (self.voice is None or
@@ -99,10 +141,12 @@ class MusicManager():
         self.logger.info("advancing queue")
         self.core.loop.call_soon_threadsafe(self.play_next.set)
 
-    async def playlist_loop(self):
+    async def playlist_loop(self, future):
         while (True):
             # self.logger.info("playlist_loop looped")
-            if (self.is_connected() is False):
+            if (self.reset):
+                break
+            elif (self.is_connected() is False):
                 self.logger.debug("playlist_loop: slept, not connected")
                 await asyncio.sleep(1)
             elif (self.yt_queue.empty()):
@@ -115,18 +159,18 @@ class MusicManager():
                 # self.current_song = await self.yt_queue.get()
                 self.current_song = self.yt_queue.get()
                 self.logger.debug("got next song")
+                announcement = self.current_song.load(after=self.advance_queue)
                 await self.core.send_message(
                     self.current_song.yt_song.channel,
-                    self.current_song.announcement
+                    # self.current_song.announcement
+                    announcement['response']
                 )
-                self.current_song.player.start()
-                await self.play_next.wait()
-
-    def close(self):
-        if (self.voice is not None):
-            self.voice.disconnect()
-        # self.yt_loop.stop()
-        # self.yt_loop.close()
+                if (announcement['type'] == "error"):
+                    pass
+                else:
+                    self.current_song.player.start()
+                    await self.play_next.wait()
+        future.set_result('closed')
 
     async def yt_add(self, yt_url, yt_embed, requestor, channel):
         song = YouTubeSong(
@@ -136,35 +180,33 @@ class MusicManager():
             requestor=requestor,
             channel=channel,
         )
-        try:
-            player = await self.voice.create_ytdl_player(
-                yt_url, after=self.advance_queue
-            )
-        except:
-            return {'type': "error", 'response': "ERROR: Couldn't process request"}
-        else:
-            announcement = ("**Now playing:** *{title}* "
-                            "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
-                            "*Requested by {user}*").format(
-                title=song.title,
-                min=player.duration / 60,
-                sec=player.duration % 60,
-                uploader=song.uploader,
-                user=song.requestor.name
-            )
-            playlist_entry = PlaylistEntry(player, announcement, song)
-            # self.yt_queue.put(song)
-            self.yt_queue.put(playlist_entry)
-            response = ("Added *{title}* [{min:0>2.0f}:{sec:0>2d}], "
-                        "by {uploader} to the playlist\n"
-                        "*Requested by {user}*").format(
-                title=song.title,
-                min=player.duration / 60,
-                sec=player.duration % 60,
-                uploader=song.uploader,
-                user=song.requestor.name
-            )
-            return {'type': "success", 'response': response}
+        # try:
+        #     player = await self.voice.create_ytdl_player(
+        #         yt_url, after=self.advance_queue
+        #     )
+        # except:
+        #     error_msg = "ERROR: Couldn't process request"
+        #     return {'type': "error", 'response': error_msg}
+        # else:
+        #     announcement = ("**Now playing:** *{title}* "
+        #                     "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
+        #                     "*Requested by {user}*").format(
+        #         title=song.title,
+        #         min=player.duration / 60,
+        #         sec=player.duration % 60,
+        #         uploader=song.uploader,
+        #         user=song.requestor.name
+        #     )
+        playlist_entry = PlaylistEntry(song)
+        # self.yt_queue.put(song)
+        self.yt_queue.put(playlist_entry)
+        response = ("Added *{title}*, by {uploader} to the playlist\n"
+                    "*Requested by {user}*").format(
+            title=song.title,
+            uploader=song.uploader,
+            user=song.requestor.name
+        )
+        return {'type': "success", 'response': response}
 
     # async def play_yt_song(self):
     #     if (self.yt_queue.empty is False):
@@ -209,6 +251,9 @@ class MusicManager():
         if (self.is_active):
             self.logger.info("skipping song")
             self.current_song.player.stop()
+
+    async def list_playlist(self):
+        return list(self.yt_queue.queue)
 
     async def join_voice_channel(self, channel):
         if (self.voice is not None and self.voice.is_connected()):
