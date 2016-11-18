@@ -68,7 +68,7 @@ class PlaylistEntry():
             self.announcement = ("**Now playing:** *{title}* "
                                  "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
                                  "*Requested by {user}*").format(
-                title=song.title,
+                title=yt_song.title,
                 min=self.player.duration / 60,
                 sec=self.player.duration % 60,
                 uploader=self.yt_song.uploader,
