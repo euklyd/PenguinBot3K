@@ -56,7 +56,7 @@ class PlaylistEntry():
 
     def load(voice, after=None):
         try:
-            self.player = await self.voice.create_ytdl_player(
+            self.player = await voice.create_ytdl_player(
                 self.yt_song.url, after=after
             )
         except:
