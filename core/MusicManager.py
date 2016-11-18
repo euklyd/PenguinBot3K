@@ -74,7 +74,7 @@ class PlaylistEntry():
                 uploader=self.yt_song.uploader,
                 user=self.yt_song.requestor.name
             )
-            return {'type': "success", 'response': announcement}
+            return {'type': "success", 'response': self.announcement}
 
 class MusicManager():
     def __init__(self, core):
