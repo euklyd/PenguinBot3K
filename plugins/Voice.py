@@ -161,7 +161,7 @@ class Voice(Plugin):
     @command("^vc playlist$", access=-1, name='playlist',
              doc_brief="`vc playlist`: Show current playlist.")
     async def show_playlist(self, msg, arguments):
-        playlist = self.music_manager.list_playlist()
+        playlist = await self.music_manager.list_playlist()
         reply = "**Current YouTube Playlist:**"
         for song in playlist:
             reply += ("** -*{song}***, by {uploader} "
@@ -175,5 +175,8 @@ class Voice(Plugin):
     @command("^vc reset$", access=ACCESS['composer'], name='reset',
              doc_brief="`vc reset`: Resets the entire music module.")
     async def reset(self, msg, arguments):
+        self.send_message(
+            msg.channel, "Attempting to restart {}".format(self.__name__)
+        )
         await self.music_manager.close()
         self.music_manager.start()

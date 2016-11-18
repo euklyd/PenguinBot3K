@@ -120,7 +120,7 @@ class MusicManager():
         if (self.voice is not None):
             self.voice.disconnect()
         self.reset = True
-        self.skip()
+        await self.skip()
         await self.loop_closed
         self.logger.info("playlist_loop finished")
 
