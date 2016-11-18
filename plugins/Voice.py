@@ -182,19 +182,22 @@ class Voice(Plugin):
     async def show_playlist(self, msg, arguments):
         current_song, playlist = await self.music_manager.list_playlist()
         reply = "**Current YouTube Playlist:**\n"
-        reply += ("🔊 ** -*{song}***, by {uploader} "
-                  "(requested by {requestor})\n").format(
-            song=current_song.yt_song.title,
-            uploader=current_song.yt_song.uploader,
-            requestor=current_song.yt_song.requestor
-        )
-        for song in playlist:
-            reply += ("** -*{song}***, by {uploader} "
+        if (current_song is not None):
+            reply += ("🔊 ** -*{song}***, by {uploader} "
                       "(requested by {requestor})\n").format(
-                song=song.yt_song.title,
-                uploader=song.yt_song.uploader,
-                requestor=song.yt_song.requestor
+                song=current_song.yt_song.title,
+                uploader=current_song.yt_song.uploader,
+                requestor=current_song.yt_song.requestor
             )
+            for song in playlist:
+                reply += ("** -*{song}***, by {uploader} "
+                          "(requested by {requestor})\n").format(
+                    song=song.yt_song.title,
+                    uploader=song.yt_song.uploader,
+                    requestor=song.yt_song.requestor
+                )
+        else:
+            reply += "Playlist is empty!"
         await self.send_message(msg.channel, reply)
 
     @command("^vc url$", access=-1, name='show url',

@@ -263,7 +263,8 @@ class MusicManager():
         return self.current_song.yt_song.url
 
     async def join_voice_channel(self, channel):
-        if (self.voice is not None and self.voice.is_connected()):
+        # if (self.voice is not None and self.voice.is_connected()):
+        if (self.voice is not None):
             await self.voice.move_to(channel)
         else:
             self.voice = await self.core.join_voice_channel(channel)
