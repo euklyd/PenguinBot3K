@@ -125,6 +125,7 @@ class Voice(Plugin):
             )
         await self.delete_message(msg)
         if (error_msg is not None):
+            ## Why doesn't this work???
             await asyncio.sleep(30)
             await self.delete_message(error_msg)
 
@@ -199,7 +200,7 @@ class Voice(Plugin):
     @command("^vc url$", access=-1, name='show url',
              doc_brief="`vc url`: Shows the URL of the current song.")
     async def show_url(self, msg, arguments):
-        url = self.music_manager.get_current_url
+        url = self.music_manager.get_current_url()
         await self.send_message(msg.channel, "Current URL: {}".format(url))
 
     @command("^vc reset$", access=ACCESS['composer'], name='reset',
