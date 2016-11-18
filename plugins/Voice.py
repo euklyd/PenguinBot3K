@@ -18,6 +18,7 @@ from core.Plugin import Plugin
 from core.Decorators import *
 
 import discord
+import re
 
 ACCESS = {
     'maestro': 200,
@@ -116,26 +117,44 @@ class Voice(Plugin):
         except IndexError:
             await self.send_message(
                 msg.channel,
-                ("**ERROR:** Error in parsing the video embed; please try again\n"
+                ("**ERROR:** Error in parsing the video embed; "
+                 "please try again\n"
                  "Request: `{}`").format(msg.content)
             )
+        await self.delete_message(msg)
+
+    @command("^vc yt bulk queue (.*)$", access=-1, name='yt bulk queue',
+             doc_brief="`vc yt bulk queue <youtube_url1> <youtube_url2> ...`: "
+             "Queues the audio from multiple YouTube videos.")
+    async def yt_bulk_queue(self, msg, arguments):
+        urls = arguments[0].split(' ')
+        valid = []
+        yt_regex = re.compile()
+        for url in urls:
+            m = yt_regex.match(url)
+            if (m is not None):
+                valid.append(url)
+        if (len(valid) != len(embeds)):
+            self.send_message("something went wrong with parsing the embeds")
+        else:
+            for i in range(0, len(valid)):
+                try:
+                    response = await self.music_manager.yt_add(
+                        arguments[i], msg.embeds[i], msg.author, msg.channel
+                    )
+                    await self.send_message(msg.channel, response['response'])
+                except IndexError:
+                    await self.send_message(
+                        msg.channel,
+                        ("**ERROR:** Error in parsing the video embed; "
+                         "please try again\n"
+                         "Request: `{}`").format(msg.content)
+                    )
         await self.delete_message(msg)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
              doc_brief="`vc pause`: Pause the music.")
     async def pause(self, msg, arguments):
-        # if (self.voice is None or self.voice.is_connected() is False):
-        #     await self.send_message(
-        #         msg.channel,
-        #         "**ERROR:** I'm not connected to voice right now."
-        #     )
-        # elif (self.player.is_playing()):
-        #     self.player.pause()
-        # else:
-        #     await self.send_message(
-        #         msg.channel,
-        #         "**ERROR:** I'm not even playing anything right now smh"
-        #     )
         error = await self.music_manager.pause()
         if (error is not None):
             await self.send_message(msg.channel, error)
@@ -143,13 +162,6 @@ class Voice(Plugin):
     @command("^vc resume$", access=ACCESS['maestro'], name='resume',
              doc_brief="`vc resume`: Resume the music.")
     async def resume(self, msg, arguments):
-        # if (self.voice is None or self.voice.is_connected() is False):
-        #     await self.send_message(
-        #         msg.channel,
-        #         "**ERROR:** I'm not connected to voice right now."
-        #     )
-        # else:
-        #     self.player.resume()
         error = await self.music_manager.resume()
         if (error is not None):
             await self.send_message(msg.channel, error)
