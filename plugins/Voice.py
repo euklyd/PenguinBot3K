@@ -21,9 +21,10 @@ import discord
 import re
 
 ACCESS = {
-    'maestro': 200,
+    'user':      100,
+    'maestro':   200,
     'conductor': 500,
-    'composer': 900
+    'composer':  900
 }
 
 # module_trigger = "vc "
@@ -109,21 +110,25 @@ class Voice(Plugin):
              doc_brief="`vc yt queue <youtube_url>`: Queues the audio from a "
              "YouTube video specified by `<youtube_url>`.")
     async def yt_queue(self, msg, arguments):
+        error_msg = None
         try:
             response = await self.music_manager.yt_add(
                 arguments[0], msg.embeds[0], msg.author, msg.channel
             )
             await self.send_message(msg.channel, response['response'])
         except IndexError:
-            await self.send_message(
+            error_msg = await self.send_message(
                 msg.channel,
                 ("**ERROR:** Error in parsing the video embed; "
                  "please try again\n"
                  "Request: `{}`").format(msg.content)
             )
         await self.delete_message(msg)
+        if (error_msg is not None):
+            await asyncio.sleep(30)
+            await self.delete_message(error_msg)
 
-    @command("^vc yt bulk queue (.*)$", access=-1, name='yt bulk queue',
+    @command("^vc yt bulk queue (.*)$", access=ACCESS['user'], name='yt bulk queue',
              doc_brief="`vc yt bulk queue <youtube_url1> <youtube_url2> ...`: "
              "Queues the audio from multiple YouTube videos.")
     async def yt_bulk_queue(self, msg, arguments):
@@ -195,7 +200,7 @@ class Voice(Plugin):
              doc_brief="`vc url`: Shows the URL of the current song.")
     async def show_url(self, msg, arguments):
         url = self.music_manager.get_current_url
-        self.send_message(msg.channel, "Current URL: {}".format(url))
+        await self.send_message(msg.channel, "Current URL: {}".format(url))
 
     @command("^vc reset$", access=ACCESS['composer'], name='reset',
              doc_brief="`vc reset`: Resets the entire music module.")
