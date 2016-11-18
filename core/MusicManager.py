@@ -113,7 +113,7 @@ class MusicManager():
         self.reset = False
         self.loop_closed = asyncio.Future()
         self.play_next = asyncio.Event()
-        self.core.loop.create_task(self.playlist_loop())
+        self.core.loop.create_task(self.playlist_loop(future=self.loop_closed))
 
     async def close(self):
         self.logger.info("Closing MusicManager")
