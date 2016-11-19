@@ -159,11 +159,12 @@ class PenguinBot(discord.Client):
             self.log_manager.log_message(msg)
         else:
             self.logger.info(
-                "Message Recieved: [Name:{}][UID:{}][CName:{}][CID:{}]: {}".format(  # noqa E501
-                    msg.author.name,
-                    msg.author.id,
-                    msg.channel.id,
-                    msg.channel.name,
+                ("Message Recieved: [Name:{uname}][UID:{uid}]"
+                 "[CName:{cname}][CID:{cid}]: {}").format(
+                    uname=msg.author.name,
+                    uid=msg.author.id,
+                    cname=msg.channel.name,
+                    cid=msg.channel.id,
                     msg.content
                 )
             )
