@@ -120,7 +120,7 @@ class MusicManager():
         if (self.voice is not None):
             await self.voice.disconnect()
         self.reset = True
-        if (self.is_active):
+        if (self.is_active()):
             await self.skip()
         await self.loop_closed
         self.logger.info("playlist_loop finished")
@@ -133,7 +133,7 @@ class MusicManager():
             return True
 
     def is_active(self):
-        self.logger.info(
+        self.logger.debug(
             "is_active: self.is_connected: {}, self.current_song: {}".format(
                 self.is_connected(), self.current_song)
         )
@@ -265,7 +265,7 @@ class MusicManager():
             return None
 
     async def skip(self):
-        if (self.is_active):
+        if (self.is_active()):
             self.logger.info("skipping song")
             self.current_song.player.stop()
 
