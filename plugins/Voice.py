@@ -48,14 +48,12 @@ class Voice(Plugin):
              doc_brief=("`vc joinvc #<channel>`: Joins the voice channel "
              "`<channel>`."))
     async def joinvc(self, msg, arguments):
-        # vc = await self.core.get_channel(arguments[0])
         vc = self.core.get_channel(arguments[0])
         try:
-            # if (self.voice is not None and self.voice.is_connected()):
-            #     await self.voice.move_to(vc)
-            # else:
-            #     self.voice = await self.core.join_voice_channel(vc)
             await self.music_manager.join_voice_channel(vc)
+            await self.send_message(
+                msg.channel, "Joined voice channel <#{}>".format(arguments[0])
+            )
         except discord.InvalidArgument:
             await self.send_message(
                 msg.channel,
@@ -125,9 +123,16 @@ class Voice(Plugin):
             )
         await self.delete_message(msg)
         if (error_msg is not None):
+            self.logger.info(
+                "Error message w/ ID {} in response to Message ID {} "
+                "to be deleted in 30 seconds.".format(error_msg.id, msg.id)
+            )
             ## Why doesn't this work???
             await asyncio.sleep(30)
             await self.delete_message(error_msg)
+            self.logger.info(
+                "Error message w/ ID {} deleted.".format(error_msg.id)
+            )
 
     @command("^vc yt bulk queue (.*)$", access=ACCESS['user'], name='yt bulk queue',
              doc_brief="`vc yt bulk queue <youtube_url1> <youtube_url2> ...`: "
@@ -135,7 +140,8 @@ class Voice(Plugin):
     async def yt_bulk_queue(self, msg, arguments):
         urls = arguments[0].split(' ')
         valid = []
-        yt_regex = re.compile()
+        yt_pattern = "https?:\/\/www\.youtube\.com\/watch\?v=[0-9A-Za-z_\-]{11}"
+        yt_regex = re.compile(yt_pattern)
         for url in urls:
             m = yt_regex.match(url)
             if (m is not None):
