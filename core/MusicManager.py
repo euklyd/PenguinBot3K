@@ -120,7 +120,8 @@ class MusicManager():
         if (self.voice is not None):
             await self.voice.disconnect()
         self.reset = True
-        await self.skip()
+        if (self.is_active):
+            await self.skip()
         await self.loop_closed
         self.logger.info("playlist_loop finished")
 
@@ -142,10 +143,10 @@ class MusicManager():
         self.core.loop.call_soon_threadsafe(self.play_next.set)
 
     async def playlist_loop(self, future):
-        while (True):
+        while (self.reset is False):
             # self.logger.info("playlist_loop looped")
-            if (self.reset):
-                break
+            # if (self.reset):
+            #     break
             elif (self.is_connected() is False):
                 self.logger.debug("playlist_loop: slept, not connected")
                 await asyncio.sleep(1)
