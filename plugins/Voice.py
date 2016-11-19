@@ -169,8 +169,8 @@ class Voice(Plugin):
                          "please try again\n"
                          "Request: `{}`").format(msg.content)
                     )
-                    self.logger.info("Embeds: {}".format(msg.embeds))
-                    self.logger.info("URLs:   {}".format(valid))
+                    self.logger.info("Embeds: {}".format(msg.embeds[i]))
+                    self.logger.info("URLs:   {}".format(valid[i]))
         await self.delete_message(msg)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
