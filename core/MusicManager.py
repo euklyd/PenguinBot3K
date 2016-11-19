@@ -184,7 +184,7 @@ class MusicManager():
             requestor=requestor,
             channel=channel,
         )
-        self.logger.info("yt_add: Created song")
+        self.logger.info("yt_add: Created song {}".format(yt_embed['title']))
         # try:
         #     player = await self.voice.create_ytdl_player(
         #         yt_url, after=self.advance_queue
@@ -203,10 +203,16 @@ class MusicManager():
         #         user=song.requestor.name
         #     )
         playlist_entry = PlaylistEntry(song)
-        self.logger.info("yt_add: Created playlist_entry")
+        self.logger.info(
+            "yt_add: Created playlist_entry {}".format(
+                yt_embed['title'])
+        )
         # self.yt_queue.put(song)
         self.yt_queue.put(playlist_entry)
-        self.logger.info("yt_add: Added playlist_entry to yt_queue")
+        self.logger.info(
+            "yt_add: Added playlist_entry {} to yt_queue".format(
+                yt_embed['title'])
+        )
         response = ("Added *{title}*, by {uploader} to the playlist\n"
                     "*Requested by {user}*").format(
             title=song.title,
