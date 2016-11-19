@@ -147,7 +147,8 @@ class MusicManager():
             # self.logger.info("playlist_loop looped")
             # if (self.reset):
             #     break
-            elif (self.is_connected() is False):
+            # elif (self.is_connected() is False):
+            if (self.is_connected() is False):
                 self.logger.debug("playlist_loop: slept, not connected")
                 await asyncio.sleep(1)
             elif (self.yt_queue.empty()):
