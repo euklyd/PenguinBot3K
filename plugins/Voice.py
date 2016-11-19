@@ -159,7 +159,7 @@ class Voice(Plugin):
                 await asyncio.sleep(1)
                 try:
                     response = await self.music_manager.yt_add(
-                        arguments[i], msg.embeds[i], msg.author, msg.channel
+                        valid[i], msg.embeds[i], msg.author, msg.channel
                     )
                     await self.send_message(msg.channel, response['response'])
                 except IndexError:
@@ -169,8 +169,8 @@ class Voice(Plugin):
                          "please try again\n"
                          "Request: `{}`").format(msg.content)
                     )
-                    self.logger.info("Embeds: {}".format(msg.embeds[i]))
-                    self.logger.info("URLs:   {}".format(valid[i]))
+                    self.logger.info("Embed: {}".format(msg.embeds[i]))
+                    self.logger.info("URL:   {}".format(valid[i]))
         await self.delete_message(msg)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
