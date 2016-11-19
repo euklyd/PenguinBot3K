@@ -3,7 +3,7 @@
 
     Description:
         Manages loading and unload plugins
-            Will bootstrap plugin commands and events when they're loaded
+        Will bootstrap plugin commands and events when they're loaded
 
     Contributors:
         - Patrick Hennessy

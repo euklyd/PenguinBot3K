@@ -133,7 +133,7 @@ class Moderation(Plugin):
             await self.send_message(msg.channel, banish) ##CHANGE? to upload
             await self.send_message(msg.channel, "Geeeeeet **dunked on**, <@!{}>!".format(user))
 
-    @command("^push ([0-9]*)$", access=ACCESS['pushPop'], name='push',
+    @command("^push ([0-9]+)$", access=ACCESS['pushPop'], name='push',
              doc_brief=("`push <number>`: saves the last `<number>` messages "
              "from the current channel to the stack."))
     async def copy_messages(self, msg, arguments):
@@ -153,7 +153,7 @@ class Moderation(Plugin):
             msg.author.id, n_msgs, len(self.saved_messages[msg.author.id]))
         )
 
-    @command("^push -d ([0-9]*)$", access=ACCESS['pushPop'], name='push',
+    @command("^push -d ([0-9]+)$", access=ACCESS['pushPop'], name='push',
              doc_brief=("`push -d <number>`: saves the last `<number>` "
              "messages from the current channel to the stack, and deletes "
              "them from the channel."))
