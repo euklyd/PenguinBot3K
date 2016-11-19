@@ -133,7 +133,11 @@ class MusicManager():
             return True
 
     def is_active(self):
-        if (self.is_connected is False or self.current_song is None):
+        self.logger.info(
+            "is_active: self.is_connected: {}, self.current_song: {}".format(
+                self.is_connected(), self.current_song)
+        )
+        if (self.is_connected() is False or self.current_song is None):
             return False
         else:
             return not self.current_song.player.is_done()
