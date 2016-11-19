@@ -110,19 +110,19 @@ class Voice(Plugin):
              "YouTube video specified by `<youtube_url>`.")
     async def yt_queue(self, msg, arguments):
         error_msg = None
-        # try:
-        await asyncio.sleep(0.5)
-        response = await self.music_manager.yt_add(
-            arguments[0], msg.embeds[0], msg.author, msg.channel
-        )
-        await self.send_message(msg.channel, response['response'])
-        # except IndexError:
-        #     error_msg = await self.send_message(
-        #         msg.channel,
-        #         ("**ERROR:** Error in parsing the video embed; "
-        #          "please try again\n"
-        #          "Request: `{}`").format(msg.content)
-        #     )
+        try:
+            await asyncio.sleep(0.5)
+            response = await self.music_manager.yt_add(
+                arguments[0], msg.embeds[0], msg.author, msg.channel
+            )
+            await self.send_message(msg.channel, response['response'])
+        except IndexError:
+            error_msg = await self.send_message(
+                msg.channel,
+                ("**ERROR:** Error in parsing the video embed; "
+                 "please try again\n"
+                 "Request: `{}`").format(msg.content)
+            )
         await asyncio.sleep(1)
         await self.delete_message(msg)
         if (error_msg is not None):
@@ -154,18 +154,18 @@ class Voice(Plugin):
         else:
             for i in range(0, len(valid)):
                 await asyncio.sleep(1)
-                try:
-                    response = await self.music_manager.yt_add(
-                        arguments[i], msg.embeds[i], msg.author, msg.channel
-                    )
-                    await self.send_message(msg.channel, response['response'])
-                except IndexError:
-                    await self.send_message(
-                        msg.channel,
-                        ("**ERROR:** Error in parsing the video embed; "
-                         "please try again\n"
-                         "Request: `{}`").format(msg.content)
-                    )
+                # try:
+                response = await self.music_manager.yt_add(
+                    arguments[i], msg.embeds[i], msg.author, msg.channel
+                )
+                await self.send_message(msg.channel, response['response'])
+                # except IndexError:
+                #     await self.send_message(
+                #         msg.channel,
+                #         ("**ERROR:** Error in parsing the video embed; "
+                #          "please try again\n"
+                #          "Request: `{}`").format(msg.content)
+                #     )
         await self.delete_message(msg)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
