@@ -160,12 +160,12 @@ class PenguinBot(discord.Client):
         else:
             self.logger.info(
                 ("Message Recieved: [Name:{uname}][UID:{uid}]"
-                 "[CName:{cname}][CID:{cid}]: {}").format(
+                 "[CName:{cname}][CID:{cid}]: {content}").format(
                     uname=msg.author.name,
                     uid=msg.author.id,
                     cname=msg.channel.name,
                     cid=msg.channel.id,
-                    msg.content
+                    content=msg.content
                 )
             )
         await self.connector._handleMessage(msg)
