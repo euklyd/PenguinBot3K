@@ -43,7 +43,7 @@ class Voice(Plugin):
         # pass
 
     async def deactivate(self):
-        self.music_manager.close()
+        await self.music_manager.close()
 
     @command("^vc joinvc <#([0-9]+)>$", access=ACCESS['conductor'], name='joinvc',
              doc_brief=("`vc joinvc #<channel>`: Joins the voice channel "
@@ -154,18 +154,20 @@ class Voice(Plugin):
         else:
             for i in range(0, len(valid)):
                 await asyncio.sleep(1)
-                # try:
-                response = await self.music_manager.yt_add(
-                    arguments[i], msg.embeds[i], msg.author, msg.channel
-                )
-                await self.send_message(msg.channel, response['response'])
-                # except IndexError:
-                #     await self.send_message(
-                #         msg.channel,
-                #         ("**ERROR:** Error in parsing the video embed; "
-                #          "please try again\n"
-                #          "Request: `{}`").format(msg.content)
-                #     )
+                try:
+                    response = await self.music_manager.yt_add(
+                        arguments[i], msg.embeds[i], msg.author, msg.channel
+                    )
+                    await self.send_message(msg.channel, response['response'])
+                except IndexError:
+                    await self.send_message(
+                        msg.channel,
+                        ("**ERROR:** Error in parsing the video embed; "
+                         "please try again\n"
+                         "Request: `{}`").format(msg.content)
+                    )
+                    self.logger.info("Embeds: {}".format(msg.embeds))
+                    self.logger.info("URLs:   {}".format(valid))
         await self.delete_message(msg)
 
     @command("^vc pause$", access=ACCESS['maestro'], name='pause',
