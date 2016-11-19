@@ -110,6 +110,7 @@ class Voice(Plugin):
     async def yt_queue(self, msg, arguments):
         error_msg = None
         try:
+            await asyncio.sleep(0.5)
             response = await self.music_manager.yt_add(
                 arguments[0], msg.embeds[0], msg.author, msg.channel
             )
@@ -121,6 +122,7 @@ class Voice(Plugin):
                  "please try again\n"
                  "Request: `{}`").format(msg.content)
             )
+        await asyncio.sleep(1)
         await self.delete_message(msg)
         if (error_msg is not None):
             self.logger.info(
@@ -150,6 +152,7 @@ class Voice(Plugin):
             self.send_message("something went wrong with parsing the embeds")
         else:
             for i in range(0, len(valid)):
+                await asyncio.sleep(1)
                 try:
                     response = await self.music_manager.yt_add(
                         arguments[i], msg.embeds[i], msg.author, msg.channel
