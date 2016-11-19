@@ -146,7 +146,7 @@ class Voice(Plugin):
             m = yt_regex.match(url)
             if (m is not None):
                 valid.append(url)
-        if (len(valid) != len(embeds)):
+        if (len(valid) != len(msg.embeds)):
             self.send_message("something went wrong with parsing the embeds")
         else:
             for i in range(0, len(valid)):
