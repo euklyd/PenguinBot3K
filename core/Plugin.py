@@ -163,8 +163,23 @@ class Plugin(object):
             Returns:
                 None
         """
+        if (type(destination) == discord.Channel):
+            self.logger.info("Sending {file} to {channel} (CID: {cid})".format(
+                    file=filename,
+                    channel=destination.name,
+                    cid=destination.id
+            ))
+        elif (type(destination) == discord.User):
+            self.logger.info(
+                "Sending {file} to {user}#{discriminator} (UID: {uid})".format(
+                    file=filename,
+                    user=destination.name,
+                    discriminator=destination.discriminator,
+                    uid=destination.id
+                )
+            )
         await self.core.send_file(destination, filepath, filename=filename,
-                       content=content, tts=tts)
+                                  content=content, tts=tts)
 
     async def get_user_info(self, user_id):
         """
