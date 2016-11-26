@@ -47,7 +47,7 @@ class Pokemon(Plugin):
         try:
             await self.send_message(msg.channel, "Generated a QR code:")
             with open(qr_filename, 'rb') as qr_file:
-                await self.core.send_file(
+                await self.send_file(
                     msg.channel,
                     qr_file,
                     filename="pokemon_qr_code.png"
