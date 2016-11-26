@@ -27,6 +27,7 @@ import os
 from os import path
 import shutil
 import time
+import datetime
 from datetime import datetime as dt
 
 
@@ -489,9 +490,10 @@ class LogManager():
                                 top-level directory of the bot (whereever
                                 bot.py resides).
         """
+        self.logger.info("Retrieving {} days of logs".format(days))
         ch = self.channel_map[channel.id]
 
-        channel_dir = "logs/servers/{srv}-{srv_id}/{ch}-{chan_id}/".format(
+        channel_dir = "logs/servers/{srv}-{srv_id}/{ch}-{ch_id}/".format(
             srv=ch['server_name'],
             srv_id=ch['server_id'],
             ch=ch['name'],
@@ -501,8 +503,12 @@ class LogManager():
         files = os.listdir(channel_dir)
         return_files = []
         for i in range(0, days+1):
-            past_date_dt = dt.utcnow() - datetime.timedelta(days=days)
+            past_date_dt = dt.utcnow() - datetime.timedelta(days=i)
             past_date_str = past_date_dt.strftime("%Y-%m-%d")
+            self.logger.debug("Asking for logs for {}".format(past_date_str))
             for logfile in files:
                 if (logfile.startswith(past_date_str)):
+                    self.logger.info("Found logs for {}".format(past_date_str))
                     return_files.append("{}/{}".format(channel_dir, logfile))
+        self.logger.debug(return_files)
+        return return_files

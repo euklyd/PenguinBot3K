@@ -28,12 +28,13 @@ ACCESS = {
 }
 
 
-class Moderation(Plugin):
+class LogManager(Plugin):
     async def activate(self):
+        await self.core.wait_until_login()
         self.log_manager = self.core.log_manager
         pass
 
-    @command("^gimme logs(?: ([0-9]+))", access=ACCESS['retrieve'],
+    @command("^gimme logs(?: ([0-9]+))?$", access=ACCESS['retrieve'],
              doc_brief="`gimme logs`: Retrieve log files for the curent channel.",
              doc_detail=("`gimme logs`: Uploads the current log file for the "
                          "current channel privately to the requestor.\n\t"
@@ -41,8 +42,9 @@ class Moderation(Plugin):
                          "request that many days in the past in addition to "
                          "today's file."))
     async def put_logs(self, msg, arguments):
-        if (len(arguments) == 1):
-            if (arguments[0] < 0):
+        print(arguments)
+        if (len(arguments) == 1 and arguments[0] is not None):
+            if (int(arguments[0]) < 0):
                 await self.send_message(
                     msg.author,
                     ("Invalid argument for `gimme logs`: needs to be"
@@ -50,7 +52,7 @@ class Moderation(Plugin):
                 )
                 return
             else:
-                days = arguments[0]
+                days = int(arguments[0])
         else:
             days = 0
         filenames = self.log_manager.get_logs(msg.channel, days)
@@ -63,7 +65,11 @@ class Moderation(Plugin):
                         discriminator=msg.author.discriminator
                     )
                 )
-                await self.core.send_file(msg.author, fp, filename=filename)
+                await self.core.send_file(
+                    msg.author,
+                    fp,
+                    filename=filename.split('/')[-1]
+                )
             # fp = open(filename, 'rb')
             # self.logger.info("Sending {file} to {user}#{discriminator}".format(
             #     file=filename,
