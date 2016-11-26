@@ -15,6 +15,7 @@
 """
 
 import asyncio
+import discord
 import logging
 from core.Database import *
 
