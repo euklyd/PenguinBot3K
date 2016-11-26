@@ -18,10 +18,12 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 
+import discord
+import os
 import random
 import re
 import string
-import discord
+import zipfile
 
 ACCESS = {
     'retrieve': 500
@@ -56,25 +58,46 @@ class LogManager(Plugin):
         else:
             days = 0
         filenames = self.log_manager.get_logs(msg.channel, days)
-        for filename in filenames:
-            with open(filename, 'rb') as fp:
-                self.logger.info(
-                    "Sending {file} to {user}#{discriminator}".format(
-                        file=filename,
-                        user=msg.author.name,
-                        discriminator=msg.author.discriminator
-                    )
-                )
-                await self.core.send_file(
+        if (len(filenames) > 1):
+            await self.send_zip(msg, filenames)
+        else:
+            with open(filenames[0], 'rb') as fp:
+                # self.logger.info(
+                #     "Sending {file} to {user}#{discriminator}".format(
+                #         file=filename,
+                #         user=msg.author.name,
+                #         discriminator=msg.author.discriminator
+                #     )
+                # )
+                await self.send_file(
                     msg.author,
                     fp,
-                    filename=filename.split('/')[-1]
+                    filename=filenames[0].split('/')[-1]
                 )
-            # fp = open(filename, 'rb')
-            # self.logger.info("Sending {file} to {user}#{discriminator}".format(
-            #     file=filename,
-            #     user=msg.author.name,
-            #     discriminator=msg.author.discriminator
-            # ))
-            # await self.core.send_file(msg.author, fp, filename=filename)
-            # fp.close()
+        # for filename in filenames:
+        #     with open(filename, 'rb') as fp:
+        #         self.logger.info(
+        #             "Sending {file} to {user}#{discriminator}".format(
+        #                 file=filename,
+        #                 user=msg.author.name,
+        #                 discriminator=msg.author.discriminator
+        #             )
+        #         )
+        #         await self.send_file(
+        #             msg.author,
+        #             fp,
+        #             filename=filename.split('/')[-1]
+        #         )
+
+    async def send_zip(self, msg, filenames):
+        zip_name = "{ch_name}-{msg_id}.zip".format(
+            ch_name=msg.channel.name,
+            msg_id=msg.id
+        )
+        zip_path = "resources/{}".format(zip_name)
+        with zipfile.PyZipFile(zip_path, mode='a') as log_zip:
+            for logfile in filenames:
+                log_zip.write(logfile)
+        with open(zip_path, 'rb') as log_zip:
+            await self.send_file(msg.author, log_zip, filename=zip_name)
+        os.remove(zip_path)
