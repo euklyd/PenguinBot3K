@@ -55,11 +55,20 @@ class Moderation(Plugin):
             days = 0
         filenames = self.log_manager.get_logs(msg.channel, days)
         for filename in filenames:
-            fp = open(filename, 'r')
-            self.logger.info("Sending {file} to {user}#{discriminator}".format(
-                file=filename,
-                user=msg.author.name,
-                discriminator=msg.author.discriminator
-            ))
-            await self.core.send_file(msg.author, fp, filename=filename)
-            fp.close()
+            with open(filename, 'rb') as fp:
+                self.logger.info(
+                    "Sending {file} to {user}#{discriminator}".format(
+                        file=filename,
+                        user=msg.author.name,
+                        discriminator=msg.author.discriminator
+                    )
+                )
+                await self.core.send_file(msg.author, fp, filename=filename)
+            # fp = open(filename, 'rb')
+            # self.logger.info("Sending {file} to {user}#{discriminator}".format(
+            #     file=filename,
+            #     user=msg.author.name,
+            #     discriminator=msg.author.discriminator
+            # ))
+            # await self.core.send_file(msg.author, fp, filename=filename)
+            # fp.close()
