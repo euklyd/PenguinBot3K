@@ -184,30 +184,41 @@ class LogManager():
             # and move the channel's log directory.
             old_channel = self.channel_map[channel.id]
             # """update filetree here"""
-            for log in os.listdir(
-                "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
-                    old_server=old_channel['server_name'],
-                    srv_id=old_channel['server_id'],
-                    old_channel=old_channel['name'],
-                    ch_id=channel.id
-                )
-            ):
-                # Move the logs to the new directory.
-                shutil.copy(
-                    "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}/{log}".format(    # noqa E501
+            try:
+                for log in os.listdir(
+                    "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
                         old_server=old_channel['server_name'],
                         srv_id=old_channel['server_id'],
                         old_channel=old_channel['name'],
-                        ch_id=channel.id,
-                        log=log
-                    ),
-                    "logs/servers/{new_server}-{srv_id}/{new_channel}-{ch_id}".format(  # noqa E501
-                        new_server=self.server_map[old_channel['server_id']]['name'],   # noqa E501
-                        srv_id=channel.server.id,
-                        new_channel=channel.name,
                         ch_id=channel.id
                     )
-                )
+                ):
+                    # Move the logs to the new directory.
+                    shutil.copy(
+                        "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}/{log}".format(    # noqa E501
+                            old_server=old_channel['server_name'],
+                            srv_id=old_channel['server_id'],
+                            old_channel=old_channel['name'],
+                            ch_id=channel.id,
+                            log=log
+                        ),
+                        "logs/servers/{new_server}-{srv_id}/{new_channel}-{ch_id}".format(  # noqa E501
+                            new_server=self.server_map[old_channel['server_id']]['name'],   # noqa E501
+                            srv_id=channel.server.id,
+                            new_channel=channel.name,
+                            ch_id=channel.id
+                        )
+                    )
+            except FileNotFoundError:
+                self.logger.info("{channel_dir} no longer exists.".format(
+                    channel_dir="logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
+                        old_server=old_channel['server_name'],
+                        srv_id=old_channel['server_id'],
+                        old_channel=old_channel['name'],
+                        ch_id=channel.id
+                    )
+                ))
+
             # Delete the old directory.
             # os.rmdir(
             #     "logs/servers/{old_server}-{srv_id}/{old_channel}-{ch_id}".format(  # noqa E501
@@ -306,6 +317,8 @@ class LogManager():
             ch_id=channel.id
         )
         if (path.isdir(log_dir) is False):
+            if (path.isfile(log_dir) is True):
+                os.rename(log_dir, "{}.txt".format(log_dir))
             os.makedirs(log_dir)
         log_file = "{dir}/{date}_{name}.txt".format(
             dir=log_dir,
@@ -393,12 +406,13 @@ class LogManager():
                 None
         """
         self.logger.info(
-            "Message Recieved: [Name:{}][UID:{}][CName:{}][CID:{}]: {}".format(
-                msg.author.name,
-                msg.author.id,
-                msg.channel.id,
-                msg.channel.name,
-                msg.content
+            ("Message Recieved: [Name:{uname}][UID:{uid}]"
+             "[CName:{cname}][CID:{cid}]: {content}").format(
+                uname=msg.author.name,
+                uid=msg.author.id,
+                cname=msg.channel.name,
+                cid=msg.channel.id,
+                content=msg.content
             )
         )
         if (msg.server is None):
