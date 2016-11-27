@@ -56,34 +56,45 @@ class Utility(Plugin):
              "specified <user>."))
     async def get_info(self, msg, arguments):
         user = msg.server.get_member(arguments[0])
-        # user = await self.core.get_member(arguments[0])
         if (user is None):
+            # discord.Server.get_member() returns None if the specified user
+            # isn't a part of that server.
             user = await self.core.get_user_info(arguments[0])
-            reply =  "**Info for {}#{}**".format(user.name, user.discriminator)
-            if (user.bot is True):
-                reply += u"\u00A0`\u200B\U0001F1E7\u200B\U0001F1F4\u200B\U0001F1F9`"
-            reply += "\n\t`ID:          \u00A0`{}".format(user.id)
-            reply += "\n\t`Created:     \u00A0`{}".format(user.created_at)
+        if (type(user) == discord.Member):
+            # If the user isn't on this server, then they're a discord.User
+            # rather than discord.Member, and so are missing a lot of fields.
+            em = discord.Embed(color=user.color)
+            nick = user.nick
+            color = "{} ({})".format(user.color.to_tuple(), user.color)
+            status = user.status
+            game = user.game
+            role = user.top_role
+            em.set_footer(text="Joined on {}".format(user.joined_at))
         else:
-            reply =  "**Info for {}#{}**".format(user.name, user.discriminator)
-            if (user.bot is True):
-                reply += u"\u00A0`\u200B\U0001F1E7\u200B\U0001F1F4\u200B\U0001F1F9`"
-            if (user.nick != user.name):
-                reply += "\n\t`Nick:        \u00A0`{}".format(user.nick)
-            reply += "\n\t`ID:          \u00A0`{}".format(user.id)
-            reply += "\n\t`Created:     \u00A0`{}".format(user.created_at)
-            reply += "\n\t`Joined:      \u00A0`{}".format(user.joined_at)
-            if (user.color != discord.Colour.default):
-                reply += "\n\t`Color:       \u00A0`{} (`{}`)".format(
-                    user.color.to_tuple(), str(user.color)
-                )
-            if (user.top_role.name != "@everyone"):
-                # print(user.top_role)
-                # print(user.top_role == "@everyone")
-                # print(type(user.top_role))
-                # print(type(user.top_role.name))
-                reply += "\n\t`Role:        \u00A0`{}".format(user.top_role)
-            else:
-                reply += "\n\t`Role:        \u00A0`{}".format(u"@\u200Beveryone")
-        reply += "\n\t`Avatar:`\n{}".format(user.avatar_url)
-        await self.send_message(msg.channel, reply)
+            em = discord.Embed()
+            nick = "None"
+            color = "None"
+            status = "None"
+            game = "None"
+            role = "None"
+            em.set_footer(text="Created on {}".format(user.created_at))
+        em.set_author(
+            name="{}#{}".format(user.name, user.discriminator),
+            icon_url=user.avatar_url
+        )
+        em.add_field(name="Nickname", value=nick, inline=True)
+        em.add_field(name="ID", value=user.id, inline=True)
+        em.add_field(
+            name="Color",
+            value=color,
+            inline=True
+        )
+        em.add_field(name="Status", value=status, inline=True)
+        em.add_field(name="Game", value=game, inline=True)
+        em.add_field(
+            name="Top Role",
+            value=role,
+            inline=True
+        )
+
+        await self.send_message(msg.channel, embed=em)
