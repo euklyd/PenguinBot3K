@@ -61,7 +61,7 @@ class Plugin(object):
 
     # Exposed methods for Plugin use:
 
-    async def send_reply(self, message, message_str):
+    async def send_reply(self, message, message_str=None, embed=None):
         """
             Summary:
                 Directed wrapper method calling the discord.Client's
@@ -78,10 +78,10 @@ class Plugin(object):
         """
         self.logger.info("Plugin.send_reply invoked")
         await self.core.send_message(
-            message.channel, "<@!{}>: {}".format(message.author.id, message_str)
+            message.channel, "<@!{}>: {}".format(message.author.id, message_str, embed=embed)
         )
 
-    async def send_message(self, destination, message_str):
+    async def send_message(self, destination, message_str=None, embed=None):
         """
             Summary:
                 Wrapper method calling the discord.Client's send_message method.
@@ -96,9 +96,9 @@ class Plugin(object):
                 None
         """
         self.logger.info("Plugin.send_message invoked")
-        await self.core.send_message(destination, message_str)
+        await self.core.send_message(destination, message_str, embed=embed)
 
-    async def send_whisper(self, user, message_str):
+    async def send_whisper(self, user, message_str=None, embed=None):
         """
             Summary:
                 Wrapper method calling the discord.Client's send_message method.
@@ -111,7 +111,7 @@ class Plugin(object):
             Returns:
                 None
         """
-        await self.core.send_message(user, message_str)
+        await self.core.send_message(user, message_str, embed=embed)
 
     async def get_messages(self, channel, limit, before=None):
         """
