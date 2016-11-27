@@ -18,7 +18,6 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 
-import discord
 import os
 import random
 import re
@@ -43,7 +42,7 @@ class LogManager(Plugin):
                          "**Optional:** Specify a number after `gimme logs` to "
                          "request that many days in the past in addition to "
                          "today's file."))
-    async def put_logs(self, msg, arguments):
+    async def send_logs(self, msg, arguments):
         print(arguments)
         if (len(arguments) == 1 and arguments[0] is not None):
             if (int(arguments[0]) < 0):
@@ -62,34 +61,16 @@ class LogManager(Plugin):
             await self.send_zip(msg, filenames)
         else:
             with open(filenames[0], 'rb') as fp:
-                # self.logger.info(
-                #     "Sending {file} to {user}#{discriminator}".format(
-                #         file=filename,
-                #         user=msg.author.name,
-                #         discriminator=msg.author.discriminator
-                #     )
-                # )
                 await self.send_file(
                     msg.author,
                     fp,
                     filename=filenames[0].split('/')[-1]
                 )
-        # for filename in filenames:
-        #     with open(filename, 'rb') as fp:
-        #         self.logger.info(
-        #             "Sending {file} to {user}#{discriminator}".format(
-        #                 file=filename,
-        #                 user=msg.author.name,
-        #                 discriminator=msg.author.discriminator
-        #             )
-        #         )
-        #         await self.send_file(
-        #             msg.author,
-        #             fp,
-        #             filename=filename.split('/')[-1]
-        #         )
 
     async def send_zip(self, msg, filenames):
+        """
+        Helper function for send_logs()
+        """
         zip_name = "{ch_name}-{msg_id}.zip".format(
             ch_name=msg.channel.name,
             msg_id=msg.id
