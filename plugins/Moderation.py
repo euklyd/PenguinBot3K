@@ -63,11 +63,15 @@ class Moderation(Plugin):
              doc_brief="`list roles`: Lists all roles on the current server in an IM.")
     async def list_all_roles(self, msg, arguments):
         roles = msg.server.roles
-        roles.sort(key=lambda role: role.position)
+        roles.sort(key=lambda role: role.position, reverse=True)
         role_block = "**List of roles on {}:**".format(msg.server.name)
         for role in roles:
-            role_block += "\n{}) {}: `{}`".format(
-                role.position, role.name, role.permissions
+            role_block += "\n{n}) {name} ({color}): `{mention}`, `{permissions}`".format(
+                n=role.position,
+                name=role.name,
+                color=role.color,
+                mention=role.mention,
+                permissions=role.permissions
             )
             if (len(role_block) >= 1700):
                 self.logger.info(role_block)
@@ -76,7 +80,7 @@ class Moderation(Plugin):
                 except discord.HTTPException:
                     self.logger("well fuck: discord.HTTPException")
                 role_block = "**List of roles on {}:**".format(msg.server.name)
-        self.logger.info(reply)
+        self.logger.info(role_block)
         try:
             if (role_block.count('\n') > 1):
                 await self.send_whisper(msg.author, role_block)
