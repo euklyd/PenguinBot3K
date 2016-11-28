@@ -16,6 +16,8 @@
 
 from core.Plugin import Plugin
 from core.Decorators import *
+
+import discord
 import logging
 
 logger = logging.getLogger(__name__)
@@ -109,6 +111,20 @@ class Macro(Plugin):
     async def plumber(self, msg, arguments):
         mariocopypasta = u"<:mario:234535787117543425> Mario <:mario:234535787117543425> is definitely **not top tier**. The plumber's got nothing; no range ✖  , no power 😩  , mediocre recovery 😐  , and bad matchups <:sunglasses_mewtwo:230828762453770240> ☁ He isn't very fast 🐢 , and he doesn't have any strong kill set ups like other top tiers 🍌 ⬇ 👏 ⬆ ✊ The only reason Ally and ANTi were able to win supermajors with him 🏆 is because of **pure skill** , and we will be blessed 🙏  if we ever see two top players carry an upper mid-tier so far again. Obviously **not** a member of the <:mario:234535787117543425> top tier <:mario:234535787117543425>"
         await self.send_message(msg.channel, mariocopypasta)
+
+    @command(u"^penguin|\U0001F427$", access=-1, name='penguin',
+             doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
+    async def penguin(self, msg, arguments):
+        penguin_url = "https://i.imgur.com/MGNa91r.gif"
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+        em.set_thumbnail(url=penguin_url)
+        em.set_footer(
+            text="",
+            icon_url=user.avatar_url
+        )
+        await self.send_message(msg.channel, embed=em)
+        self.logger.debug(em.to_dict())
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
