@@ -179,13 +179,18 @@ class PlaylistEntry():
         #         self.song.title
         #     )
         #     return {'type': "error", 'response': error_msg}
+        # else:
+        #     self.announcement = song.announcement().format(
+        #         min=self.player.duration / 60,
+        #         sec=self.player.duration % 60,
+        #     )
+        #     return {'type': "success", 'response': self.announcement}
         self.player = await self.song.create_player(voice, after=after)
-        else:
-            self.announcement = song.announcement().format(
-                min=self.player.duration / 60,
-                sec=self.player.duration % 60,
-            )
-            return {'type': "success", 'response': self.announcement}
+        self.announcement = song.announcement().format(
+            min=self.player.duration / 60,
+            sec=self.player.duration % 60,
+        )
+        return {'type': "success", 'response': self.announcement}
 
 
 class MusicManager():
