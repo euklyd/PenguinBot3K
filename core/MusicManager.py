@@ -23,6 +23,7 @@ import mutagen
 import os
 import queue
 import time
+import traceback
 
 
 class Song(metaclass=ABCMeta):
@@ -183,25 +184,20 @@ class PlaylistEntry():
     #         return {'type': "success", 'response': self.announcement}
 
     async def load(self, voice, after=None):
-        # try:
-        #     self.player = await self.song.create_player(voice, after=after)
-        # except:
-        #     error_msg = "**ERROR:** Couldn't process request for {}".format(
-        #         self.song.title
-        #     )
-        #     return {'type': "error", 'response': error_msg}
-        # else:
-        #     self.announcement = song.announcement().format(
-        #         min=self.player.duration / 60,
-        #         sec=self.player.duration % 60,
-        #     )
-        #     return {'type': "success", 'response': self.announcement}
-        self.player = await self.song.create_player(voice, after=after)
-        self.announcement = self.song.announcement().format(
-            min=self.player.duration / 60,
-            sec=self.player.duration % 60,
-        )
-        return {'type': "success", 'response': self.announcement}
+        try:
+            self.player = await self.song.create_player(voice, after=after)
+        except:
+            error_msg = "**ERROR:** Couldn't process request for {}".format(
+                self.song.title
+            )
+            print(traceback.format_exc())
+            return {'type': "error", 'response': error_msg}
+        else:
+            self.announcement = song.announcement().format(
+                min=self.player.duration / 60,
+                sec=self.player.duration % 60,
+            )
+            return {'type': "success", 'response': self.announcement}
 
 
 class MusicManager():
