@@ -30,7 +30,7 @@ class Song(metaclass=ABCMeta):
         self.title = title
         self.requestor = requestor
         self.channel = channel
-        self.logger = logging.getLogger("songs." + self.name)
+        self.logger = logging.getLogger("songs." + self.title)
 
     @abstractmethod
     def announcement(self):
