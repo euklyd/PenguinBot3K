@@ -173,7 +173,7 @@ class PlaylistEntry():
 
     async def load(self, voice, after=None):
         try:
-            self.player = await song.create_player(voice, after=after)
+            self.player = await self.song.create_player(voice, after=after)
         except:
             error_msg = "**ERROR:** Couldn't process request for {}".format(
                 self.song.title
