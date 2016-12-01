@@ -74,7 +74,7 @@ class YouTubeSong(Song):
                 channel (discord.Channel):
                                 Channel in which this song was requested
         """
-        super(title, requestor, channel)
+        super().__init__(title, requestor, channel)
         self.url = yt_url
         # self.title = title
         self.uploader = uploader
@@ -101,7 +101,7 @@ class MP3Song(Song):
     def __init__(self, name, requestor, channel):
         metadata = mutagen.File(self.path)
         title = str(metadata['TIT2'])
-        super(title, requestor, channel)
+        super().__init__(title, requestor, channel)
         self.name = name
         self.url = self.name
         self.path = "resources/music/{}".format(name)
