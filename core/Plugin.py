@@ -78,7 +78,8 @@ class Plugin(object):
         """
         self.logger.info("Plugin.send_reply invoked")
         await self.core.send_message(
-            message.channel, "<@!{}>: {}".format(message.author.id, message_str, embed=embed)
+            message.channel, "<@!{}>: {}".format(
+                message.author.id, message_str, embed=embed)
         )
 
     async def send_message(self, destination, message_str=None, embed=None):

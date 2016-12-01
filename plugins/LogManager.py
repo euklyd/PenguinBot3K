@@ -35,14 +35,16 @@ class LogManager(Plugin):
         self.log_manager = self.core.log_manager
         pass
 
-    @command("^gimme logs <#([0-9]+)>(?: ([0-9]+))?$", access=ACCESS['retrieve'],
-             doc_brief="`gimme logs #<channel>`: Retrieve log files for <channel>.",
+    @command("^gimme logs <#([0-9]+)>(?: ([0-9]+))?$",
+             access=ACCESS['retrieve'],
+             doc_brief="`gimme logs #<channel>`: Retrieve log files for "
+             "<channel>.",
              doc_detail=("`gimme logs #<channel>`: Uploads the current log "
                          "file for the specified channel privately to the "
                          "requestor.\n\t"
-                         "**Optional:** Specify a number after `gimme logs` to "
-                         "request that many days in the past in addition to "
-                         "today's file."))
+                         "**Optional:** Specify a number after `gimme logs` "
+                         "to request that many days in the past in addition "
+                         "to today's file."))
     async def remote_log_request(self, msg, arguments):
         channel = self.core.get_channel(arguments[0])
         if (len(arguments) == 2 and arguments[1] is not None):
@@ -60,12 +62,13 @@ class LogManager(Plugin):
         await self.send_logs(channel, msg.author, days=days, request_id=msg.id)
 
     @command("^gimme logs(?: ([0-9]+))?$", access=ACCESS['retrieve'],
-             doc_brief="`gimme logs`: Retrieve log files for the curent channel.",
+             doc_brief="`gimme logs`: Retrieve log files for the curent "
+             "channel.",
              doc_detail=("`gimme logs`: Uploads the current log file for the "
                          "current channel privately to the requestor.\n\t"
-                         "**Optional:** Specify a number after `gimme logs` to "
-                         "request that many days in the past in addition to "
-                         "today's file."))
+                         "**Optional:** Specify a number after `gimme logs` "
+                         "to request that many days in the past in addition "
+                         "to today's file."))
     async def log_request(self, msg, arguments):
         if (len(arguments) == 1 and arguments[0] is not None):
             if (int(arguments[0]) < 0):
@@ -79,13 +82,17 @@ class LogManager(Plugin):
                 days = int(arguments[0])
         else:
             days = 0
-        await self.send_logs(msg.channel, msg.author, days=days, request_id=msg.id)
+        await self.send_logs(
+            msg.channel, msg.author, days=days, request_id=msg.id
+        )
         await self.delete_message(msg)
 
     async def send_logs(self, channel, requestor, days=0, request_id="0000"):
         filenames = self.log_manager.get_logs(channel, days)
         if (len(filenames) > 1):
-            await self.send_zip(channel, requestor, filenames, request_id=request_id)
+            await self.send_zip(
+                channel, requestor, filenames, request_id=request_id
+            )
         elif (len(filenames) == 1):
             with open(filenames[0], 'rb') as fp:
                 await self.send_file(

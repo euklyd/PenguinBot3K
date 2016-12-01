@@ -51,16 +51,17 @@ class Moderation(Plugin):
         await self.send_message(channel, arguments[1])
 
     @command("^announce -d <#([0-9]*)> (.*)", access=ACCESS['anonymous'],
-             name='announce',
-             doc_brief=("`announce -d #<channel> <message>`: Sends `<message>` "
-             "to `<channel>` anonymously, and deletes command message."))
+             name='announce', doc_brief=("`announce -d #<channel> <message>`: "
+             "Sends `<message>` to `<channel>` anonymously, and "
+             "deletes command message."))
     async def announce_delete(self, msg, arguments):
         channel = self.core.get_channel(arguments[0])
         await self.send_message(channel, arguments[1])
         await self.delete_message(msg)
 
     @command("^list roles$", access=500, name='list roles',
-             doc_brief="`list roles`: Lists all roles on the current server in an IM.")
+             doc_brief="`list roles`: Lists all roles on the current "
+             "server in an IM.")
     async def list_all_roles(self, msg, arguments):
         roles = msg.server.roles
         roles.sort(key=lambda role: role.position, reverse=True)

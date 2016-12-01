@@ -29,8 +29,8 @@ class Utility(Plugin):
         pass
 
     @command("^pick(?:[- ]one)? (.*)", access=-1, name='pick',
-             doc_brief=("`pick one <list of items>`: Selects one item out of "
-             "a list of space-separated items."))
+             doc_brief="`pick one <list of items>`: Selects one item out of "
+             "a list of space-separated items.")
     async def pick_one(self, msg, arguments):
         items = arguments[0].split(' ')
         choice = random.choice(items)
@@ -52,8 +52,8 @@ class Utility(Plugin):
         await self.send_message(msg.channel, reply)
 
     @command("^info <@!?([0-9]*)>$", access=50, name='info',
-             doc_brief=("`info @<user>`: Gets assorted info about the "
-             "specified <user>."))
+             doc_brief="`info @<user>`: Gets assorted info about the "
+             "specified <user>.")
     async def get_info(self, msg, arguments):
         user = msg.server.get_member(arguments[0])
         if (user is None):
