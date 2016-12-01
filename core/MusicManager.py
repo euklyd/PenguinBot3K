@@ -30,13 +30,14 @@ class Song(metaclass=ABCMeta):
         self.title = title
         self.requestor = requestor
         self.channel = channel
+        self.logger = logging.getLogger("songs." + self.name)
 
     @abstractmethod
     def announcement(self):
         return
 
     @abstractmethod
-    async def create_player(self, after=None):
+    async def create_player(self, voice, after=None):
         return
 
 # class YouTubeSong():
@@ -89,7 +90,8 @@ class YouTubeSong(Song):
         )
         return announcement
 
-    async def create_player(self, after=None):
+    async def create_player(self, voice, after=None):
+        self.logger.info("YouTubeSong: creating player")
         player = await voice.create_ytdl_player(self.url, after=after)
         return player
 
@@ -120,7 +122,8 @@ class MP3Song(Song):
         )
         return announcement
 
-    async def create_player(self, after=None):
+    async def create_player(self, voice, after=None):
+        self.logger.info("MP3Song: creating player")
         player = await voice.create_ffmpeg_player(self.path, after=after)
         player.duration = self.duration
         return player
@@ -170,7 +173,7 @@ class PlaylistEntry():
 
     async def load(self, voice, after=None):
         try:
-            self.player = await song.create_player(after=after)
+            self.player = await song.create_player(voice, after=after)
         except:
             error_msg = "**ERROR:** Couldn't process request for {}".format(
                 self.song.title
