@@ -74,12 +74,13 @@ class YouTubeSong(Song):
                 channel (discord.Channel):
                                 Channel in which this song was requested
         """
+        super(title, requestor, channel)
         self.url = yt_url
-        self.title = title
+        # self.title = title
         self.uploader = uploader
         # self.duration = duration
-        self.requestor = requestor
-        self.channel = channel
+        # self.requestor = requestor
+        # self.channel = channel
 
     def announcement(self):
         announcement = ("**Now playing:** *{title}* [{{min}}:{{sec}}], "
@@ -98,15 +99,18 @@ class YouTubeSong(Song):
 
 class MP3Song(Song):
     def __init__(self, name, requestor, channel):
+        metadata = mutagen.File(self.path)
+        title = str(metadata['TIT2'])
+        super(title, requestor, channel)
         self.name = name
         self.url = self.name
         self.path = "resources/music/{}".format(name)
         # self.title = title
         # self.artist = artist
-        self.requestor = requestor
-        self.channel = channel
-        metadata = mutagen.File(self.path)
-        self.title = str(metadata['TIT2'])
+        # self.requestor = requestor
+        # self.channel = channel
+        # metadata = mutagen.File(self.path)
+        # self.title = str(metadata['TIT2'])
         try:
             self.artist = str(metadata['TOPE'])
         except KeyError:
