@@ -101,7 +101,10 @@ class MP3Song(Song):
     def __init__(self, name, requestor, channel):
         self.path = "resources/music/{}".format(name)
         metadata = mutagen.File(self.path)
-        title = str(metadata['TIT2'])
+        if (metadata.get('TIT2') is not None):
+            title = str(metadata['TIT2'])
+        else:
+            title = "{} (unknown title)".format(name)
         super().__init__(title, requestor, channel)
         self.name = name
         self.url = self.name
@@ -111,10 +114,14 @@ class MP3Song(Song):
         # self.channel = channel
         # metadata = mutagen.File(self.path)
         # self.title = str(metadata['TIT2'])
-        try:
+        if (metadata.get('TPE1') is not None):
+            self.artist = str(metadata['TPE1'])
+        elif (metadata.get('TOPE') is not None):
             self.artist = str(metadata['TOPE'])
-        except KeyError:
+        elif (metadata.get('TCOM') is not None):
             self.artist = str(metadata['TCOM'])
+        else:
+            self.artist = "Unknown Artist"
         self.duration = metadata.info.length
 
     def announcement(self):
