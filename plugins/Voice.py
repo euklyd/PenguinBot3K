@@ -97,7 +97,7 @@ class Voice(Plugin):
         try:
             response = await self.music_manager.mp3_add(
                 song_name, msg.author, msg.channel
-            )
+            )['response']
         except OSError:
             response = ("Song not found; use `vc library` to see"
                         "available selections.")
