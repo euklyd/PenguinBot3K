@@ -190,7 +190,7 @@ class PlaylistEntry():
         #     )
         #     return {'type': "success", 'response': self.announcement}
         self.player = await self.song.create_player(voice, after=after)
-        self.announcement = song.announcement().format(
+        self.announcement = self.song.announcement().format(
             min=self.player.duration / 60,
             sec=self.player.duration % 60,
         )
