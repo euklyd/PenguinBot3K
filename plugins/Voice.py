@@ -38,6 +38,7 @@ class Voice(Plugin):
         # discord.opus.load_opus("/usr/lib/x86_64-linux-gnu/libopus.so.0")
         # self.voice = None
         # self.player = None
+        await self.core.wait_until_login()
         self.music_manager = self.core.music_manager
 
         # pass
@@ -45,9 +46,9 @@ class Voice(Plugin):
     async def deactivate(self):
         await self.music_manager.close()
 
-    @command("^vc joinvc <#([0-9]+)>$", access=ACCESS['conductor'], name='joinvc',
-             doc_brief=("`vc joinvc #<channel>`: Joins the voice channel "
-             "`<channel>`."))
+    @command("^vc joinvc <#([0-9]+)>$", access=ACCESS['conductor'],
+             name='joinvc', doc_brief=("`vc joinvc #<channel>`: "
+             "Joins the voice channel `<channel>`."))
     async def joinvc(self, msg, arguments):
         vc = self.core.get_channel(arguments[0])
         try:
@@ -60,6 +61,32 @@ class Voice(Plugin):
                 msg.channel,
                 "**ERROR:** The channel you specified is not a voice channel."
             )
+
+    @command("^vc library$", access=-1, name='library',
+             doc_brief="`vc library`: List all songs stored in "
+             "the local library (in a private message).")
+    async def list_library(self, msg, arguments):
+        songs = self.music_manager.list_library().sort()
+        reply = "**Music Library:**\n"
+        for song in songs:
+            reply += "- {}\n".format(song)
+        await self.send_message(msg.author, reply)
+
+    @command("^vc queue (.*)$", access=-1, name='local queue',
+             doc_brief="`vc queue <song_name>`: Queue the audio from "
+             "a local file named `<song_name>` (if it exists).")
+    async def local_queue(self, msg, arguments):
+        song_name = arguments[0]
+        try:
+            response = await self.music_manager.mp3_add(
+                song_name, msg.author, msg.channel
+            )
+        except OSError:
+            response = ("Song not found; use `vc library` to see"
+                        "available selections.")
+        await self.send_message(msg.channel, response)
+        await asyncio.sleep(1)
+        await self.delete_message(msg)
 
     # @command("^vc tokusentai|TOKUSENTAI|\*\*TOKUSENTAI\*\*$",
     #          access=ACCESS['maestro'], name='tokusentai',
@@ -78,36 +105,10 @@ class Voice(Plugin):
     #     self.player = self.voice.create_ffmpeg_player(tokusentai_src)
     #     self.player.start()
 
-    # @command("^vc yt play (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
-    #          access=ACCESS['maestro'], name='yt play',
-    #          doc_brief="`vc yt play <youtube_url>`: Plays the audio from a "
-    #          "YouTube video specified by `<youtube_url>`.")
-    # async def yt_play(self, msg, arguments):
-    #     if (self.voice is None or self.voice.is_connected() is False):
-    #         await self.send_message(
-    #             msg.channel,
-    #             "**ERROR:** I'm not connected to voice right now."
-    #         )
-    #         return
-    #     if (self.player is not None and self.player.is_playing()):
-    #         self.player.stop()
-    #     self.player = await self.voice.create_ytdl_player(arguments[0])
-    #     await self.delete_message(msg)
-    #     self.player.start()
-    #     reply = ("**Now playing:** *{title}* [{min:0>2.0f}:{sec:0>2d}] by {uploader}\n"
-    #              "*Requested by {user}*").format(
-    #         title=msg.embeds[0]['title'],
-    #         min=self.player.duration / 60,
-    #         sec=self.player.duration % 60,
-    #         uploader=msg.embeds[0]['author']['name'],
-    #         user=msg.author.name
-    #     )
-    #     await self.send_message(msg.channel, reply)
-
     @command("^vc yt queue (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
              access=-1, name='yt queue',
-             doc_brief="`vc yt queue <youtube_url>`: Queues the audio from a "
-             "YouTube video specified by `<youtube_url>`.")
+             doc_brief="`vc yt queue <youtube_url>`: Queue the audio from "
+             "a YouTube video specified by `<youtube_url>`.")
     async def yt_queue(self, msg, arguments):
         error_msg = None
         try:
@@ -137,13 +138,14 @@ class Voice(Plugin):
                 "Error message w/ ID {} deleted.".format(error_msg.id)
             )
 
-    @command("^vc yt bulk queue (.*)$", access=ACCESS['user'], name='yt bulk queue',
+    @command("^vc yt bulk queue (.*)$", access=ACCESS['user'],
+             name='yt bulk queue',
              doc_brief="`vc yt bulk queue <youtube_url1> <youtube_url2> ...`: "
-             "Queues the audio from multiple YouTube videos.")
+             "Queue the audio from multiple YouTube videos.")
     async def yt_bulk_queue(self, msg, arguments):
         urls = arguments[0].split(' ')
         valid = []
-        yt_pattern = "https?:\/\/www\.youtube\.com\/watch\?v=[0-9A-Za-z_\-]{11}"
+        yt_pattern = "https?:\/\/(?:www\.youtube\.com\/watch\?v=|youtu.be\/)[0-9A-Za-z_\-]{11}"
         yt_regex = re.compile(yt_pattern)
         for url in urls:
             m = yt_regex.match(url)
@@ -211,8 +213,37 @@ class Voice(Plugin):
                     uploader=song.yt_song.uploader,
                     requestor=song.yt_song.requestor
                 )
+                # if (len(reply) > 1500):
+                #     await self.send_message(msg.channel, reply)
+                #     reply = ""
         else:
             reply += "Playlist is empty!"
+        if (len(reply) > 2000):
+            reply = "**Next Ten Songs in YouTube Playlist:**\n"
+            if (current_song is not None):
+                reply += ("🔊 ** -*{song}***, by {uploader} "
+                          "(requested by {requestor})\n").format(
+                    song=current_song.yt_song.title,
+                    uploader=current_song.yt_song.uploader,
+                    requestor=current_song.yt_song.requestor
+                )
+            for i in range(0, 10):
+                try:
+                    line = ("** -*{song}***, by {uploader} "
+                            "(requested by {requestor})\n").format(
+                        song=playlist[i].yt_song.title,
+                        uploader=playlist[i].yt_song.uploader,
+                        requestor=playlist[i].yt_song.requestor
+                    )
+                    if (len(reply) + len(line) > 1950):
+                        break
+                    else:
+                        reply += line
+                except IndexError:
+                    break
+            reply += "...followed by others."
+        # if (reply != ""):
+        #     await self.send_message(msg.channel, reply)
         await self.send_message(msg.channel, reply)
 
     @command("^vc url$", access=-1, name='show url',

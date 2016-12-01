@@ -14,15 +14,52 @@
         by the Free Software Foundation
 """
 
+from abc import ABCMeta, abstractmethod
+
 import asyncio
+import discord
 import logging
+import mutagen
 import queue
 import time
 
-import discord
+
+class Song(metaclass=ABCMeta):
+    def __init__(self, title, requestor, channel):
+        self.title = title
+        self.requestor = requestor
+        self.channel = channel
+
+    @abstractmethod
+    def announcement(self):
+        return
+
+    @abstractmethod
+    async def create_player(self, after=None):
+        return
+
+# class YouTubeSong():
+#     def __init__(self, yt_url, title, uploader, requestor, channel):
+#         """
+#             Arguments:
+#                 yt_url (str):   URL of the YouTube video
+#                 title (str):    Title of the video
+#                 uploader (str): YouTube user who uploaded the video
+#                 # duration (int): Duration of the video, in seconds
+#                 requestor (discord.User):
+#                                 User who requested this song
+#                 channel (discord.Channel):
+#                                 Channel in which this song was requested
+#         """
+#         self.url = yt_url
+#         self.title = title
+#         self.uploader = uploader
+#         # self.duration = duration
+#         self.requestor = requestor
+#         self.channel = channel
 
 
-class YouTubeSong():
+class YouTubeSong(Song):
     def __init__(self, yt_url, title, uploader, requestor, channel):
         """
             Arguments:
@@ -42,6 +79,51 @@ class YouTubeSong():
         self.requestor = requestor
         self.channel = channel
 
+    def announcement(self):
+        announcement = ("**Now playing:** *{title}* [{{min}}:{{sec}}], "
+                        "by {uploader}\n*Requested by {user}*").format(
+            title=self.title,
+            uploader=self.uploader,
+            user=self.requestor.name
+        )
+        return announcement
+
+    async def create_player(self, after=None):
+        player = await voice.create_ytdl_player(self.url, after=after)
+        return player
+
+
+class MP3Song(Song):
+    def __init__(self, name, requestor, channel):
+        self.name = name
+        self.url = self.name
+        self.path = "resources/music/{}".format(name)
+        # self.title = title
+        # self.artist = artist
+        self.requestor = requestor
+        self.channel = channel
+        metadata = mutagen.File(self.path)
+        self.title = str(metadata['TIT2'])
+        try:
+            self.artist = str(metadata['TOPE'])
+        except KeyError:
+            self.artist = str(metadata['TCOM'])
+        self.duration = metadata.info.length
+
+    def announcement(self):
+        announcement = ("**Now playing:** *{title}* [{{min}}:{{sec}}], "
+                        "by {artist}\n*Requested by {user}*").format(
+            title=self.title,
+            artist=self.artist,
+            user=self.requestor.name
+        )
+        return announcement
+
+    async def create_player(self, after=None):
+        player = await voice.create_ffmpeg_player(self.path, after=after)
+        player.duration = self.duration
+        return player
+
 
 class PlaylistEntry():
     # def __init__(self, player, announcement, yt_song):
@@ -49,32 +131,57 @@ class PlaylistEntry():
     #     self.announcement = announcement
     #     self.yt_song = yt_song
 
-    def __init__(self, yt_song):
+    # def __init__(self, yt_song):
+    #     self.player = None
+    #     self.announcement = None
+    #     self.yt_song = yt_song
+
+    def __init__(self, song):
         self.player = None
         self.announcement = None
-        self.yt_song = yt_song
+        self.song = song
+
+    # async def load(self, voice, after=None):
+    #     try:
+    #         ## UPGRADE: Move this portion to yt_song.create_player() so that
+    #         ##          it can also be used by other music types
+    #         self.player = await voice.create_ytdl_player(
+    #             self.yt_song.url, after=after
+    #         )
+    #     except:
+    #         error_msg = "**ERROR:** Couldn't process request for {}".format(
+    #             self.yt_song.title
+    #         )
+    #         return {'type': "error", 'response': error_msg}
+    #     else:
+    #         ## UPGRADE: Move this portion to yt_song.announcement() so that
+    #         ##          it can also be used by other music types
+    #         self.announcement = ("**Now playing:** *{title}* "
+    #                              "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
+    #                              "*Requested by {user}*").format(
+    #             title=self.yt_song.title,
+    #             min=self.player.duration / 60,
+    #             sec=self.player.duration % 60,
+    #             uploader=self.yt_song.uploader,
+    #             user=self.yt_song.requestor.name
+    #         )
+    #         return {'type': "success", 'response': self.announcement}
 
     async def load(self, voice, after=None):
         try:
-            self.player = await voice.create_ytdl_player(
-                self.yt_song.url, after=after
-            )
+            self.player = await song.create_player(after=after)
         except:
             error_msg = "**ERROR:** Couldn't process request for {}".format(
-                self.yt_song.title
+                self.song.title
             )
             return {'type': "error", 'response': error_msg}
         else:
-            self.announcement = ("**Now playing:** *{title}* "
-                                 "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
-                                 "*Requested by {user}*").format(
-                title=self.yt_song.title,
+            self.announcement = song.announcement().format(
                 min=self.player.duration / 60,
                 sec=self.player.duration % 60,
-                uploader=self.yt_song.uploader,
-                user=self.yt_song.requestor.name
             )
             return {'type': "success", 'response': self.announcement}
+
 
 class MusicManager():
     def __init__(self, core):
@@ -86,7 +193,7 @@ class MusicManager():
         # self.current_song = None
         # # self.player = None
         # # self.paused = False
-        # self.yt_queue = queue.Queue()
+        # self.playlist_queue = queue.Queue()
         # # self.yt_loop = asyncio.get_event_loop()
         #
         # self.reset = False
@@ -109,7 +216,7 @@ class MusicManager():
         self.logger.info("Starting MusicManager")
         self.voice = None
         self.current_song = None
-        self.yt_queue = queue.Queue()
+        self.playlist_queue = queue.Queue()
         self.reset = False
         self.loop_closed = asyncio.Future()
         self.play_next = asyncio.Event()
@@ -155,21 +262,22 @@ class MusicManager():
             if (self.is_connected() is False):
                 self.logger.debug("playlist_loop: slept, not connected")
                 await asyncio.sleep(1)
-            elif (self.yt_queue.empty()):
+            elif (self.playlist_queue.empty()):
                 self.logger.debug("playlist_loop: queue is empty, sleeping")
                 await asyncio.sleep(1)
             else:
                 self.logger.info("playlist_loop: playing next song")
                 self.play_next.clear()
                 self.logger.debug("getting next song")
-                # self.current_song = await self.yt_queue.get()
-                self.current_song = self.yt_queue.get()
+                # self.current_song = await self.playlist_queue.get()
+                self.current_song = self.playlist_queue.get()
                 self.logger.debug("got next song")
                 announcement = await self.current_song.load(
                     voice=self.voice, after=self.advance_queue
                 )
                 await self.core.send_message(
-                    self.current_song.yt_song.channel,
+                    # self.current_song.yt_song.channel,
+                    self.current_song.song.channel,
                     # self.current_song.announcement
                     announcement['response']
                 )
@@ -208,13 +316,12 @@ class MusicManager():
         #     )
         playlist_entry = PlaylistEntry(song)
         self.logger.info(
-            "yt_add: Created playlist_entry {}".format(
-                yt_embed['title'])
+            "yt_add: Created playlist_entry {}".format(yt_embed['title'])
         )
-        # self.yt_queue.put(song)
-        self.yt_queue.put(playlist_entry)
+        # self.playlist_queue.put(song)
+        self.playlist_queue.put(playlist_entry)
         self.logger.info(
-            "yt_add: Added playlist_entry {} to yt_queue".format(
+            "yt_add: Added playlist_entry {} to playlist_queue".format(
                 yt_embed['title'])
         )
         response = ("Added *{title}*, by {uploader} to the playlist\n"
@@ -225,9 +332,32 @@ class MusicManager():
         )
         return {'type': "success", 'response': response}
 
+    async def mp3_add(self, name, requestor, channel):
+        music_library = os.listdir("resources/music")
+        if (name not in music_library):
+            raise OSError("Song not found")
+        song = MP3Song(name, requestor, channel)
+        self.logger.info("mp3_add: Created song {}".format(song.title))
+        playlist_entry = PlaylistEntry(song)
+        self.logger.info(
+            "mp3_add: Created playlist_entry {}".format(song.title)
+        )
+        self.playlist_queue.put(playlist_entry)
+        self.logger.info(
+            "mp3_add: Added playlist_entry {} to playlist_queue".format(
+                song.title)
+        )
+        response = ("Added *{title}*, by {uploader} to the playlist\n"
+                    "*Requested by {user}*").format(
+            title=song.title,
+            uploader=song.artist,
+            user=song.requestor.name
+        )
+        return {'type': "success", 'response': response}
+
     # async def play_yt_song(self):
-    #     if (self.yt_queue.empty is False):
-    #         yt_vid = self.yt_queue.get()
+    #     if (self.playlist_queue.empty is False):
+    #         yt_vid = self.playlist_queue.get()
     #         self.player = await self.voice.create_ytdl_player(
     #             yt_vid.url
     #         )
@@ -269,13 +399,17 @@ class MusicManager():
             self.logger.info("skipping song")
             self.current_song.player.stop()
 
+    def list_library(self):
+        return os.listdir("resources/music")
+
     async def list_playlist(self):
-        # playlist = list(self.yt_queue.queue)
+        # playlist = list(self.playlist_queue.queue)
         # playlist.insert(0, self.current_song)
-        return self.current_song, list(self.yt_queue.queue)
+        return self.current_song, list(self.playlist_queue.queue)
 
     def get_current_url(self):
-        return self.current_song.yt_song.url
+        # return self.current_song.yt_song.url
+        return self.current_song.song.url
 
     async def join_voice_channel(self, channel):
         # if (self.voice is not None and self.voice.is_connected()):
