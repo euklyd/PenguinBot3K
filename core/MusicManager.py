@@ -401,7 +401,9 @@ class MusicManager():
             self.current_song.player.stop()
 
     def list_library(self):
-        return os.listdir("resources/music")
+        library = os.listdir("resources/music")
+        self.logger.info(library)
+        return library
 
     async def list_playlist(self):
         # playlist = list(self.playlist_queue.queue)

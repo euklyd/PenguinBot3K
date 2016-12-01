@@ -67,6 +67,7 @@ class Voice(Plugin):
              "the local library (in a private message).")
     async def list_library(self, msg, arguments):
         songs = self.music_manager.list_library().sort()
+        self.logger.info(songs)
         reply = "**Music Library:**\n"
         for song in songs:
             reply += "- {}\n".format(song)
