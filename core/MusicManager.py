@@ -400,8 +400,8 @@ class MusicManager():
             self.logger.info("skipping song")
             self.current_song.player.stop()
 
-    def list_library(self):
-        library = os.listdir("resources/music")
+    def list_library(self, album=""):
+        library = os.listdir("resources/music/{}".format(album))
         self.logger.info(library)
         return library
 

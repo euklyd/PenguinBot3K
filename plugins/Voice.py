@@ -67,7 +67,22 @@ class Voice(Plugin):
              "the local library (in a private message).")
     async def list_library(self, msg, arguments):
         songs = self.music_manager.list_library()
-        song.sort()
+        songs.sort()
+        self.logger.info(songs)
+        reply = "**Music Library:**\n"
+        for song in songs:
+            reply += "- {}\n".format(song)
+        await self.send_message(msg.author, reply)
+
+    @command("^vc album (.*)$", access=-1, name='album',
+             doc_brief="`vc album`: List all songs stored in an "
+             "album in the local library (in a private message).")
+    async def list_album(self, msg, arguments):
+        # try:
+        songs = self.music_manager.list_library(arguments[0])
+        # except:
+        #
+        songs.sort()
         self.logger.info(songs)
         reply = "**Music Library:**\n"
         for song in songs:
