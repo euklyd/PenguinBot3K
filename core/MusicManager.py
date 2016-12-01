@@ -99,12 +99,12 @@ class YouTubeSong(Song):
 
 class MP3Song(Song):
     def __init__(self, name, requestor, channel):
+        self.path = "resources/music/{}".format(name)
         metadata = mutagen.File(self.path)
         title = str(metadata['TIT2'])
         super().__init__(title, requestor, channel)
         self.name = name
         self.url = self.name
-        self.path = "resources/music/{}".format(name)
         # self.title = title
         # self.artist = artist
         # self.requestor = requestor
