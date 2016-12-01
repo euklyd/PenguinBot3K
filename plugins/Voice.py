@@ -66,7 +66,8 @@ class Voice(Plugin):
              doc_brief="`vc library`: List all songs stored in "
              "the local library (in a private message).")
     async def list_library(self, msg, arguments):
-        songs = self.music_manager.list_library().sort()
+        songs = self.music_manager.list_library()
+        song.sort()
         self.logger.info(songs)
         reply = "**Music Library:**\n"
         for song in songs:
