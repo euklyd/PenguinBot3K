@@ -20,6 +20,7 @@ import asyncio
 import discord
 import logging
 import mutagen
+import os
 import queue
 import time
 
