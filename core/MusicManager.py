@@ -172,13 +172,14 @@ class PlaylistEntry():
     #         return {'type': "success", 'response': self.announcement}
 
     async def load(self, voice, after=None):
-        try:
-            self.player = await self.song.create_player(voice, after=after)
-        except:
-            error_msg = "**ERROR:** Couldn't process request for {}".format(
-                self.song.title
-            )
-            return {'type': "error", 'response': error_msg}
+        # try:
+        #     self.player = await self.song.create_player(voice, after=after)
+        # except:
+        #     error_msg = "**ERROR:** Couldn't process request for {}".format(
+        #         self.song.title
+        #     )
+        #     return {'type': "error", 'response': error_msg}
+        self.player = await self.song.create_player(voice, after=after)
         else:
             self.announcement = song.announcement().format(
                 min=self.player.duration / 60,
