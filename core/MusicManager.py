@@ -193,7 +193,7 @@ class PlaylistEntry():
             print(traceback.format_exc())
             return {'type': "error", 'response': error_msg}
         else:
-            self.announcement = song.announcement().format(
+            self.announcement = self.song.announcement().format(
                 min=self.player.duration / 60,
                 sec=self.player.duration % 60,
             )
