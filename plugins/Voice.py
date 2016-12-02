@@ -103,7 +103,7 @@ class Voice(Plugin):
         await self.send_message(msg.author, reply)
 
     @command("^vc queue \"([^\"]*)\"$", access=-1, name='local queue',
-             doc_brief="`vc queue <song>`: Queue the audio from "
+             doc_brief="`vc queue \"<song>\"`: Queue the audio from "
              "a local file named `<song>` (if it exists).")
     async def local_queue(self, msg, arguments):
         song_name = arguments[0]
