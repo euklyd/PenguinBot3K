@@ -255,25 +255,56 @@ class Voice(Plugin):
     async def skip(self, msg, arguments):
         await self.music_manager.skip()
 
+    def generate_playlist_line(self, song, top=False):
+        """
+            Helper function for the playlist commands.
+
+            Takes a Song, and formats an entry for either
+            YouTubeSong or MP3Song.
+        """
+        if (top is True):
+            bullet = "🔊"
+        else:
+            bullet = "-"
+        if (type(song) is YouTubeSong):
+            entry += ("{bullet} ***{song}***, by {uploader} "
+                      "(requested by {requestor})\n").format(
+                bullet=bullet,
+                song=song.title,
+                uploader=song.uploader,
+                requestor=song.requestor
+            )
+        else:
+            entry += ("{bullet} ***{song}***, by {uploader} "
+                      "(requested by {artist})\n").format(
+                bullet=bullet,
+                song=song.title,
+                artist=song.artist,
+                requestor=song.requestor
+            )
+        return entry
+
     @command("^vc playlist$", access=-1, name='playlist',
              doc_brief="`vc playlist`: Show current playlist.")
     async def show_playlist(self, msg, arguments):
         current_song, playlist = await self.music_manager.list_playlist()
         reply = "**Current YouTube Playlist:**\n"
         if (current_song is not None):
-            reply += ("🔊 ** -*{song}***, by {uploader} "
-                      "(requested by {requestor})\n").format(
-                song=current_song.yt_song.title,
-                uploader=current_song.yt_song.uploader,
-                requestor=current_song.yt_song.requestor
-            )
-            for song in playlist:
-                reply += ("** -*{song}***, by {uploader} "
-                          "(requested by {requestor})\n").format(
-                    song=song.yt_song.title,
-                    uploader=song.yt_song.uploader,
-                    requestor=song.yt_song.requestor
-                )
+            # reply += ("🔊 ** -*{song}***, by {uploader} "
+            #           "(requested by {requestor})\n").format(
+            #     song=current_song.yt_song.title,
+            #     uploader=current_song.yt_song.uploader,
+            #     requestor=current_song.yt_song.requestor
+            # )
+            reply += generate_playlist_line(current_song, top=True)
+            for entry in playlist:
+                # reply += ("** -*{song}***, by {uploader} "
+                #           "(requested by {requestor})\n").format(
+                #     song=song.yt_song.title,
+                #     uploader=song.yt_song.uploader,
+                #     requestor=song.yt_song.requestor
+                # )
+                reply += generate_playlist_line(entry.song)
                 # if (len(reply) > 1500):
                 #     await self.send_message(msg.channel, reply)
                 #     reply = ""
@@ -282,20 +313,22 @@ class Voice(Plugin):
         if (len(reply) > 2000):
             reply = "**Next Ten Songs in YouTube Playlist:**\n"
             if (current_song is not None):
-                reply += ("🔊 ** -*{song}***, by {uploader} "
-                          "(requested by {requestor})\n").format(
-                    song=current_song.yt_song.title,
-                    uploader=current_song.yt_song.uploader,
-                    requestor=current_song.yt_song.requestor
-                )
+                # reply += ("🔊 ** -*{song}***, by {uploader} "
+                #           "(requested by {requestor})\n").format(
+                #     song=current_song.yt_song.title,
+                #     uploader=current_song.yt_song.uploader,
+                #     requestor=current_song.yt_song.requestor
+                # )
+                reply += generate_playlist_line(current_song, top=True)
             for i in range(0, 10):
                 try:
-                    line = ("** -*{song}***, by {uploader} "
-                            "(requested by {requestor})\n").format(
-                        song=playlist[i].yt_song.title,
-                        uploader=playlist[i].yt_song.uploader,
-                        requestor=playlist[i].yt_song.requestor
-                    )
+                    # line = ("** -*{song}***, by {uploader} "
+                    #         "(requested by {requestor})\n").format(
+                    #     song=playlist[i].yt_song.title,
+                    #     uploader=playlist[i].yt_song.uploader,
+                    #     requestor=playlist[i].yt_song.requestor
+                    # )
+                    reply += generate_playlist_line(playlist[i].song)
                     if (len(reply) + len(line) > 1950):
                         break
                     else:
