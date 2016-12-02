@@ -15,12 +15,12 @@
 """
 
 from abc import ABCMeta, abstractmethod
+from mutagen import id3
 
 import asyncio
 import discord
 import logging
 import mutagen
-from mutagen import id3
 import os
 import queue
 import time
@@ -172,10 +172,14 @@ class MP3Song(Song):
             self.thumbnail = None
             return None
         elif (self.metadata.get('TXXX:art_url') is None):
-            sent_file = await client.send_file(
-                client.user, self.metadata['APIC:'], filename=self.name
+            # sent_file = await client.send_file(
+            #     client.user, self.metadata['APIC:'], filename=self.name
+            # )
+            # url = sent_file.attachments[0]['url']
+            sent_file = await client.imgur.upload(
+                self.metadata['APIC:'], anon=False
             )
-            url = sent_file.attachments[0]['url']
+            url = sent_file['link']
             # url_frame = mutagen.id3.TXXX(encoding=3, desc=u'art_url', text=[u'https://i.sli.mg/olTqCE.png'])
             # url_frame = mutagen.id3.TXXX(
             url_frame = id3.TXXX(
