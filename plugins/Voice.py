@@ -88,7 +88,7 @@ class Voice(Plugin):
         await self.send_message(msg.author, albums_reply)
         await self.send_message(msg.author, songs_reply)
 
-    @command("^vc album \"([^\"])\"$", access=-1, name='album',
+    @command("^vc album \"([^\"]*)\"$", access=-1, name='album',
              doc_brief="`vc album \"<album>\"`: List all songs stored in the "
              "album `<album>` in the local library (in a private message).")
     async def list_album(self, msg, arguments):
