@@ -59,7 +59,7 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
-        self.imgur = ImgurClient(self)
+        self.imgur = Imgur(self)
 
         if (self.config.channel_logging is True):
             self.log_manager = LogManager(self)
