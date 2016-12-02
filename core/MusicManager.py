@@ -168,6 +168,7 @@ class MP3Song(Song):
 
     async def save_artwork_url(self, client):
         if (self.metadata.get('APIC:') is None):
+            self.logger.info("No album artwork found (no 'APIC:' key)")
             self.thumbnail = None
             return None
         elif (self.metadata.get('TXXX:art_url') is None):
@@ -182,9 +183,16 @@ class MP3Song(Song):
             )
             self.metadata.add(url_frame)
             self.metadata.save()
+            self.logger.info("Added '{}' to the ID3 tag 'TXXX:art_url'".format(
+                url
+            ))
+            self.thumbnail = url
             return 0
         else:
-            self.thumbnail = self.metadata['TXXX:art_url']
+            self.thumbnail = self.metadata['TXXX:art_url'].text[0]
+            self.logger.info("Found existing artwork url: '{}'".format(
+                self.thumbnail
+            ))
             return 0
 
     def announcement(self):
