@@ -173,7 +173,7 @@ class MP3Song(Song):
             return None
         elif (self.metadata.get('TXXX:art_url') is None):
             sent_file = await client.send_file(
-                client.user.id, self.metadata['APIC:'], filename=self.name
+                client.user, self.metadata['APIC:'], filename=self.name
             )
             url = sent_file.attachments[0]['url']
             # url_frame = mutagen.id3.TXXX(encoding=3, desc=u'art_url', text=[u'https://i.sli.mg/olTqCE.png'])
