@@ -116,7 +116,7 @@ class YouTubeSong(Song):
             value="[{min:0>2.0f}:{sec:0>2d}]".format(
                 min=int(self.duration / 60),
                 sec=int(self.duration % 60),
-            )
+            ),
             inline=True)
         em.set_footer(
             text="*Requested by {}*".format(self.requestor.nick),
