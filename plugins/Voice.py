@@ -268,16 +268,16 @@ class Voice(Plugin):
         else:
             bullet = "-"
         if (type(song) is YouTubeSong):
-            entry += ("{bullet} ***{song}***, by {uploader} "
-                      "(requested by {requestor})\n").format(
+            entry = ("{bullet} ***{song}***, by {uploader} "
+                     "(requested by {requestor})\n").format(
                 bullet=bullet,
                 song=song.title,
                 uploader=song.uploader,
                 requestor=song.requestor
             )
         else:
-            entry += ("{bullet} ***{song}***, by {uploader} "
-                      "(requested by {artist})\n").format(
+            entry = ("{bullet} ***{song}***, by {uploader} "
+                     "(requested by {artist})\n").format(
                 bullet=bullet,
                 song=song.title,
                 artist=song.artist,
