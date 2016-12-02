@@ -63,7 +63,8 @@ class Song(metaclass=ABCMeta):
 
 
 class YouTubeSong(Song):
-    def __init__(self, yt_url, title, uploader, requestor, channel):
+    def __init__(self, yt_url, title, uploader, requestor,
+                 channel, thumbnail=None):
         """
             Arguments:
                 yt_url (str):   URL of the YouTube video
@@ -82,20 +83,51 @@ class YouTubeSong(Song):
         # self.duration = duration
         # self.requestor = requestor
         # self.channel = channel
+        self.thumbnail = thumbnail
 
     def announcement(self):
-        announcement = ("**Now playing:** *{title}* "
-                        "[{{min:0>2.0f}}:{{sec:0>2d}}], "
-                        "by {uploader}\n*Requested by {user}*").format(
-            title=self.title,
-            uploader=self.uploader,
-            user=self.requestor.name
+        # announcement = ("**Now playing:** *{title}* "
+        #                 "[{{min:0>2.0f}}:{{sec:0>2d}}], "
+        #                 "by {uploader}\n*Requested by {user}*").format(
+        #     title=self.title,
+        #     uploader=self.uploader,
+        #     user=self.requestor.name
+        # )
+
+        # announcement = ("**Now playing:** *{title}* "
+        #                 "[{min:0>2.0f}:{sec:0>2d}], "
+        #                 "by {uploader}\n*Requested by {user}*").format(
+        #     title=self.title,
+        #     min=int(self.duration / 60),
+        #     sec=int(self.duration % 60),
+        #     uploader=self.uploader,
+        #     user=self.requestor.name
+        # )
+        # return announcement
+
+        em = discord.Embed(color=self.requestor.color)
+        if (self.thumbnail is not None):
+            em.set_author(name=self.title, icon_url=self.thumbnail)
+        else:
+            em.set_author(name=self.title)
+        em.add_field(name="Uploader", value=self.uploader, inline=True)
+        em.add_field(
+            name="Duration",
+            value="[{min:0>2.0f}:{sec:0>2d}]".format(
+                min=int(self.duration / 60),
+                sec=int(self.duration % 60),
+            )
+            inline=True)
+        em.set_footer(
+            text="*Requested by {}*".format(self.requestor.nick),
+            icon_url=self.requestor.avatar_url
         )
-        return announcement
+        return em
 
     async def create_player(self, voice, after=None):
         self.logger.info("YouTubeSong: creating player")
         player = await voice.create_ytdl_player(self.url, after=after)
+        self.duration = player.duration
         return player
 
 
@@ -127,10 +159,19 @@ class MP3Song(Song):
         self.duration = metadata.info.length
 
     def announcement(self):
+        # announcement = ("**Now playing:** *{title}* "
+        #                 "[{{min:0>2.0f}}:{{sec:0>2d}}], "
+        #                 "by {artist}\n*Requested by {user}*").format(
+        #     title=self.title,
+        #     artist=self.artist,
+        #     user=self.requestor.name
+        # )
         announcement = ("**Now playing:** *{title}* "
-                        "[{{min:0>2.0f}}:{{sec:0>2d}}], "
+                        "[{min:0>2.0f}:{sec:0>2d}], "
                         "by {artist}\n*Requested by {user}*").format(
             title=self.title,
+            min=int(self.duration / 60),
+            sec=int(self.duration % 60),
             artist=self.artist,
             user=self.requestor.name
         )
@@ -195,10 +236,11 @@ class PlaylistEntry():
             print(traceback.format_exc())
             return {'type': "error", 'response': error_msg}
         else:
-            self.announcement = self.song.announcement().format(
-                min=int(self.player.duration / 60),
-                sec=int(self.player.duration % 60),
-            )
+            # self.announcement = self.song.announcement().format(
+            #     min=int(self.player.duration / 60),
+            #     sec=int(self.player.duration % 60),
+            # )
+            self.announcement = self.song.announcement()
             return {'type': "success", 'response': self.announcement}
 
 
@@ -294,12 +336,16 @@ class MusicManager():
                 announcement = await self.current_song.load(
                     voice=self.voice, after=self.advance_queue
                 )
-                await self.core.send_message(
-                    # self.current_song.yt_song.channel,
-                    self.current_song.song.channel,
-                    # self.current_song.announcement
-                    announcement['response']
-                )
+                if (type(announcement) is discord.Embed):
+                    await self.core.send_message(
+                        self.current_song.song.channel,
+                        embed=announcement['response']
+                    )
+                else:
+                    await self.core.send_message(
+                        self.current_song.song.channel,
+                        announcement['response']
+                    )
                 if (announcement['type'] == "error"):
                     pass
                 else:
@@ -314,6 +360,7 @@ class MusicManager():
             uploader=yt_embed['author']['name'],
             requestor=requestor,
             channel=channel,
+            thumbnail=yt_embed['thumbnail']['url']
         )
         self.logger.info("yt_add: Created song {}".format(yt_embed['title']))
         # try:
