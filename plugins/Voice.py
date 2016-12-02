@@ -43,8 +43,6 @@ class Voice(Plugin):
         await self.core.wait_until_login()
         self.music_manager = self.core.music_manager
 
-        # pass
-
     async def deactivate(self):
         await self.music_manager.close()
 
@@ -76,10 +74,6 @@ class Voice(Plugin):
         library = self.music_manager.list_library()
         library.sort()
         self.logger.info(library)
-        # reply = "**Music Library:**\n"
-        # for song in library:
-        #     reply += "- {}\n".format(song)
-        # await self.send_message(msg.author, reply)
         songs_reply = "**Unfiled Songs:**\n"
         albums_reply = "**Album Library:**\n"
         # songs = []
@@ -149,23 +143,6 @@ class Voice(Plugin):
         await self.send_message(msg.channel, response)
         await asyncio.sleep(1)
         await self.delete_message(msg)
-
-    # @command("^vc tokusentai|TOKUSENTAI|\*\*TOKUSENTAI\*\*$",
-    #          access=ACCESS['maestro'], name='tokusentai',
-    #          doc_brief=("`vc tokusentai`: Tokusentai\t*Tokusentai*\t"
-    #          "TOKUSENTAI\t**TOKUSENTAI**"))
-    # async def tokusentai(self, msg, arguments):
-    #     if (self.voice is None or self.voice.is_connected() is False):
-    #         await self.send_message(
-    #             msg.channel,
-    #             "**ERROR:** I'm not connected to voice right now."
-    #         )
-    #         return
-    #     if (self.player is not None and self.player.is_playing()):
-    #         self.player.stop()
-    #     tokusentai_src = "resources/music/05-sanjou-ginyu-tokusentai.mp3"
-    #     self.player = self.voice.create_ffmpeg_player(tokusentai_src)
-    #     self.player.start()
 
     @command("^vc yt queue (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
              access=-1, name='yt queue',
@@ -291,20 +268,8 @@ class Voice(Plugin):
         current_song, playlist = await self.music_manager.list_playlist()
         reply = "**Current YouTube Playlist:**\n"
         if (current_song is not None):
-            # reply += ("🔊 ** -*{song}***, by {uploader} "
-            #           "(requested by {requestor})\n").format(
-            #     song=current_song.yt_song.title,
-            #     uploader=current_song.yt_song.uploader,
-            #     requestor=current_song.yt_song.requestor
-            # )
             reply += self.generate_playlist_line(current_song.song, top=True)
             for entry in playlist:
-                # reply += ("** -*{song}***, by {uploader} "
-                #           "(requested by {requestor})\n").format(
-                #     song=song.yt_song.title,
-                #     uploader=song.yt_song.uploader,
-                #     requestor=song.yt_song.requestor
-                # )
                 reply += self.generate_playlist_line(entry.song)
                 # if (len(reply) > 1500):
                 #     await self.send_message(msg.channel, reply)
@@ -314,21 +279,9 @@ class Voice(Plugin):
         if (len(reply) > 2000):
             reply = "**Next Ten Songs in YouTube Playlist:**\n"
             if (current_song is not None):
-                # reply += ("🔊 ** -*{song}***, by {uploader} "
-                #           "(requested by {requestor})\n").format(
-                #     song=current_song.yt_song.title,
-                #     uploader=current_song.yt_song.uploader,
-                #     requestor=current_song.yt_song.requestor
-                # )
                 reply += self.generate_playlist_line(current_song.song, top=True)
             for i in range(0, 10):
                 try:
-                    # line = ("** -*{song}***, by {uploader} "
-                    #         "(requested by {requestor})\n").format(
-                    #     song=playlist[i].yt_song.title,
-                    #     uploader=playlist[i].yt_song.uploader,
-                    #     requestor=playlist[i].yt_song.requestor
-                    # )
                     reply += self.generate_playlist_line(playlist[i].song)
                     if (len(reply) + len(line) > 1950):
                         break
