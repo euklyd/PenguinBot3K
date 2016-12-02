@@ -127,7 +127,8 @@ class MP3Song(Song):
         self.duration = metadata.info.length
 
     def announcement(self):
-        announcement = ("**Now playing:** *{title}* [{{min}}:{{sec}}], "
+        announcement = ("**Now playing:** *{title}* "
+                        "[{{min:0>2.0f}}:{{sec:0>2d}}], "
                         "by {artist}\n*Requested by {user}*").format(
             title=self.title,
             artist=self.artist,
