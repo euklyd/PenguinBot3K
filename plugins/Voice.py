@@ -62,6 +62,11 @@ class Voice(Plugin):
                 msg.channel,
                 "**ERROR:** The channel you specified is not a voice channel."
             )
+        except:
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** Something went terribly, terribly wrong in `joinvc()`"
+            )
 
     @command("^vc library$", access=-1, name='library',
              doc_brief="`vc library`: List all songs stored in "
@@ -99,7 +104,7 @@ class Voice(Plugin):
             reply = "**Music Library:**\n"
             for song in songs:
                 reply += "- {}\n".format(song)
-            reply += ('\n*(Use* `{trigger} vc queue "{album}"` "<song>" '
+            reply += ('\n*(Use* `{trigger}vc queue "{album}" "<song>"` '
                       '*to play a song from "{album}")*'.format(
                         trigger=self.core.default_trigger,
                         album=arguments[0])
