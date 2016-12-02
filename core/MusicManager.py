@@ -121,7 +121,7 @@ class YouTubeSong(Song):
             ),
             inline=True)
         em.set_footer(
-            text="*Requested by {}*".format(self.requestor.nick),
+            text="(Requested by {})".format(self.requestor.nick),
             icon_url=self.requestor.avatar_url
         )
         return em
@@ -136,9 +136,10 @@ class YouTubeSong(Song):
 class MP3Song(Song):
     def __init__(self, name, requestor, channel):
         self.path = "resources/music/{}".format(name)
-        metadata = mutagen.File(self.path)
-        if (metadata.get('TIT2') is not None):
-            title = str(metadata['TIT2'])
+        # self.metadata = mutagen.File(self.path)
+        self.metadata = mutagen.id3.ID3(self.path)
+        if (self.metadata.get('TIT2') is not None):
+            title = str(self.metadata['TIT2'])
         else:
             title = "{} (unknown title)".format(name)
         super().__init__(title, requestor, channel)
@@ -148,17 +149,40 @@ class MP3Song(Song):
         # self.artist = artist
         # self.requestor = requestor
         # self.channel = channel
-        # metadata = mutagen.File(self.path)
-        # self.title = str(metadata['TIT2'])
-        if (metadata.get('TPE1') is not None):
-            self.artist = str(metadata['TPE1'])
-        elif (metadata.get('TOPE') is not None):
-            self.artist = str(metadata['TOPE'])
-        elif (metadata.get('TCOM') is not None):
-            self.artist = str(metadata['TCOM'])
+        # self.metadata = mutagen.File(self.path)
+        # self.title = str(self.metadata['TIT2'])
+        if (self.metadata.get('TPE1') is not None):
+            self.artist = str(self.metadata['TPE1'])
+        elif (self.metadata.get('TOPE') is not None):
+            self.artist = str(self.metadata['TOPE'])
+        elif (self.metadata.get('TCOM') is not None):
+            self.artist = str(self.metadata['TCOM'])
         else:
             self.artist = "Unknown Artist"
-        self.duration = metadata.info.length
+        self.duration = self.metadata.info.length
+
+        # To be overwritten later, hopefully
+        self.thumbnail = None
+
+    async def save_artwork_url(self, client):
+        if (self.metadata.get('APIC:') is None):
+            self.thumbnail = None
+            return None
+        elif (self.metadata.get('TXXX:art_url') is None):
+            sent_file = await client.send_file(
+                client.user.id, self.metadata['APIC:'], filename=self.name
+            )
+            url = sent_file.attachments[0]['url']
+            # url_frame = mutagen.id3.TXXX(encoding=3, desc=u'art_url', text=[u'https://i.sli.mg/olTqCE.png'])
+            url_frame = mutagen.id3.TXXX(
+                encoding=3, desc=u'art_url', text=[url]
+            )
+            self.metadata.add(url_frame)
+            self.metadata.save()
+            return 0
+        else:
+            self.thumbnail = self.metadata['TXXX:art_url']
+            return 0
 
     def announcement(self):
         # announcement = ("**Now playing:** *{title}* "
@@ -168,16 +192,38 @@ class MP3Song(Song):
         #     artist=self.artist,
         #     user=self.requestor.name
         # )
-        announcement = ("**Now playing:** *{title}* "
-                        "[{min:0>2.0f}:{sec:0>2d}], "
-                        "by {artist}\n*Requested by {user}*").format(
-            title=self.title,
-            min=int(self.duration / 60),
-            sec=int(self.duration % 60),
-            artist=self.artist,
-            user=self.requestor.name
+
+        # announcement = ("**Now playing:** *{title}* "
+        #                 "[{min:0>2.0f}:{sec:0>2d}], "
+        #                 "by {artist}\n*Requested by {user}*").format(
+        #     title=self.title,
+        #     min=int(self.duration / 60),
+        #     sec=int(self.duration % 60),
+        #     artist=self.artist,
+        #     user=self.requestor.name
+        # )
+        # return announcement
+
+        em = discord.Embed(color=self.requestor.color)
+        if (self.thumbnail is not None):
+            # em.set_author(name=self.title, icon_url=self.thumbnail)
+            em.set_author(name=self.title)
+            em.set_thumbnail(url=self.thumbnail)
+        else:
+            em.set_author(name=self.title)
+        em.add_field(name="Artist", value=self.artist, inline=True)
+        em.add_field(
+            name="Duration",
+            value="[{min:0>2.0f}:{sec:0>2d}]".format(
+                min=int(self.duration / 60),
+                sec=int(self.duration % 60),
+            ),
+            inline=True)
+        em.set_footer(
+            text="(Requested by {})".format(self.requestor.nick),
+            icon_url=self.requestor.avatar_url
         )
-        return announcement
+        return em
 
     async def create_player(self, voice, after=None):
         self.logger.info("MP3Song: creating player")
@@ -406,6 +452,7 @@ class MusicManager():
         if (not os.path.isfile("resources/music/{}".format(name))):
             raise OSError("Song not found")
         song = MP3Song(name, requestor, channel)
+        song.save_artwork_url(self.core)
         self.logger.info("mp3_add: Created song {}".format(song.title))
         playlist_entry = PlaylistEntry(song)
         self.logger.info(
