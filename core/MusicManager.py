@@ -421,9 +421,13 @@ class MusicManager():
             self.current_song.player.stop()
 
     def list_library(self, album=""):
-        library = os.listdir("resources/music/{}".format(album))
-        self.logger.info(library)
-        return library
+        try:
+            library = os.listdir("resources/music/{}".format(album))
+            self.logger.debug(library)
+            return library
+        except FileNotFoundError:
+            self.logger.info("No album found for '{}'".format(album))
+            return None
 
     async def list_playlist(self):
         # playlist = list(self.playlist_queue.queue)

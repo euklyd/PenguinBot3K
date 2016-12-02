@@ -88,20 +88,26 @@ class Voice(Plugin):
         await self.send_message(msg.author, albums_reply)
         await self.send_message(msg.author, songs_reply)
 
-    @command("^vc album (.*)$", access=-1, name='album',
-             doc_brief="`vc album <album>`: List all songs stored in the "
+    @command("^vc album \"([^\"])\"$", access=-1, name='album',
+             doc_brief="`vc album \"<album>\"`: List all songs stored in the "
              "album `<album>` in the local library (in a private message).")
     async def list_album(self, msg, arguments):
-        # try:
         songs = self.music_manager.list_library(arguments[0])
-        # except:
-        #
-        songs.sort()
-        self.logger.info(songs)
-        reply = "**Music Library:**\n"
-        for song in songs:
-            reply += "- {}\n".format(song)
-        await self.send_message(msg.author, reply)
+        if (songs is not None):
+            songs.sort()
+            self.logger.debug(songs)
+            reply = "**Music Library:**\n"
+            for song in songs:
+                reply += "- {}\n".format(song)
+            reply += ('\n*(Use* `{trigger} vc queue "{album}"` "<song>" '
+                      '*to play a song from "{album}")*'.format(
+                        trigger=self.core.default_trigger,
+                        album=arguments[0])
+                      )
+        else:
+            reply = "**ERROR:** No album '{}' exists.".format(arguments[0])
+        # await self.send_message(msg.author, reply)
+        await self.send_message(msg.channel, reply)
 
     @command("^vc queue \"([^\"]*)\"$", access=-1, name='local queue',
              doc_brief="`vc queue \"<song>\"`: Queue the audio from "
