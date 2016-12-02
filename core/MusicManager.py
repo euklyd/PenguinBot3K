@@ -196,8 +196,8 @@ class PlaylistEntry():
             return {'type': "error", 'response': error_msg}
         else:
             self.announcement = self.song.announcement().format(
-                min=self.player.duration / 60,
-                sec=self.player.duration % 60,
+                min=int(self.player.duration / 60),
+                sec=int(self.player.duration % 60),
             )
             return {'type': "success", 'response': self.announcement}
 
