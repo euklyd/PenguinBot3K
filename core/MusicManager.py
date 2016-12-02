@@ -463,7 +463,7 @@ class MusicManager():
         if (not os.path.isfile("resources/music/{}".format(name))):
             raise OSError("Song not found")
         song = MP3Song(name, requestor, channel)
-        song.save_artwork_url(self.core)
+        await song.save_artwork_url(self.core)
         self.logger.info("mp3_add: Created song {}".format(song.title))
         playlist_entry = PlaylistEntry(song)
         self.logger.info(
