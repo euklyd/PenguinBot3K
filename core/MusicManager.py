@@ -84,7 +84,8 @@ class YouTubeSong(Song):
         # self.channel = channel
 
     def announcement(self):
-        announcement = ("**Now playing:** *{title}* [{{min}}:{{sec}}], "
+        announcement = ("**Now playing:** *{title}* "
+                        "[{{min:0>2.0f}}:{{sec:0>2d}}], "
                         "by {uploader}\n*Requested by {user}*").format(
             title=self.title,
             uploader=self.uploader,
