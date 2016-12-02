@@ -85,3 +85,15 @@ plugins = [
     'Moderation',
     'Utility'
 ]
+
+# imgur API
+# You'll need an authorized application, which you can create yourself
+# in about 5 minutes. This can then be connected to an existing imgur
+# account (of yours).
+# More info about all this can be found at http://api.imgur.com/
+imgur_api = {
+    'id': "YOUR IMGUR API ID",
+    'secret': 'YOUR IMGUR API SECRET',
+    'access': 'YOUR ACCESS TOKEN',
+    'refresh': 'YOUR REFRESH TOKEN'
+}
