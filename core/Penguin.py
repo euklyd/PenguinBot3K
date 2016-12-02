@@ -30,6 +30,7 @@ from core.Command import CommandManager
 from core.Database import Database
 from core.Event import EventManager
 from core.PluginManager import PluginManager
+from core.Imgur import Imgur
 from core.LogManager import LogManager
 from core.MusicManager import MusicManager
 

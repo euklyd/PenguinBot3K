@@ -1,5 +1,5 @@
 """
-    Class Name : ImgurClient
+    Class Name : Imgur
 
     Description:
         Interfaces with the imgur API.
