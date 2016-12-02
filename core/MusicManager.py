@@ -107,7 +107,9 @@ class YouTubeSong(Song):
 
         em = discord.Embed(color=self.requestor.color)
         if (self.thumbnail is not None):
-            em.set_author(name=self.title, icon_url=self.thumbnail)
+            # em.set_author(name=self.title, icon_url=self.thumbnail)
+            em.set_author(name=self.title)
+            em.set_thumbnail(url=self.thumbnail)
         else:
             em.set_author(name=self.title)
         em.add_field(name="Uploader", value=self.uploader, inline=True)
@@ -333,21 +335,19 @@ class MusicManager():
                 # self.current_song = await self.playlist_queue.get()
                 self.current_song = self.playlist_queue.get()
                 self.logger.debug("got next song")
-                announcement = await self.current_song.load(
+                announce = await self.current_song.load(
                     voice=self.voice, after=self.advance_queue
                 )
-                self.logger.info(type(announcement['response']))  ##RM
-                if (type(announcement['response']) is discord.embeds.Embed):
+                if (type(announce['response']) is discord.embeds.Embed):
                     await self.core.send_message(
                         self.current_song.song.channel,
-                        embed=announcement['response']
+                        embed=announce['response']
                     )
                 else:
                     await self.core.send_message(
-                        self.current_song.song.channel,
-                        announcement['response']
+                        self.current_song.song.channel, announce['response']
                     )
-                if (announcement['type'] == "error"):
+                if (announce['type'] == "error"):
                     pass
                 else:
                     self.current_song.player.start()
