@@ -19,7 +19,8 @@ from abc import ABCMeta, abstractmethod
 import asyncio
 import discord
 import logging
-import mutagen
+# import mutagen
+from mutagen import id3
 import os
 import queue
 import time
@@ -137,7 +138,8 @@ class MP3Song(Song):
     def __init__(self, name, requestor, channel):
         self.path = "resources/music/{}".format(name)
         # self.metadata = mutagen.File(self.path)
-        self.metadata = mutagen.id3.ID3(self.path)
+        # self.metadata = mutagen.id3.ID3(self.path)
+        self.metadata = id3.ID3(self.path)
         if (self.metadata.get('TIT2') is not None):
             title = str(self.metadata['TIT2'])
         else:
@@ -174,7 +176,8 @@ class MP3Song(Song):
             )
             url = sent_file.attachments[0]['url']
             # url_frame = mutagen.id3.TXXX(encoding=3, desc=u'art_url', text=[u'https://i.sli.mg/olTqCE.png'])
-            url_frame = mutagen.id3.TXXX(
+            # url_frame = mutagen.id3.TXXX(
+            url_frame = id3.TXXX(
                 encoding=3, desc=u'art_url', text=[url]
             )
             self.metadata.add(url_frame)
