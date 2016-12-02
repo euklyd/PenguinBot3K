@@ -77,10 +77,11 @@ class Plugin(object):
                 None
         """
         self.logger.info("Plugin.send_reply invoked")
-        await self.core.send_message(
+        sent = await self.core.send_message(
             message.channel, "<@!{}>: {}".format(
                 message.author.id, message_str, embed=embed)
         )
+        return sent
 
     async def send_message(self, destination, message_str=None, embed=None):
         """
@@ -97,7 +98,10 @@ class Plugin(object):
                 None
         """
         self.logger.info("Plugin.send_message invoked")
-        await self.core.send_message(destination, message_str, embed=embed)
+        sent = await self.core.send_message(
+            destination, message_str, embed=embed
+        )
+        return sent
 
     async def send_whisper(self, user, message_str=None, embed=None):
         """
@@ -112,7 +116,8 @@ class Plugin(object):
             Returns:
                 None
         """
-        await self.core.send_message(user, message_str, embed=embed)
+        sent = await self.core.send_message(user, message_str, embed=embed)
+        return sent
 
     async def get_messages(self, channel, limit, before=None):
         """
@@ -146,7 +151,8 @@ class Plugin(object):
             Returns:
                 None
         """
-        await self.core.delete_message(msg)
+        deleted = await self.core.delete_message(msg)
+        return deleted
 
     async def send_file(self, destination, filepath, filename=None,
                         content=None, tts=False):
@@ -180,8 +186,10 @@ class Plugin(object):
                     uid=destination.id
                 )
             )
-        await self.core.send_file(destination, filepath, filename=filename,
-                                  content=content, tts=tts)
+        sent = await self.core.send_file(destination, filepath,
+                                         filename=filename,
+                                         content=content, tts=tts)
+        return sent
 
     async def get_user_info(self, user_id):
         """
