@@ -177,7 +177,7 @@ class MP3Song(Song):
             # )
             # url = sent_file.attachments[0]['url']
             sent_file = await client.imgur.upload(
-                self.metadata['APIC:'], anon=False
+                self.metadata['APIC:'].data, anon=False
             )
             url = sent_file['link']
             # url_frame = mutagen.id3.TXXX(encoding=3, desc=u'art_url', text=[u'https://i.sli.mg/olTqCE.png'])
