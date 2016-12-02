@@ -296,7 +296,7 @@ class Voice(Plugin):
             #     uploader=current_song.yt_song.uploader,
             #     requestor=current_song.yt_song.requestor
             # )
-            reply += generate_playlist_line(current_song, top=True)
+            reply += self.generate_playlist_line(current_song, top=True)
             for entry in playlist:
                 # reply += ("** -*{song}***, by {uploader} "
                 #           "(requested by {requestor})\n").format(
@@ -304,7 +304,7 @@ class Voice(Plugin):
                 #     uploader=song.yt_song.uploader,
                 #     requestor=song.yt_song.requestor
                 # )
-                reply += generate_playlist_line(entry.song)
+                reply += self.generate_playlist_line(entry.song)
                 # if (len(reply) > 1500):
                 #     await self.send_message(msg.channel, reply)
                 #     reply = ""
@@ -319,7 +319,7 @@ class Voice(Plugin):
                 #     uploader=current_song.yt_song.uploader,
                 #     requestor=current_song.yt_song.requestor
                 # )
-                reply += generate_playlist_line(current_song, top=True)
+                reply += self.generate_playlist_line(current_song, top=True)
             for i in range(0, 10):
                 try:
                     # line = ("** -*{song}***, by {uploader} "
@@ -328,7 +328,7 @@ class Voice(Plugin):
                     #     uploader=playlist[i].yt_song.uploader,
                     #     requestor=playlist[i].yt_song.requestor
                     # )
-                    reply += generate_playlist_line(playlist[i].song)
+                    reply += self.generate_playlist_line(playlist[i].song)
                     if (len(reply) + len(line) > 1950):
                         break
                     else:
