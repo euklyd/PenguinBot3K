@@ -297,7 +297,7 @@ class Voice(Plugin):
             #     uploader=current_song.yt_song.uploader,
             #     requestor=current_song.yt_song.requestor
             # )
-            reply += self.generate_playlist_line(current_song, top=True)
+            reply += self.generate_playlist_line(current_song.song, top=True)
             for entry in playlist:
                 # reply += ("** -*{song}***, by {uploader} "
                 #           "(requested by {requestor})\n").format(
@@ -320,7 +320,7 @@ class Voice(Plugin):
                 #     uploader=current_song.yt_song.uploader,
                 #     requestor=current_song.yt_song.requestor
                 # )
-                reply += self.generate_playlist_line(current_song, top=True)
+                reply += self.generate_playlist_line(current_song.song, top=True)
             for i in range(0, 10):
                 try:
                     # line = ("** -*{song}***, by {uploader} "
