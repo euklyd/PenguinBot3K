@@ -552,5 +552,7 @@ class MusicManager():
         # if (self.voice is not None and self.voice.is_connected()):
         if (self.voice is not None):
             await self.voice.move_to(channel)
+            self.logger.info("Switched to vc #{}".format(channel.name))
         else:
             self.voice = await self.core.join_voice_channel(channel)
+            self.logger.info("Connected to vc #{}".format(channel.name))
