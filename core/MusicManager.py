@@ -19,7 +19,7 @@ from abc import ABCMeta, abstractmethod
 import asyncio
 import discord
 import logging
-# import mutagen
+import mutagen
 from mutagen import id3
 import os
 import queue
@@ -137,7 +137,7 @@ class YouTubeSong(Song):
 class MP3Song(Song):
     def __init__(self, name, requestor, channel):
         self.path = "resources/music/{}".format(name)
-        # self.metadata = mutagen.File(self.path)
+        mutagen_file = mutagen.File(self.path)
         # self.metadata = mutagen.id3.ID3(self.path)
         self.metadata = id3.ID3(self.path)
         if (self.metadata.get('TIT2') is not None):
@@ -161,7 +161,7 @@ class MP3Song(Song):
             self.artist = str(self.metadata['TCOM'])
         else:
             self.artist = "Unknown Artist"
-        self.duration = self.metadata.info.length
+        self.duration = mutagen_file.info.length
 
         # To be overwritten later, hopefully
         self.thumbnail = None
