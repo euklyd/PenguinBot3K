@@ -16,6 +16,7 @@
 
 from core.Plugin import Plugin
 from core.Decorators import *
+from core.MusicManager import YouTubeSong, MP3Song
 
 import asyncio
 import discord
