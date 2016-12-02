@@ -21,14 +21,15 @@ import base64
 class Imgur(ImgurClient):
     def __init__(self, core):
         self.core = core
+        imgur_api = core.config.imgur_api
         # self.id = core.config.imgur['id']
         # self.secret = core.config.imgur['secret']
         # self.refresh = core.config.imgur['refresh']
         # self.access = core.config.imgur['access']
-        client_id = core.config.imgur['id']
-        client_secret = core.config.imgur['secret']
-        refresh_token = core.config.imgur['refresh']
-        access_token = core.config.imgur['access']
+        client_id = imgur_api['id']
+        client_secret = imgur_api['secret']
+        refresh_token = imgur_api['refresh']
+        access_token = imgur_api['access']
 
         # client = ImgurClient(client_id, client_secret, access_token, refresh_token)
         super().__init__(client_id, client_secret, access_token, refresh_token)
