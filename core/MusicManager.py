@@ -139,7 +139,7 @@ class MP3Song(Song):
     async def create_player(self, voice, after=None):
         self.logger.info("MP3Song: creating player")
         player = voice.create_ffmpeg_player(self.path, after=after)
-        player.duration = self.duration
+        player.duration = int(self.duration)
         return player
 
 
