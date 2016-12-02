@@ -47,6 +47,10 @@ class PenguinBot(discord.Client):
         # Setup logger and load config
         self.setup_logger()
         self.config = self.load_config("settings")
+        if (type(self.core.config.trigger) is tuple or type(self.core.config.trigger) is list):
+            self.default_trigger = self.config.trigger[0]
+        else:
+            self.default_trigger = self.config.trigger
         self.bot_name = self.config.username
 
         # Setup managers
