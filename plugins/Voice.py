@@ -66,17 +66,30 @@ class Voice(Plugin):
              doc_brief="`vc library`: List all songs stored in "
              "the local library (in a private message).")
     async def list_library(self, msg, arguments):
-        songs = self.music_manager.list_library()
-        songs.sort()
-        self.logger.info(songs)
-        reply = "**Music Library:**\n"
-        for song in songs:
-            reply += "- {}\n".format(song)
-        await self.send_message(msg.author, reply)
+        library = self.music_manager.list_library()
+        library.sort()
+        self.logger.info(library)
+        # reply = "**Music Library:**\n"
+        # for song in library:
+        #     reply += "- {}\n".format(song)
+        # await self.send_message(msg.author, reply)
+        songs_reply = "**Unfiled Songs:**\n"
+        albums_reply = "**Album Library:**\n"
+        # songs = []
+        # albums = []
+        for item in library:
+            if (os.path.isdir("resources/music/{}".format(item))):
+                # albums.append(item)
+                albums_reply += "- {}\n".format(item)
+            else:
+                # songs.append(item)
+                songs_reply += "- {}\n".format(item)
+        await self.send_message(msg.author, albums_reply)
+        await self.send_message(msg.author, songs_reply)
 
     @command("^vc album (.*)$", access=-1, name='album',
-             doc_brief="`vc album`: List all songs stored in an "
-             "album in the local library (in a private message).")
+             doc_brief="`vc album <album>`: List all songs stored in the "
+             "album `<album>` in the local library (in a private message).")
     async def list_album(self, msg, arguments):
         # try:
         songs = self.music_manager.list_library(arguments[0])
@@ -89,11 +102,29 @@ class Voice(Plugin):
             reply += "- {}\n".format(song)
         await self.send_message(msg.author, reply)
 
-    @command("^vc queue (.*)$", access=-1, name='local queue',
-             doc_brief="`vc queue <song_name>`: Queue the audio from "
-             "a local file named `<song_name>` (if it exists).")
+    @command("^vc queue \"([^\"]*)\"$", access=-1, name='local queue',
+             doc_brief="`vc queue <song>`: Queue the audio from "
+             "a local file named `<song>` (if it exists).")
     async def local_queue(self, msg, arguments):
         song_name = arguments[0]
+        try:
+            response = await self.music_manager.mp3_add(
+                song_name, msg.author, msg.channel
+            )
+            response = response['response']
+        except OSError:
+            response = ("Song not found; use `vc library` to see"
+                        "available selections.")
+        await self.send_message(msg.channel, response)
+        await asyncio.sleep(1)
+        await self.delete_message(msg)
+
+    @command("^vc queue \"([^\"]*)\" \"([^\"]*)\"$", access=-1,
+             name='local queue',
+             doc_brief="`vc queue \"<album>\" \"<song>\"`: Queue the audio "
+             "from a local file `<song>` in `<album>` (if it exists).")
+    async def local_queue_albumsong(self, msg, arguments):
+        song_name = "{}/{}".format(arguments[0], arguments[1])
         try:
             response = await self.music_manager.mp3_add(
                 song_name, msg.author, msg.channel
