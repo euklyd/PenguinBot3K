@@ -336,7 +336,8 @@ class MusicManager():
                 announcement = await self.current_song.load(
                     voice=self.voice, after=self.advance_queue
                 )
-                if (type(announcement) is discord.embeds.Embed):
+                self.logger.info(type(announcement['response']))  ##RM
+                if (type(announcement['response']) is discord.embeds.Embed):
                     await self.core.send_message(
                         self.current_song.song.channel,
                         embed=announcement['response']
