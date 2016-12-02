@@ -58,6 +58,8 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
+        self.imgur = ImgurClient(self)
+
         if (self.config.channel_logging is True):
             self.log_manager = LogManager(self)
 
@@ -173,6 +175,13 @@ class PenguinBot(discord.Client):
                 )
             )
         await self.connector._handleMessage(msg)
+        if (msg.author.id == "136107769680887808"):
+            self.logger.info(msg.embeds[0])
+        elif ((msg.author.id == "159985870458322944" or
+               msg.author.id == "241170316045451264" or
+               msg.author.id == "100165629373337600") and
+              len(msg.embeds) >= 1):
+            self.logger.info(msg.embeds[0])
 
     # async def on_server_update(self, before, after):
     #     """
