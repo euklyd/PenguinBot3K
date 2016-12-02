@@ -350,8 +350,10 @@ class MusicManager():
         return {'type': "success", 'response': response}
 
     async def mp3_add(self, name, requestor, channel):
-        music_library = os.listdir("resources/music")
-        if (name not in music_library):
+        # music_library = os.listdir("resources/music")
+        # if (name not in music_library):
+        #     raise OSError("Song not found")
+        if (not os.path.isfile("resources/music/{}".format(name))):
             raise OSError("Song not found")
         song = MP3Song(name, requestor, channel)
         self.logger.info("mp3_add: Created song {}".format(song.title))
