@@ -1,6 +1,6 @@
 """
     Plugin Name : Macro
-    Plugin Version : 3.1
+    Plugin Version : 3.2.1
 
     Description:
         Transforms text into text with a macro applied.
@@ -100,20 +100,26 @@ class Macro(Plugin):
         await self.send_message(msg.channel, cloudcopypasta)
 
     @command("^waddle$", access=100, name='waddle',
-             doc_brief=u"`waddle`: Prints out the dankest of \U0001F427 "
-             u"Penguin \U0001F427 memes")
+             doc_brief="`waddle`: Prints out the dankest of \U0001F427 "
+             "Penguin \U0001F427 memes")
     async def waddle(self, msg, arguments):
-        dddcopypasta = u"\U0001F427 **King Dedede** \U0001F427 is definitely **top tier**. The king's got it all; disjoint \U00002694, power \U0001F4AA, recovery \U00002708, and damaging throw combos \U0001F4A5. He is the hardest character in the game to kill vertically \U0001F480, and with the safest and strongest ways to kill \U0001F480 being traditionally vertical, that's huge \U000026F0. His presence at the ledge is not to be ignored, as with clever Gordo setups, he can cover most if not all ledge options with a potentially deadly hitbox \U0001F480. He might be combo food \U0001F356, but he wants all that \U0001F4A2 rage \U0001F4A2 so he can kill with his safe and powerful back air \U0001F528 even earlier than usual. **An obvious member of \U0001F427 top tier\U0001F427.**"  # noqa E501
-        kingistoptier = u"\U0001F427 **THE \U0001F427 KING \U0001F427 IS \U0001F427 TOP \U0001F427 TIER** \U0001F427"  # noqa E501
+        dddcopypasta = "\U0001F427 **King Dedede** \U0001F427 is definitely **top tier**. The king's got it all; disjoint \U00002694, power \U0001F4AA, recovery \U00002708, and damaging throw combos \U0001F4A5. He is the hardest character in the game to kill vertically \U0001F480, and with the safest and strongest ways to kill \U0001F480 being traditionally vertical, that's huge \U000026F0. His presence at the ledge is not to be ignored, as with clever Gordo setups, he can cover most if not all ledge options with a potentially deadly hitbox \U0001F480. He might be combo food \U0001F356, but he wants all that \U0001F4A2 rage \U0001F4A2 so he can kill with his safe and powerful back air \U0001F528 even earlier than usual. **An obvious member of \U0001F427 top tier\U0001F427.**"  # noqa E501
+        kingistoptier = "\U0001F427 **THE \U0001F427 KING \U0001F427 IS \U0001F427 TOP \U0001F427 TIER** \U0001F427"  # noqa E501
         await self.send_message(msg.channel, "{}\n{}".format(dddcopypasta, kingistoptier))
 
     @command("^plumber|cancer|<:mario:[0-9]*>$", access=100, name='plumber',
-             doc_brief=u"`plumber`: Prints out the dankest of 🚽 Plumber 🚽 memes")
+             doc_brief="`plumber`: Prints out the dankest of 🚽 Plumber 🚽 memes")
     async def plumber(self, msg, arguments):
-        mariocopypasta = u"<:mario:234535787117543425> Mario <:mario:234535787117543425> is definitely **not top tier**. The plumber's got nothing; no range ✖  , no power 😩  , mediocre recovery 😐  , and bad matchups <:sunglasses_mewtwo:230828762453770240> ☁ He isn't very fast 🐢 , and he doesn't have any strong kill set ups like other top tiers 🍌 ⬇ 👏 ⬆ ✊ The only reason Ally and ANTi were able to win supermajors with him 🏆 is because of **pure skill** , and we will be blessed 🙏  if we ever see two top players carry an upper mid-tier so far again. Obviously **not** a member of the <:mario:234535787117543425> top tier <:mario:234535787117543425>"
+        mariocopypasta = "<:mario:234535787117543425> Mario <:mario:234535787117543425> is definitely **not top tier**. The plumber's got nothing; no range ✖  , no power 😩  , mediocre recovery 😐  , and bad matchups <:sunglasses_mewtwo:230828762453770240> ☁ He isn't very fast 🐢 , and he doesn't have any strong kill set ups like other top tiers 🍌 ⬇ 👏 ⬆ ✊ The only reason Ally and ANTi were able to win supermajors with him 🏆 is because of **pure skill** , and we will be blessed 🙏  if we ever see two top players carry an upper mid-tier so far again. Obviously **not** a member of the <:mario:234535787117543425> top tier <:mario:234535787117543425>"
         await self.send_message(msg.channel, mariocopypasta)
 
-    @command(u"^penguin|\U0001F427$", access=-1, name='penguin',
+    @command("^md|doc|doctor|💊$", access=100, name='doctor',
+             doc_brief="`plumber`: Prints out the dankest of 💊 Doctor 💊 memes")
+    async def doctor(self, msg, arguments):
+        doccopypasta = ":pill:Dr Mario:pill: is definitely top tier. The doctor's got it all; good pokes :bear:, ko power :arrow_up::construction_worker::joy::ok_hand:, amazing oos:arrow_up::fist:, and damaging combos :construction_worker::construction_worker::construction_worker:. His presence offstage is not to be ignored, as with proper down b timing, he can cover several recoveries with a hitbox that sends opponents downwards for a gimp :cloud_tornado:. He can also use upsmash to cover several ledge options while being completely safe :construction_worker:. He might move slow :snail:, but he has a projectile :pill: that can force approaches that he can punish with his safe and powerful upsmash :construction_worker:. An obvious member of top 5, unlike that worthless clone :mario::confused::weary::tired_face:.\n:pill: THE :pill: DOCTOR :pill: IS :pill: A :pill: TOP :pill: TIER :pill:"
+        await self.send_message(msg.channel, doccopypasta)
+
+    @command("^penguin|\U0001F427$", access=-1, name='penguin',
              doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
     async def penguin(self, msg, arguments):
         penguin_url = "https://i.imgur.com/MGNa91r.gif"
