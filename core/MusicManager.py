@@ -1,9 +1,27 @@
 """
     Class Name : MusicManager
+    Class Version: 2.0
 
     Description:
         Manages playing music and music queues and such.
         Controlled by plugins/Voice.py
+
+        Local music should be stored in `resources/music/`,
+        preferably grouped by album, e.g.,
+            `resources/music/Kilroy\ Was\ Here/Mr.\ Roboto.mp3`
+
+        The MusicManager module is tested to work with the
+        following music filetypes:
+            - MP3
+        may possibly work with:
+            - AIFF
+            - True Audio
+        and can be extended to work with others (using the Mutagen
+        library). One could also dumb it down and not bother with
+        metadata, but that shouldn't be necessary for most
+        applications. Besides, it's much prettier this way! =)
+
+        MusicManager will work with any YouTube video audio.
 
     Contributors:
         - Euklyd / Popguin
@@ -107,20 +125,86 @@ class YouTubeSong(Song):
         self.duration = player.duration
         return player
 
+"""
+don't use this anymore
+# class LocalSong(Song):
+#     def __init__(self, title, name, requestor, channel):
+#         super().__init__(title, requestor, channel)
+#         self.path = None
+#         ...
+#
+# class MP4Song(LocalSong):
+#     ...
+#     # Key fields here for artist, artwork, and title:
+#     self.title = metadata['sonm'] or metadata['©nam']
+#     self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
+#     self.thumbnail = metadata['covr']
+#     # If you care:
+#     genre = metadata['soal'] or metadata['©alb']
+"""
 
-class MP3Song(Song):
+
+class LocalSong(Song):
     def __init__(self, name, requestor, channel):
         self.path = "resources/music/{}".format(name)
-        mutagen_file = mutagen.File(self.path)
-        # self.metadata = mutagen.id3.ID3(self.path)
-        self.metadata = id3.ID3(self.path)
+        self.name = name
+        self.url = self.name
+        # To be overwritten later, hopefully
+        self.thumbnail = None
+        self.metadata = mutagen.File(self.path)
+        self.duration = self.metadata.info.length
+
+        # There are several file formats that don't even *have* a 'tags'
+        # attribute; these should probably be identified, but having a
+        # (sort of) catch-all exception is probably a good thing as well.
+        try:
+            if (type(self.metadata.tags) is mutagen.id3.ID3):
+                # This should be able to take several audio formats,
+                # namely AIFF, MP3, and True Audio. Maybe others?
+                self.id3_init(name, requestor, channel)
+            # elif (type(self.metadata) is mutagen.mp4.MP4):
+            #     # Used by both MP4 and M4A. Mutagen stresses primarily
+            #     # MP4 compatibility with iTunes, so there may be issues
+            #     # with some MP4 files.
+            #     self.mp4_init(name, requestor, channel)
+            # elif (type(self.metadata.tags) is mutagen._vorbis.VCommentDict):
+            #     # Used by all of the mutagen types with 'vorbis' in their
+            #     # name, and then some.
+            #     self.do_whatever_vorbis_thing(name, requestor, channel)
+            # elif (type(self.metadata.tags) is mutagen.apev2.APEv2):
+            #     # Most everything else that even has tags uses these.
+            #     self.do_whatever_apev2_thing(name, requestor, channel)
+            else:
+                raise mutagen.MutagenError
+        except AttributeError:
+            raise mutagen.MutagenError
+
+        # mutagen_file = mutagen.File(self.path)
+        # self.metadata = id3.ID3(self.path)
+        # self.duration = mutagen_file.info.length
+
+        # if (self.metadata.get('TIT2') is not None):
+        #     title = str(self.metadata['TIT2'])
+        # else:
+        #     title = "{} (unknown title)".format(name)
+        # super().__init__(title, requestor, channel)
+        #
+        # if (self.metadata.get('TPE1') is not None):
+        #     self.artist = str(self.metadata['TPE1'])
+        # elif (self.metadata.get('TOPE') is not None):
+        #     self.artist = str(self.metadata['TOPE'])
+        # elif (self.metadata.get('TCOM') is not None):
+        #     self.artist = str(self.metadata['TCOM'])
+        # else:
+        #     self.artist = "Unknown Artist"
+
+    def id3_init(self, name, requestor, channel):
         if (self.metadata.get('TIT2') is not None):
             title = str(self.metadata['TIT2'])
         else:
             title = "{} (unknown title)".format(name)
         super().__init__(title, requestor, channel)
-        self.name = name
-        self.url = self.name
+
         if (self.metadata.get('TPE1') is not None):
             self.artist = str(self.metadata['TPE1'])
         elif (self.metadata.get('TOPE') is not None):
@@ -129,11 +213,16 @@ class MP3Song(Song):
             self.artist = str(self.metadata['TCOM'])
         else:
             self.artist = "Unknown Artist"
-        self.duration = mutagen_file.info.length
 
-        # To be overwritten later, hopefully
-        self.thumbnail = None
+    # def mp4_init(self, name, requestor, channel):
+    #     # Key fields here for artist, artwork, and title:
+    #     self.title = metadata['sonm'] or metadata['©nam']
+    #     self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
+    #     self.thumbnail = metadata['covr']
+    #     # If you care:
+    #     genre = metadata['soal'] or metadata['©alb']
 
+    # Currently only works with ID3 tags.
     async def save_artwork_url(self, client):
         if (self.metadata.get('APIC:') is None):
             self.logger.info("No album artwork found (no 'APIC:' key)")
@@ -160,6 +249,11 @@ class MP3Song(Song):
                 self.thumbnail
             ))
             return 0
+
+    # async def save_artwork_url_id3(self, client):
+    #     pass
+    # async def save_artwork_url_mp4(self, client):
+    #     pass
 
     def announcement(self):
         # announcement = ("**Now playing:** *{title}* "
@@ -195,7 +289,7 @@ class MP3Song(Song):
         return em
 
     async def create_player(self, voice, after=None):
-        self.logger.info("MP3Song: creating player")
+        self.logger.info("LocalSong: creating player")
         player = voice.create_ffmpeg_player(self.path, after=after)
         player.duration = int(self.duration)
         return player
@@ -350,31 +444,36 @@ class MusicManager():
         )
         return {'type': "success", 'response': response}
 
-    async def mp3_add(self, name, requestor, channel):
+    async def local_add(self, name, requestor, channel):
         # music_library = os.listdir("resources/music")
         # if (name not in music_library):
         #     raise OSError("Song not found")
         if (not os.path.isfile("resources/music/{}".format(name))):
-            raise OSError("Song not found")
-        song = MP3Song(name, requestor, channel)
-        await song.save_artwork_url(self.core)
-        self.logger.info("mp3_add: Created song {}".format(song.title))
-        playlist_entry = PlaylistEntry(song)
-        self.logger.info(
-            "mp3_add: Created playlist_entry {}".format(song.title)
-        )
-        self.playlist_queue.put(playlist_entry)
-        self.logger.info(
-            "mp3_add: Added playlist_entry {} to playlist_queue".format(
-                song.title)
-        )
-        response = ("Added *{title}*, by {uploader} to the playlist\n"
-                    "*Requested by {user}*").format(
-            title=song.title,
-            uploader=song.artist,
-            user=song.requestor.name
-        )
-        return {'type': "success", 'response': response}
+            raise FileNotFoundError("Song not found")
+        try:
+            song = LocalSong(name, requestor, channel)
+        except mutagen.MutagenError
+            self.logger.warning("Filetype of '{}' unsupported".format(name))
+            raise OSError("Filetype of '{}' unsupported".format(name))
+        else:
+            await song.save_artwork_url(self.core)
+            self.logger.info("local_add: Created song {}".format(song.title))
+            playlist_entry = PlaylistEntry(song)
+            self.logger.info(
+                "local_add: Created playlist_entry {}".format(song.title)
+            )
+            self.playlist_queue.put(playlist_entry)
+            self.logger.info(
+                "local_add: Added playlist_entry {} to playlist_queue".format(
+                    song.title)
+            )
+            response = ("Added *{title}*, by {uploader} to the playlist\n"
+                        "*Requested by {user}*").format(
+                title=song.title,
+                uploader=song.artist,
+                user=song.requestor.name
+            )
+            return {'type': "success", 'response': response}
 
     async def pause(self):
         if (self.is_connected() is False):

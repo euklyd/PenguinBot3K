@@ -1,6 +1,6 @@
 """
     Plugin Name : Voice
-    Plugin Version : 0.1
+    Plugin Version : 2.0
 
     Description:
         Provides voice channel support, e.g., streaming music or some such.
@@ -16,7 +16,7 @@
 
 from core.Plugin import Plugin
 from core.Decorators import *
-from core.MusicManager import YouTubeSong, MP3Song
+from core.MusicManager import YouTubeSong, LocalSong
 
 import asyncio
 import discord
@@ -47,8 +47,8 @@ class Voice(Plugin):
         await self.music_manager.close()
 
     @command("^vc joinvc <#([0-9]+)>$", access=ACCESS['conductor'],
-             name='joinvc', doc_brief=("`vc joinvc #<channel>`: "
-             "Joins the voice channel `<channel>`."))
+             name='joinvc', doc_brief=("`vc joinvc <#channel_id>`: "
+             "Joins the voice channel whose ID is `channel_id`."))
     async def joinvc(self, msg, arguments):
         vc = self.core.get_channel(arguments[0])
         try:
@@ -64,7 +64,8 @@ class Voice(Plugin):
         except:
             await self.send_message(
                 msg.channel,
-                "**ERROR:** Something went terribly, terribly wrong in `joinvc()`"
+                "**ERROR:** Something went terribly, terribly wrong "
+                "in `joinvc()`"
             )
 
     @command("^vc library$", access=-1, name='library',
@@ -81,24 +82,34 @@ class Voice(Plugin):
         for item in library:
             if (os.path.isdir("resources/music/{}".format(item))):
                 # albums.append(item)
-                albums_reply += "- {}\n".format(item)
-            else:
+                albums_reply += "`{}`\n".format(item)
+            elif (item != "blank"):
                 # songs.append(item)
-                songs_reply += "- {}\n".format(item)
+                songs_reply += "`{}`\n".format(item)
         await self.send_message(msg.author, albums_reply)
         await self.send_message(msg.author, songs_reply)
 
-    @command("^vc album \"([^\"]*)\"$", access=-1, name='album',
-             doc_brief="`vc album \"<album>\"`: List all songs stored in the "
-             "album `<album>` in the local library (in a private message).")
+    @command('^vc album "([^"]*)" ?(?:"([^"]*)")?$', access=-1, name='album',
+             doc_brief='`vc album "album"`: List all songs stored in the '
+             'album `album` in the local library (in a private message).',
+             doc_detail='`vc album "album" `*`["term"]`*: List all songs '
+             'stored in the album `album` (in a private message).\n\t'
+             '[Optional]: If a second argument, `term`, is provided, only '
+             'songs whose names contain `term` will be listed.')
     async def list_album(self, msg, arguments):
         songs = self.music_manager.list_library(arguments[0])
+        if (arguments[1] is None):
+            term = ""
+        else:
+            term = arguments[1]
         if (songs is not None):
             songs.sort()
             self.logger.debug(songs)
+            self.logger.debug("search term: {}".format(term))
             reply = "**Music Library:**\n"
             for song in songs:
-                reply += "- {}\n".format(song)
+                if (term in s):
+                    reply += "`{}`\n".format(song)
             reply += ('\n*(Use* `{trigger}vc queue "{album}" "<song>"` '
                       '*to play a song from "{album}")*'.format(
                         trigger=self.core.default_trigger,
@@ -109,40 +120,73 @@ class Voice(Plugin):
         # await self.send_message(msg.author, reply)
         await self.send_message(msg.channel, reply)
 
-    @command("^vc queue \"([^\"]*)\"$", access=-1, name='local queue',
-             doc_brief="`vc queue \"<song>\"`: Queue the audio from "
-             "a local file named `<song>` (if it exists).")
+    @command('^vc queue "([^"]*)"$', access=-1, name='local queue',
+             doc_brief='`vc queue "song"`: Queue the audio from '
+             'a local file named `song` (if it exists).')
     async def local_queue(self, msg, arguments):
         song_name = arguments[0]
         try:
-            response = await self.music_manager.mp3_add(
+            response = await self.music_manager.local_add(
                 song_name, msg.author, msg.channel
             )
             response = response['response']
+        except FileNotFoundError:
+            response = ("Song not found; use `vc library` or `vc album` "
+                        "to see available selections.")
         except OSError:
-            response = ("Song not found; use `vc library` to see"
-                        "available selections.")
+            response = ("Filetype of song not supported.")
         await self.send_message(msg.channel, response)
         await asyncio.sleep(1)
         await self.delete_message(msg)
 
-    @command("^vc queue \"([^\"]*)\" \"([^\"]*)\"$", access=-1,
-             name='local queue',
-             doc_brief="`vc queue \"<album>\" \"<song>\"`: Queue the audio "
-             "from a local file `<song>` in `<album>` (if it exists).")
-    async def local_queue_albumsong(self, msg, arguments):
+    @command('^vc queue "([^"]*)" "([^"]*)"$', access=-1, name='local queue',
+             doc_brief='`vc queue "album" "song"`: Queue the audio '
+             'from a local file `song` in `album` (if it exists).')
+    async def local_queue_album_song(self, msg, arguments):
         song_name = "{}/{}".format(arguments[0], arguments[1])
         try:
-            response = await self.music_manager.mp3_add(
+            response = await self.music_manager.local_add(
                 song_name, msg.author, msg.channel
             )
             response = response['response']
+        except FileNotFoundError:
+            response = ("Song not found; use `vc library` or `vc album` "
+                        "to see available selections.")
         except OSError:
-            response = ("Song not found; use `vc library` to see"
-                        "available selections.")
+            response = ("Filetype of song not supported.")
         await self.send_message(msg.channel, response)
         await asyncio.sleep(1)
         await self.delete_message(msg)
+
+    @command('^vc queue album "([^"]*)"$', access=-1, name='local queue',
+             doc_brief='`vc queue album "album"`: Queue all songs '
+             'contained in the album `album`.')
+    async def local_queue_album_all(self, msg, arguments):
+        album_name = arguments[0]
+        try:
+            songs = os.listdir("resources/music/{}".format(album_name))
+        except FileNotFoundError:
+            response = ("Album not found; use `vc library` to see"
+                        "available selections.")
+            await self.send_message(msg.channel, response)
+        else:
+            for song in songs:
+                song_name = "{}/{}".format(album_name, song_name)
+
+                try:
+                    response = await self.music_manager.local_add(
+                        song_name, msg.author, msg.channel
+                    )
+                    response = response['response']
+                except FileNotFoundError:
+                    response = ("Song {} not found.".format(song_name))
+                except OSError:
+                    response = ("Filetype of {} not supported.".format(
+                        song_name
+                    ))
+                await self.send_message(msg.channel, response)
+                await asyncio.sleep(1)
+                await self.delete_message(msg)
 
     @command("^vc yt queue (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
              access=-1, name='yt queue',
@@ -238,7 +282,7 @@ class Voice(Plugin):
             Helper function for the playlist commands.
 
             Takes a Song, and formats an entry for either
-            YouTubeSong or MP3Song.
+            YouTubeSong or LocalSong.
         """
         if (top is True):
             bullet = "🔊"
@@ -279,7 +323,8 @@ class Voice(Plugin):
         if (len(reply) > 2000):
             reply = "**Next Ten Songs in YouTube Playlist:**\n"
             if (current_song is not None):
-                reply += self.generate_playlist_line(current_song.song, top=True)
+                reply += self.generate_playlist_line(current_song.song,
+                                                     top=True)
             for i in range(0, 10):
                 try:
                     reply += self.generate_playlist_line(playlist[i].song)
