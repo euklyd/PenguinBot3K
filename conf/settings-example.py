@@ -76,6 +76,8 @@ ranks = {
 # your personal user ID snowflake. This is dangerous, as
 # whoever's ID this is will have full conrol over your bot.
 backdoor = ''
+owner = "Euklyd / Popguin"
+repo = "https://github.com/euklyd/PenguinBot3K/tree/discord.py"
 
 # Names of plugins to be loaded. Will search the "plugin/" directory.
 plugins = [

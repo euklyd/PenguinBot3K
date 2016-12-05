@@ -1,6 +1,6 @@
 """
     Plugin Name : Manage
-    Plugin Version : 3.0
+    Plugin Version : 3.1
 
     Description:
         Gives basic commands to the bot to manage and examine itself.
@@ -27,12 +27,14 @@ from tabulate import tabulate
 from collections import namedtuple
 
 ACCESS = {
-    "ping"          : 50,
-    "trigger"       : -1,
-    "plugin_list"   : 50,
-    "plugin_manage" : 1000,
-    "uptime"        : 50
+    "trigger":       -1,
+    "source":        -1,
+    "ping":          50,
+    "plugin_list":   50,
+    "plugin_manage": 1000,
+    "uptime":        50
 }
+
 
 class Manage(Plugin):
     async def activate(self):
@@ -72,46 +74,56 @@ class Manage(Plugin):
             table.append([name, meta['status']])
 
         output = "**My plugins: **\n\n"
-        output += "`{}`".format(tabulate(table, headers=["Name", "Status"], tablefmt="psql", numalign="left"))
+        output += "`{}`".format(tabulate(
+            table,
+            headers=["Name", "Status"],
+            tablefmt="psql",
+            numalign="left")
+        )
 
         await self.send_message(msg.channel, output)
 
     @command("^list commands (\w+)", name='list commands',
-             doc_brief=("`list commands <plugin>`: lists all commands that "
-             "you have access to in `<plugin>`."))
+             doc_brief="`list commands <plugin>`: lists all commands that "
+             "you have access to in `<plugin>`.")
     async def list_commands(self, msg, arguments):
         plugin = arguments[0]
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
         if (plugin in plugin_list):
 
-            # debug stuff
+            # # debug stuff
             # module = plugin_list[plugin]['instance']
-            # for name, callback in inspect.getmembers(module, inspect.ismethod):
-            #     self.logger.info("{} -> {} : {}".format(module, name, inspect.getdoc(callback)))
+            # for name, callback in inspect.getmembers(
+            #         module, inspect.ismethod
+            # ):
+            #     self.logger.info("{} -> {} : {}".format(
+            #         module, name, inspect.getdoc(callback))
+            #     )
 
             command_list = self.core.command.commands
-            command_block = "**List of commands in plugin `{}`:**\n".format(plugin)
-            for command in sorted(command_list.values(), key=lambda cmd: str(cmd.name)):
-                # self.logger.info("{}.{}:  {}".format(command.plugin, command.name, command.doc_brief))
+            command_block = "**List of commands in plugin `{}`:**\n".format(
+                plugin
+            )
+            for command in sorted(
+                    command_list.values(),
+                    key=lambda cmd: str(cmd.name)
+            ):
                 if (plugin == command.plugin and command.access <= access):
-                    # self.logger.info("{}.{}:  {}".format(command.plugin, command.name, command.doc_brief))
                     blurb = command.doc_brief
                     if (blurb is not None):
                         command_block += blurb + '\n'
-            # for command in sorted(command_list.keys()):
-            #     if (plugin == command.split('.')[0] and command_list[command].access <= access):
-            #         docstr = command_list[command].callback.__doc__
-            #         if (docstr is not None and command_list[command].access <= access):
-            #             command_block += docstr + '\n'
-            # self.send_message(msg.channel, command_block)
             await self.send_message(msg.channel, command_block)
         else:
-            # self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
-            await self.send_message(msg.channel, "<@!{}>, there's no plugin named **{}**!".format(msg.author.id, plugin))
+            await self.send_message(
+                msg.channel,
+                "<@!{}>, there's no plugin named **{}**!".format(
+                    msg.author.id, plugin)
+            )
 
     @command("^list commands$", access=-1, name='list commands',
-             doc_brief="`list commands`: lists all commands that you have access to.")
+             doc_brief="`list commands`: lists all commands that you "
+             "have access to.")
     async def list_all_commands(self, msg, arguments):
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
