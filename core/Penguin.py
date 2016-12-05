@@ -48,7 +48,9 @@ class PenguinBot(discord.Client):
         # Setup logger and load config
         self.setup_logger()
         self.config = self.load_config("settings")
-        if (type(self.config.trigger) is tuple or type(self.config.trigger) is list):
+        if (type(self.config.trigger) is tuple or
+                type(self.config.trigger) is list
+        ):
             self.default_trigger = self.config.trigger[0]
         else:
             self.default_trigger = self.config.trigger
@@ -176,6 +178,8 @@ class PenguinBot(discord.Client):
                 )
             )
         await self.connector._handleMessage(msg)
+
+        # embed debugging stuff:
         # if (msg.author.id == "136107769680887808"):
         #     self.logger.info(msg.embeds[0])
         # elif ((msg.author.id == "159985870458322944" or
@@ -195,7 +199,8 @@ class PenguinBot(discord.Client):
     #
     #         Inherited from discord.Client.
     #     """
-    #     pass  # I don't actually want to be updating the server filetree during operation
+    #     pass
+    # I don't actually want to be updating the server filetree during operation
 
     async def on_channel_update(self, before, after):
         """
