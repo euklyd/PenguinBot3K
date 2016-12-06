@@ -1,6 +1,6 @@
 """
     Plugin Name : Manage
-    Plugin Version : 3.1.1
+    Plugin Version : 3.2.0
 
     Description:
         Gives basic commands to the bot to manage and examine itself.
@@ -170,6 +170,20 @@ class Manage(Plugin):
              doc_brief="`help`: alias for `list commands`.")
     async def help(self, msg, arguments):
         await self.list_all_commands(msg, arguments)
+
+    @command("^(?:help|command detail) ([^.]*).([^.]*)$", access=-1, name='help',
+             doc_brief="`command detail <plugin>.<command>`: prints out "
+             "specific help for `<command>` in `<plugin>`.")
+    async def command_detail(self, msg, arguments):
+        command_list = self.core.command.commands
+        self.logger.info(command_list.keys())
+        key = "{}.{}".format(arguments[0], arguments[1])
+        if (key in command_list):
+            reply = command_list[key].doc_detail
+            await self.send_message(msg.channel, reply)
+        else:
+            await self.send_message(msg.channel,
+                                    "There is no command with that name")
 
     @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$",
              access=ACCESS["plugin_manage"], name='toggle plugin',

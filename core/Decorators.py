@@ -42,7 +42,7 @@ def command(pattern, access=0, trigger="", silent=False, name=None,
             setattr(wrapper, 'silent', silent)
             setattr(wrapper, 'name', name)
             setattr(wrapper, 'doc_brief', doc_brief)
-            setattr(wrapper, 'doc_detail', doc_brief)
+            setattr(wrapper, 'doc_detail', doc_detail)
 
         return wrapper
     return decorate
