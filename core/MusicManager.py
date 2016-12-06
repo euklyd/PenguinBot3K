@@ -285,7 +285,7 @@ class LocalSong(Song):
             return None
         elif (self.metadata.get('AUrl') is None):
             sent_file = client.imgur.upload(
-                self.metadata['covr'], anon=False
+                self.metadata['covr'][0], anon=False
             )
             url = sent_file['link']
             # self.metadata['AUrl'] = url
