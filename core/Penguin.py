@@ -33,6 +33,7 @@ from core.PluginManager import PluginManager
 from core.Imgur import Imgur
 from core.LogManager import LogManager
 from core.MusicManager import MusicManager
+from core.EmojiManager import EmojiManager
 
 from imp import load_module, find_module
 from sys import stdout, path, exit
@@ -61,6 +62,7 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
+        self.emoji = EmojiManager(self)
 
         if (self.config.channel_logging is True):
             self.log_manager = LogManager(self)
