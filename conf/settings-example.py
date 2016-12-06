@@ -76,6 +76,8 @@ ranks = {
 # your personal user ID snowflake. This is dangerous, as
 # whoever's ID this is will have full conrol over your bot.
 backdoor = ''
+
+# (public) Github stuff:
 owner = "Euklyd / Popguin"
 repo = "https://github.com/euklyd/PenguinBot3K/tree/discord.py"
 

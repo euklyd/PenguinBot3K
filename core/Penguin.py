@@ -61,13 +61,17 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.ACL = ACL(self.config.backdoor)
-        self.imgur = Imgur(self)
 
         if (self.config.channel_logging is True):
             self.log_manager = LogManager(self)
 
         if ("Voice" in self.config.plugins):
+            if (self.config.imgur['id'] is None):
+                raise RuntimeError("Music requires imgur credentials")
             self.music_manager = MusicManager(self)
+
+        if (self.config.imgur['id'] is not None):
+            self.imgur = Imgur(self)
 
         # Setup connection
         # self.connector = self.load_connector(self)
