@@ -162,11 +162,11 @@ class LocalSong(Song):
                 # This should be able to take several audio formats,
                 # namely AIFF, MP3, and True Audio. Maybe others?
                 self.id3_init(name, requestor, channel)
-            # elif (type(self.metadata) is mutagen.mp4.MP4):
-            #     # Used by both MP4 and M4A. Mutagen stresses primarily
-            #     # MP4 compatibility with iTunes, so there may be issues
-            #     # with some MP4 files.
-            #     self.mp4_init(name, requestor, channel)
+            elif (type(self.metadata) is mutagen.mp4.MP4):
+                # Used by both MP4 and M4A. Mutagen stresses primarily
+                # MP4 compatibility with iTunes, so there may be issues
+                # with some MP4 files.
+                self.mp4_init(name, requestor, channel)
             # elif (type(self.metadata.tags) is mutagen._vorbis.VCommentDict):
             #     # Used by all of the mutagen types with 'vorbis' in their
             #     # name, and then some.
@@ -214,16 +214,25 @@ class LocalSong(Song):
         else:
             self.artist = "Unknown Artist"
 
-    # def mp4_init(self, name, requestor, channel):
-    #     # Key fields here for artist, artwork, and title:
-    #     self.title = metadata['sonm'] or metadata['©nam']
-    #     self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
-    #     self.thumbnail = metadata['covr']
-    #     # If you care:
-    #     genre = metadata['soal'] or metadata['©alb']
+    def mp4_init(self, name, requestor, channel):
+        # Key fields here for artist, artwork, and title:
+        self.title = metadata['sonm'] or metadata['©nam']
+        self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
+        self.thumbnail = metadata['covr']
+        # If you care:
+        genre = metadata['soal'] or metadata['©alb']
 
     # Currently only works with ID3 tags.
     async def save_artwork_url(self, client):
+        if (type(self.metadata.tags) is mutagen.id3.ID3):
+            self.save_artwork_url_id3(client)
+        elif (type(self.metadata) is mutagen.mp4.MP4):
+            self.save_artwork_url_mp4(client)
+        else:
+            self.thumbnail = None
+            return None
+
+    async def save_artwork_url_id3(self, client):
         if (self.metadata.get('APIC:') is None):
             self.logger.info("No album artwork found (no 'APIC:' key)")
             self.thumbnail = None
@@ -250,10 +259,29 @@ class LocalSong(Song):
             ))
             return 0
 
-    # async def save_artwork_url_id3(self, client):
-    #     pass
-    # async def save_artwork_url_mp4(self, client):
-    #     pass
+    async def save_artwork_url_mp4(self, client):
+        if (self.metadata.get('covr') is None):
+            self.logger.info("No album artwork found (no 'covr' key)")
+            self.thumbnail = None
+            return None
+        elif (self.metadata.get('AUrl') is None):
+            sent_file = client.imgur.upload(
+                self.metadata['AUrl'].data, anon=False
+            )
+            url = sent_file['link']
+            self.metadata['AUrl'] = url
+            self.metadata.save()
+            self.logger.info("Added '{}' to the MP4 tag 'AUrl'".format(
+                url
+            ))
+            self.thumbnail = url
+            return 0
+        else:
+            self.thumbnail = self.metadata['AUrl']
+            self.logger.info("Found existing artwork url: '{}'".format(
+                self.thumbnail
+            ))
+            return 0
 
     def announcement(self):
         # announcement = ("**Now playing:** *{title}* "
