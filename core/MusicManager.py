@@ -230,7 +230,7 @@ class LocalSong(Song):
             title = "{} (unknown title)".format(name)
         super().__init__(title, requestor, channel)
 
-        elif (self.metadata.get('©ART') is not None):
+        if (self.metadata.get('©ART') is not None):
             self.artist = str(self.metadata['©ART'])
         elif (self.metadata.get('soar') is not None):
             self.artist = str(self.metadata['soar'])
