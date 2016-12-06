@@ -216,11 +216,30 @@ class LocalSong(Song):
 
     def mp4_init(self, name, requestor, channel):
         # Key fields here for artist, artwork, and title:
-        self.title = metadata['sonm'] or metadata['©nam']
-        self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
-        self.thumbnail = metadata['covr']
+        # # self.title = metadata['sonm'] or metadata['©nam']
+        # # self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
+        # # self.thumbnail = metadata['covr']
         # If you care:
-        genre = metadata['soal'] or metadata['©alb']
+        # # genre = metadata['soal'] or metadata['©alb']
+
+        if (self.metadata.get('sonm') is not None):
+            title = str(self.metadata['sonm'])
+        elif (self.metadata.get('©nam') is not None):
+            title = str(self.metadata['©nam'])
+        else:
+            title = "{} (unknown title)".format(name)
+        super().__init__(title, requestor, channel)
+
+        elif (self.metadata.get('©ART') is not None):
+            self.artist = str(self.metadata['©ART'])
+        elif (self.metadata.get('soar') is not None):
+            self.artist = str(self.metadata['soar'])
+        elif (self.metadata.get('aART') is not None):
+            self.artist = str(self.metadata['aART'])
+        elif (self.metadata.get('\xa9wrt') is not None):
+            self.artist = str(self.metadata['\xa9wrt'])
+        else:
+            self.artist = "Unknown Artist"
 
     # Currently only works with ID3 tags.
     async def save_artwork_url(self, client):
