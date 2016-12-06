@@ -70,7 +70,7 @@ class PenguinBot(discord.Client):
             self.music_manager = MusicManager(self)
 
         # Setup connection
-        self.connector = self.load_connector(self)
+        # self.connector = self.load_connector(self)
         self.last_update = time.time()
 
     def run(self, *args):
@@ -177,7 +177,8 @@ class PenguinBot(discord.Client):
                     content=msg.content
                 )
             )
-        await self.connector._handleMessage(msg)
+        # await self.connector._handleMessage(msg)
+        await self.command.check(msg)
 
         # embed debugging stuff:
         # if (msg.author.id == "136107769680887808"):
