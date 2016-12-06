@@ -108,7 +108,7 @@ class Voice(Plugin):
             self.logger.debug("search term: {}".format(term))
             reply = "**Music Library:**\n"
             for song in songs:
-                if (term in song):
+                if (term.lower() in song.lower()):
                     reply += "`{}`\n".format(song)
             reply += ('\n*(Use* `{trigger}vc queue "{album}" "<song>"` '
                       '*to play a song from "{album}")*'.format(
@@ -133,8 +133,8 @@ class Voice(Plugin):
         except FileNotFoundError:
             response = ("Song not found; use `vc library` or `vc album` "
                         "to see available selections.")
-        except OSError:
-            response = ("Filetype of song not supported.")
+        except OSError as e:
+            response = (e)
         await self.send_message(msg.channel, response)
         await asyncio.sleep(1)
         await self.delete_message(msg)
