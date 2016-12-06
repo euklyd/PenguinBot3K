@@ -33,7 +33,7 @@
 """
 
 from abc import ABCMeta, abstractmethod
-from mutagen import id3
+from mutagen import id3, MutagenError
 
 import asyncio
 import discord
@@ -175,9 +175,9 @@ class LocalSong(Song):
             #     # Most everything else that even has tags uses these.
             #     self.do_whatever_apev2_thing(name, requestor, channel)
             else:
-                raise mutagen.MutagenError
+                raise MutagenError
         except AttributeError:
-            raise mutagen.MutagenError
+            raise MutagenError
 
         # mutagen_file = mutagen.File(self.path)
         # self.metadata = id3.ID3(self.path)
@@ -452,7 +452,7 @@ class MusicManager():
             raise FileNotFoundError("Song not found")
         try:
             song = LocalSong(name, requestor, channel)
-        except mutagen.MutagenError
+        except MutagenError:
             self.logger.warning("Filetype of '{}' unsupported".format(name))
             raise OSError("Filetype of '{}' unsupported".format(name))
         else:
