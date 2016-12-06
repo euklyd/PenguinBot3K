@@ -114,7 +114,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, mariocopypasta)
 
     @command("^md|doc|doctor|💊$", access=100, name='doctor',
-             doc_brief="`plumber`: Prints out the dankest of 💊 Doctor 💊 memes")
+             doc_brief="`doctor`: Prints out the dankest of 💊 Doctor 💊 memes")
     async def doctor(self, msg, arguments):
         doccopypasta = ":pill:Dr Mario:pill: is definitely top tier. The doctor's got it all; good pokes :bear:, ko power :arrow_up::construction_worker::joy::ok_hand:, amazing oos:arrow_up::fist:, and damaging combos :construction_worker::construction_worker::construction_worker:. His presence offstage is not to be ignored, as with proper down b timing, he can cover several recoveries with a hitbox that sends opponents downwards for a gimp :cloud_tornado:. He can also use upsmash to cover several ledge options while being completely safe :construction_worker:. He might move slow :snail:, but he has a projectile :pill: that can force approaches that he can punish with his safe and powerful upsmash :construction_worker:. An obvious member of top 5, unlike that worthless clone :mario::confused::weary::tired_face:.\n:pill: THE :pill: DOCTOR :pill: IS :pill: A :pill: TOP :pill: TIER :pill:"
         await self.send_message(msg.channel, doccopypasta)
@@ -132,6 +132,72 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
+
+    @command("^chillinrap *([123])?$", access=100, name='chillinrap',
+             doc_brief='`chillinrap [verse number]`: "What\'s the set count '
+             'going to be?"',
+             doc_detail='"What\'s the set count going to be?"\n'
+             '"Against who? mew2king?"\n'
+             '"Chillin."\n'
+             '"*Chillin*" 😂 😂 😂\n'
+             '"What\'s the set count going to be?"\n'
+             '"Alright, well, GIMR wants to know—"\n'
+             '"What\'s the set count?\n"'
+             '"—GIMR wants to know what\'s the set count going to be against'
+             'Chillin. **The people** wanna know."\n'
+             '"..."\n"..."\n'
+             '"...I don\'t need to *say* anything; everyone knows what I\'m '
+             'going to say.\n'
+             '<:5_0:252694352315285504> ***AND IT\'S GONNA BE FIVE-OH*** '
+             '<:5_0:252694352315285504>\n'
+             'That- that\'s how it\'s gonna be."')
+    async def chillinrap(self, msg, arguments):
+        verse = []
+        verse.append("""<:my_b:232583716189241346> I'm not lawful, make <:5_0:252694352315285504> this pussy stop talking 🙊
+You're not one of the gods 👼❌, you're one of the god-awfuls 👺✔
+We all got gimped <:shine:255634528171851786> 😫 when looking at your Fox <:leffen_fox:230177630035378176>
+Bitch, stick to 🚮 Smash 4 🚮  and losing by four stocks 🦊 🦊 🦊 🦊
+😤 Not a fan of your style
+<:5_0:252694352315285504> You ain't standing your ground
+Get wins 🏆👌 while kicking a man when he's down 👢😩
+Like, <:5_0:252694352315285504> "I beat Mango <:shine:255634528171851786>🍊, I'm the favorite if he chokes! <:notlikethis:234174248380399617>
+As far as Armada 🍑 goes, I'll just wait 🤞 'til he's a host.😏"
+Ain't no telling how foolish 😛 you'll be lookin' 👀
+Evidence.zip 📁📂 can't contain the ass whooping 👊 🍑
+Right when we realize the 💰 money match 💯💸 is over
+That'll be your cue to throw your controller 😡 👋 🎮 ⬇""")
+
+        verse.append("""Expose <:5_0:252694352315285504> you as a fraud
+Yeah I'll be blowing you up 💥
+Who said you were a god? 👼❓
+I know it wasn't Plup 🚀🦊<:notlikethis:234174248380399617>👌
+Been here 🔟 ten 🗓 years and you know <:my_b:232583716189241346> I'm showing up
+For a man of many words <:5_0:252694352315285504>, I think you've said enough 🙊
+But, the only way to make you hush
+First I'll body bag your Fox 🦊<:shine:255634528171851786>💀 then .zip 📁 it shut
+'Imma put you in your place
+Kid 👦, you a disgrace 👺
+Get killed quick like that missile hit you in the face 🚀<:leffen_fox:230177630035378176>💀
+After all of this <:5_0:252694352315285504> you'll be watching 👀 your mouth 🙊
+Ain't no telling who'll be calling you out
+Salty <:pjsalt:231625734123159563> Suite 🎮 goes down
+You better come correct ✔
+Until you win a major 🏆 show your elders 👴 some respect 🤝""")
+
+        verse.append("""💌 P.S. Leffen, I ain't done yet <:my_b:232583716189241346>
+I'm the underdog 🐶 so place your bets 💸
+Whoever want to see <:5_0:252694352315285504> Leffen looking dumb 😜
+Throw your money 👋💯💸 on the line cause <:my_b:232583716189241346> I'm making some 💰👌
+Gotta say bro 🤔 you're looking awfully weak 😩
+Wait and see 👀 what happens at the Salty <:pjsalt:231625734123159563> Suite 🎮
+Vanilla Fox 🍦🦊 don't suit you so go find another 🌈🦊
+Teach you a lesson and take back my color <:5_0:252694352315285504><:my_b:232583716189241346>""")
+        if (arguments[0] is not None):
+            reply = verse[int(arguments[0])-1]
+            await self.send_message(msg.channel, reply)
+        else:
+            for i in range(0, 3):
+                await self.send_message(msg.channel, verse[i])
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
