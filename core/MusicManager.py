@@ -285,12 +285,15 @@ class LocalSong(Song):
             return None
         elif (self.metadata.get('AUrl') is None):
             sent_file = client.imgur.upload(
-                self.metadata['AUrl'].data, anon=False
+                self.metadata['covr'], anon=False
             )
             url = sent_file['link']
-            self.metadata['AUrl'] = url
-            self.metadata.save()
-            self.logger.info("Added '{}' to the MP4 tag 'AUrl'".format(
+            # self.metadata['AUrl'] = url
+            # self.metadata.save()
+            # self.logger.info("Added '{}' to the MP4 tag 'AUrl'".format(
+            #     url
+            # ))
+            self.logger.info("Uploaded '{}' to the MP4 tag 'AUrl'".format(
                 url
             ))
             self.thumbnail = url
