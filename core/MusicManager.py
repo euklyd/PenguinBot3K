@@ -244,9 +244,9 @@ class LocalSong(Song):
     # Currently only works with ID3 tags.
     async def save_artwork_url(self, client):
         if (type(self.metadata.tags) is mutagen.id3.ID3):
-            self.save_artwork_url_id3(client)
+            await self.save_artwork_url_id3(client)
         elif (type(self.metadata) is mutagen.mp4.MP4):
-            self.save_artwork_url_mp4(client)
+            await self.save_artwork_url_mp4(client)
         else:
             self.thumbnail = None
             return None
