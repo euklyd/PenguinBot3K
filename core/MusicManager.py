@@ -299,7 +299,7 @@ class LocalSong(Song):
             self.thumbnail = url
             return 0
         else:
-            self.thumbnail = self.metadata['AUrl']
+            self.thumbnail = self.metadata['AUrl'][0]
             self.logger.info("Found existing artwork url: '{}'".format(
                 self.thumbnail
             ))
