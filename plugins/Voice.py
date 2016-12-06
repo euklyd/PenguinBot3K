@@ -108,7 +108,7 @@ class Voice(Plugin):
             self.logger.debug("search term: {}".format(term))
             reply = "**Music Library:**\n"
             for song in songs:
-                if (term in s):
+                if (term in song):
                     reply += "`{}`\n".format(song)
             reply += ('\n*(Use* `{trigger}vc queue "{album}" "<song>"` '
                       '*to play a song from "{album}")*'.format(
