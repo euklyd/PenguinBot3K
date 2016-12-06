@@ -288,14 +288,14 @@ class LocalSong(Song):
                 self.metadata['covr'][0], anon=False
             )
             url = sent_file['link']
-            # self.metadata['AUrl'] = url
-            # self.metadata.save()
-            # self.logger.info("Added '{}' to the MP4 tag 'AUrl'".format(
-            #     url
-            # ))
-            self.logger.info("Uploaded '{}' to the MP4 tag 'AUrl'".format(
+            self.metadata['AUrl'] = url
+            self.metadata.save()
+            self.logger.info("Added '{}' to the MP4 tag 'AUrl'".format(
                 url
             ))
+            # self.logger.info("Uploaded '{}' to the MP4 tag 'AUrl'".format(
+            #     url
+            # ))
             self.thumbnail = url
             return 0
         else:
