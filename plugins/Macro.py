@@ -186,7 +186,7 @@ class Macro(Plugin):
              '"What\'s the set count going to be?"\n'
              '"Alright, well, GIMR wants to know—"\n'
              '"What\'s the set count?\n"'
-             '"—GIMR wants to know what\'s the set count going to be against'
+             '"—GIMR wants to know what\'s the set count going to be against '
              'Chillin. **The people** wanna know."\n'
              '"..."\n"..."\n'
              '"...I don\'t need to *say* anything; everyone knows what I\'m '
@@ -267,7 +267,7 @@ class Macro(Plugin):
                      "Throw your money 👋💯💸 on the line cause "
                      "{my_b} I'm making some 💰👌\n"
                      "Gotta say bro 🤔 you're looking awfully weak 😩\n"
-                     "Wait and see 👀 what happens at the Salty "
+                     "Wait and see 👀 what happens in the Salty "
                      "{pjsalt} Suite 🎮\n"
                      "Vanilla Fox 🍦🦊 don't suit you so go find another 🌈🦊\n"
                      "Teach you a lesson and take back my color "
