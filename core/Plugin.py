@@ -151,6 +151,10 @@ class Plugin(object):
             Returns:
                 None
         """
+        self.logger.info(
+            "deleting [ID:{msg_id}][User:{uname}]: {content}".format(
+                msg_id=msg.id, uname=msg.author.name, content=msg.content)
+        )
         deleted = await self.core.delete_message(msg)
         return deleted
 
