@@ -264,7 +264,7 @@ class LocalSong(Song):
             url_frame = id3.TXXX(
                 encoding=3, desc=u'art_url', text=[url]
             )
-            self.metadata.add(url_frame)
+            self.metadata.tags.add(url_frame)
             self.metadata.save()
             self.logger.info("Added '{}' to the ID3 tag 'TXXX:art_url'".format(
                 url
