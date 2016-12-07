@@ -165,6 +165,7 @@ class Voice(Plugin):
         album_name = arguments[0]
         try:
             songs = os.listdir("resources/music/{}".format(album_name))
+            self.logger.info(songs)
         except FileNotFoundError:
             response = ("Album not found; use `vc library` to see"
                         "available selections.")
@@ -186,7 +187,7 @@ class Voice(Plugin):
                     ))
                 await self.send_message(msg.channel, response)
                 await asyncio.sleep(1)
-                await self.delete_message(msg)
+            await self.delete_message(msg)
 
     @command("^vc yt queue (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
              access=-1, name='yt queue',
