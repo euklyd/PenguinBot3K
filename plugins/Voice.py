@@ -171,7 +171,7 @@ class Voice(Plugin):
                         "available selections.")
             await self.send_message(msg.channel, response)
         else:
-            for song in songs:
+            for song_name in songs:
                 song_name = "{}/{}".format(album_name, song_name)
 
                 try:
