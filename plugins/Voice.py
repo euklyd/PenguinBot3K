@@ -320,7 +320,7 @@ class Voice(Plugin):
                 requestor=song.requestor
             )
         else:
-            entry = ("{bullet} ***{song}***, by {uploader} "
+            entry = ("{bullet} ***{song}***, by {requestor} "
                      "(requested by {artist})\n").format(
                 bullet=bullet,
                 song=song.title,
