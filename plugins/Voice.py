@@ -159,8 +159,8 @@ class Voice(Plugin):
         await asyncio.sleep(1)
         await self.delete_message(msg)
 
-    @command('^vc queue album "([^"]*)"$', access=ACCESS['user'],
-             name='local queue',
+    @command('^vc queue album "([^"]*)" ?(?:"([^"]*)")?$',
+             access=ACCESS['user'], name='local queue',
              doc_brief='`vc queue album "album"`: Queue all songs '
              'contained in the album `album`.',
              doc_detail='`vc queue album "album" ["pattern"]`: Queue all '
