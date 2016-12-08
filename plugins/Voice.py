@@ -299,6 +299,10 @@ class Voice(Plugin):
              doc_brief="`vc skip`: Shuffle the playlist.")
     async def shuffle(self, msg, arguments):
         self.music_manager.shuffle()
+        await self.send_message(
+            msg.channel,
+            "Playlist shuffled. Use `vc playlist` to see the new order."
+        )
 
     def generate_playlist_line(self, song, top=False):
         """
