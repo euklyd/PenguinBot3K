@@ -393,7 +393,7 @@ class MusicManager():
             await self.voice.disconnect()
         self.reset = True
         if (self.is_active()):
-            await self.skip()
+            self.skip()
         await self.loop_closed
         self.logger.info("playlist_loop finished")
 
@@ -543,15 +543,17 @@ class MusicManager():
             self.current_song.player.resume()
             return None
 
-    async def skip(self):
+    def skip(self):
         if (self.is_active()):
             self.logger.info("skipping song")
             self.current_song.player.stop()
 
-    async def shuffle(self):
+    def shuffle(self):
         q = self.playlist_queue.queue
         random.shuffle(q)
-        self.playlist_queue = queue.Queue(q)
+        for entry in q:
+            self.playlist_queue.put(entry)
+            self.playlist_queue.get()
 
     def list_library(self, album=""):
         try:

@@ -293,12 +293,12 @@ class Voice(Plugin):
     @command("^vc skip$", access=ACCESS['maestro'], name='skip',
              doc_brief="`vc skip`: Move to next song in the playlist.")
     async def skip(self, msg, arguments):
-        await self.music_manager.skip()
+        self.music_manager.skip()
 
     @command("^vc shuffle$", access=ACCESS['maestro'], name='shuffle',
              doc_brief="`vc skip`: Shuffle the playlist.")
     async def shuffle(self, msg, arguments):
-        await self.music_manager.shuffle()
+        self.music_manager.shuffle()
 
     def generate_playlist_line(self, song, top=False):
         """
