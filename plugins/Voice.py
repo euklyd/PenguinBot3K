@@ -20,6 +20,7 @@ from core.MusicManager import YouTubeSong, LocalSong
 
 import asyncio
 import discord
+import glob
 import os
 import re
 
@@ -161,11 +162,25 @@ class Voice(Plugin):
     @command('^vc queue album "([^"]*)"$', access=ACCESS['user'],
              name='local queue',
              doc_brief='`vc queue album "album"`: Queue all songs '
-             'contained in the album `album`.')
+             'contained in the album `album`.',
+             doc_detail='`vc queue album "album" ["pattern"]`: Queue all '
+             'songs contained in the album `album` whose names match '
+             '`pattern` (using standard Unix shell globbing).')
     async def local_queue_album_all(self, msg, arguments):
         album_name = arguments[0]
         try:
-            songs = os.listdir("resources/music/{}".format(album_name))
+            if (arguments[1] is not None):
+                songs = glob.glob("resources/music/{}/{}".format(
+                    album_name, arguments[1]
+                ))
+                if (len(songs) == 0):
+                    response = ("No songs found in album '{}' matching `{}`; "
+                                "use `vc library` and `vc album` to see"
+                                "available selections.")
+                    await self.send_message(msg.channel, response)
+                    return
+            else:
+                songs = os.listdir("resources/music/{}".format(album_name))
             self.logger.info(songs)
         except FileNotFoundError:
             response = ("Album not found; use `vc library` to see"
