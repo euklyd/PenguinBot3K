@@ -41,6 +41,7 @@ import logging
 import mutagen
 import os
 import queue
+import random
 import time
 import traceback
 
@@ -546,6 +547,11 @@ class MusicManager():
         if (self.is_active()):
             self.logger.info("skipping song")
             self.current_song.player.stop()
+
+    async def shuffle(self):
+        q = self.playlist_queue.queue
+        random.shuffle(q)
+        self.playlist_queue = queue.Queue(q)
 
     def list_library(self, album=""):
         try:

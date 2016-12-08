@@ -295,6 +295,11 @@ class Voice(Plugin):
     async def skip(self, msg, arguments):
         await self.music_manager.skip()
 
+    @command("^vc shuffle$", access=ACCESS['maestro'], name='shuffle',
+             doc_brief="`vc skip`: Shuffle the playlist.")
+    async def shuffle(self, msg, arguments):
+        await self.music_manager.shuffle()
+
     def generate_playlist_line(self, song, top=False):
         """
             Helper function for the playlist commands.
