@@ -46,6 +46,7 @@ import time
 class PenguinBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.plugins_loaded = False
         # Setup logger and load config
         self.setup_logger()
         self.config = self.load_config("settings")
@@ -122,7 +123,8 @@ class PenguinBot(discord.Client):
         if (self.config.channel_logging is True):
             self.log_manager.update_info()
 
-        await self.load_plugins()
+        if (self.plugins_loaded is False):
+            await self.load_plugins()
 
         profile_args = {}
         avatarfile = None
@@ -368,3 +370,4 @@ class PenguinBot(discord.Client):
         self.logger.info("Loading Plugins")
         for plugin in config.plugins:
             await self.plugin.load(plugin)
+        self.plugins_loaded = True
