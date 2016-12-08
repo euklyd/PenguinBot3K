@@ -170,9 +170,10 @@ class Voice(Plugin):
         album_name = arguments[0]
         try:
             if (arguments[1] is not None):
-                songs = glob.glob("resources/music/{}/{}".format(
-                    album_name, arguments[1]
-                ))
+                songs = glob.glob1(
+                    dirname="resources/music/{}".format(album_name),
+                    pattern=arguments[1]
+                )
                 if (len(songs) == 0):
                     response = ("No songs found in album '{}' matching `{}`; "
                                 "use `vc library` and `vc album` to see"
