@@ -549,7 +549,7 @@ class MusicManager():
             self.current_song.player.stop()
 
     def shuffle(self):
-        q = self.playlist_queue.queue
+        q = list(self.playlist_queue.queue)
         random.shuffle(q)
         for entry in q:
             self.playlist_queue.put(entry)
