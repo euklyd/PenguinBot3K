@@ -337,7 +337,7 @@ class Voice(Plugin):
              doc_brief="`vc playlist`: Show current playlist.")
     async def show_playlist(self, msg, arguments):
         current_song, playlist = await self.music_manager.list_playlist()
-        reply = "**Current YouTube Playlist:**\n"
+        reply = "**Current Playlist:**\n"
         if (current_song is not None):
             reply += self.generate_playlist_line(current_song.song, top=True)
             for entry in playlist:
