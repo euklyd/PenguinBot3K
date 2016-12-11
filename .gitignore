@@ -8,3 +8,4 @@ databases/*.db
 databases/*.json
 *\~
 .DS_Store
+*.mp3
