@@ -296,7 +296,7 @@ class Voice(Plugin):
         self.music_manager.skip()
 
     @command("^vc shuffle$", access=ACCESS['maestro'], name='shuffle',
-             doc_brief="`vc skip`: Shuffle the playlist.")
+             doc_brief="`vc shuffle`: Shuffle the playlist.")
     async def shuffle(self, msg, arguments):
         self.music_manager.shuffle()
         await self.send_message(
@@ -324,8 +324,8 @@ class Voice(Plugin):
                 requestor=song.requestor
             )
         else:
-            entry = ("{bullet} ***{song}***, by {requestor} "
-                     "(requested by {artist})\n").format(
+            entry = ("{bullet} ***{song}***, by {artist} "
+                     "(requested by {requestor})\n").format(
                 bullet=bullet,
                 song=song.title,
                 artist=song.artist,

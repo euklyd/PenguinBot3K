@@ -333,10 +333,16 @@ class LocalSong(Song):
                 sec=int(self.duration % 60),
             ),
             inline=True)
-        em.set_footer(
-            text="(Requested by {})".format(self.requestor.nick),
-            icon_url=self.requestor.avatar_url
-        )
+        if (self.requestor.nick is None):
+            em.set_footer(
+                text="(Requested by {})".format(self.requestor.name),
+                icon_url=self.requestor.avatar_url
+            )
+        else:
+            em.set_footer(
+                text="(Requested by {})".format(self.requestor.nick),
+                icon_url=self.requestor.avatar_url
+            )
         return em
 
     async def create_player(self, voice, after=None):
