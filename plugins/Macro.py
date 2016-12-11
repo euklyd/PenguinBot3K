@@ -301,7 +301,7 @@ class Macro(Plugin):
                         "unlike {nip}, im independent since my first chuckle, "
                         "first {nip}, feel the {nip} than the {nip} "
                         "chuckle").format(nip=nipples)
-        self.send_message(msg.channel, nipplespasta)
+        await self.send_message(msg.channel, nipplespasta)
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
