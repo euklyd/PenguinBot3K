@@ -287,7 +287,7 @@ class Macro(Plugin):
                 await self.send_message(msg.channel, verse[i])
 
     @command("^nipples|knuckles$", access=100, name="nipples",
-             doc_brief="")
+             doc_brief="`knuckles`: oh. my mistake")
     async def nipples(self, msg, arguments):
         nipples = self.core.emoji.emoji(
             msg.server, ['knuckles', 'nipples_the_enchilada']
@@ -296,8 +296,8 @@ class Macro(Plugin):
                         "tougher than {nip}\n"
                         "you can call me {nip}, unlike {nip}, i dont chuckle, "
                         "id rather flex my {nip}\n"
-                        "im hard as {nip}, it aint hard to {nip}, i break em "
-                        "down whether they {nip} or {nip}\n"
+                        "im hard as {nip}, it aint hard to chuckle, i break "
+                        "em down whether they {nip} or {nip}\n"
                         "unlike {nip}, im independent since my first chuckle, "
                         "first {nip}, feel the {nip} than the {nip} "
                         "chuckle").format(nip=nipples)
