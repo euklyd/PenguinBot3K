@@ -194,17 +194,17 @@ class Macro(Plugin):
         roypasta.append(
             "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
             "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
-            "and a pencil disjoint 👌 ⚔ .  Let's not forget that in his own "
-            "respective game 😘 he's gay 😘 👰 .
+            "and a pencil  ✏ disjoint 👌 🗡 .  Let's not forget that in his "
+            "own respective game 😳 he's a total beta nerd 🤓 . "
             "His presence all over the stage should not be ignored, "
-            "a single read gets you nothing 💀 at 40% 👀 , 🔥 🔥 🔥 you're not "
-            "at risk when trying to gimp him, and his 🔥 ⚔ is completely "
-            "laggy and can OHKO you at 304 percent 👌 👌 👌 . "
-            "He may be combo food 🍖 , but he wants that DING DONG 🐒 , "
+            "a single read 📖 gets you nothing 💀 at 40% 👀 , 🔥 🔥 🔥 you're "
+            "not at risk ⚠ 💤 when trying to gimp him, and his 🔥 ⚔ is "
+            "completely laggy 🐌 and can OHKO you at 304% 👌 👌 👌 😂 . "
+            "He may be combo food 🍖 , but he wants that DING DONG 🐒 💥 💀 , "
             "so he can die you at 60% from a single grab 💥 💥 💥 👀 . "
             "Roy is the bottom top 5 sword character, unlike that amazing "
-            "original character Marth {marth} 😕 😩 😫 .\n\n"
-            "🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥".format(marth=marf))
+            "original character ⚔ Marth {marth} 😕 😩 😫 .\n\n"
+            "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
         roypasta.append(
             "🔥 **Roy** 🔥 is definitely **top tier**.  The boy got it all:  "
             "Speed 🏃 , KO Power 💥 , 💯 off throws, and disjoint 👌 ⚔ .  "
@@ -212,14 +212,14 @@ class Macro(Plugin):
             "6 different marriage options 😘 👰 .  "
             "His presence all over the stage should not be ignored, "
             "a single read kills 💀 you at *40%* 👀 , 🔥 🔥 🔥 puts you at "
-            "risk when trying to gimp him, and his 🔥 ⚔ is completely lagless "
-            "and can OHKO you 👌 👌 👌 . "
+            "risk ⚠ when trying to gimp him, and his 🔥 ⚔ is completely "
+            "lagless and can OHKO you 👌 👌 👌 . "
             "He may be combo food 🍖 , but he wants that 💢 rage 💢 , "
-            "so he can kill you at *10%* with a read 💥 💥 💥 👀 . "
+            "so he can kill you at *10%* with a read 📖 💥 💥 💥 👀 . "
             "Roy is the real top 5 sword character, unlike that worthless "
             "clone {marth}  😕 😩 😫\n\n"
-            "🔥 **ROY'S** 🔥 **OUR** 🔥 **BOY** 🔥".format(marth=marf))
-        pasta = random.choice(roypasta.values())
+            "**🔥 ROY'S 🔥 OUR 🔥 BOY 🔥**".format(marth=marf))
+        pasta = random.choice(roypasta)
         await self.send_message(msg.channel, pasta)
 
     @command("^oh no|uair$", access=-1, name='oh no',
