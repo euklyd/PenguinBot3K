@@ -19,6 +19,7 @@ from core.Decorators import *
 
 import discord
 import logging
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, cloudcopypasta)
 
-    @command("^waddle$", access=100, name='waddle',
+    @command("^waddle|ddd|THE KING$", access=100, name='waddle',
              doc_brief="`waddle`: Prints out the dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
         dddpasta = ("🐧 **King Dedede** 🐧 is definitely **top tier**. "
@@ -175,6 +176,63 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
+
+    @command("^boy|roy|🔥🔥🔥|ph1r3$", access=100, name='ph1r3',
+             doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes")
+    async def ph1r3(self, msg, arguments):
+        marf = self.core.emoji.emoji(msg.server, ['ppmd_marth', 'MarthSip'])
+        roypasta = []
+        roypasta.append(
+            "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
+            "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
+            "and a pencil disjoint 👌 ⚔ .  Let's not forget that in his own "
+            "respective game 😘 he's gay 😘 👰 .
+            "His presence all over the stage should not be ignored, "
+            "a single read gets you nothing 💀 at 40% 👀 , 🔥 🔥 🔥 you're not "
+            "at risk when trying to gimp him, and his 🔥 ⚔ is completely "
+            "laggy and can OHKO you at 304 percent 👌 👌 👌 . "
+            "He may be combo food 🍖 , but he wants that DING DONG 🐒 , "
+            "so he can die you at 60% from a single grab 💥 💥 💥 👀 . "
+            "Roy is the bottom top 5 sword character, unlike that amazing "
+            "original character Marth {marth} 😕 😩 😫 .\n\n"
+            "🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥".format(marth=marf))
+        roypasta.append(
+            "🔥 **Roy** 🔥 is definitely **top tier**.  The boy got it all:  "
+            "Speed 🏃 , KO Power 💥 , 💯 off throws, and disjoint 👌 ⚔ .  "
+            "Let's not forget that in his own respective game 😘 he has "
+            "6 different marriage options 😘 👰 .  "
+            "His presence all over the stage should not be ignored, "
+            "a single read kills 💀 you at *40%* 👀 , 🔥 🔥 🔥 puts you at "
+            "risk when trying to gimp him, and his 🔥 ⚔ is completely lagless "
+            "and can OHKO you 👌 👌 👌 . "
+            "He may be combo food 🍖 , but he wants that 💢 rage 💢 , "
+            "so he can kill you at *10%* with a read 💥 💥 💥 👀 . "
+            "Roy is the real top 5 sword character, unlike that worthless "
+            "clone {marth}  😕 😩 😫\n\n"
+            "🔥 **ROY'S** 🔥 **OUR** 🔥 **BOY** 🔥".format(marth=marf))
+        pasta = random.choice(roypasta.values())
+        await self.send_message(msg.channel, pasta)
+
+    @command("^oh no|uair$", access=-1, name='oh no',
+             doc_brief="`oh no`: Pastes a random pasta")
+    async def oh_no(self, msg, arguments):
+        oh_nos = {}
+        oh_nos['cloud'] = (
+            "ー仁二二二ア\n"
+            "¯\_(ツ)_/¯\n"
+            "OH NO You've been Up-aired by the top-tier Anime Man!\n"
+            "Repost this message in 10 chats or be up-aired again!\n"
+        )
+        oh_nos['diddy'] = (
+            "You have been visited by the 🐒 **Mankey of FREE COMBOS** 🐒\n"
+            "🍌 Bananas 🍌 and downthrows will come to you, "
+            "but ONLY if you post \n"
+            "**ヽ༼ຈل͜ຈ༽ﾉ HOO HAH ヽ༼ຈل͜ຈ༽ﾉ**\n"
+            "in 10 chats!\n"
+            "🙈 🙉 🙊"
+        )
+        pasta = random.choice(oh_nos.values())
+        await self.send_message(msg.channel, pasta)
 
     @command("^chillinrap *([123])?$", access=100, name='chillinrap',
              doc_brief='`chillinrap [verse number]`: "What\'s the set count '
