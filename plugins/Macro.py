@@ -99,7 +99,7 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, cloudcopypasta)
 
-    @command("^waddle|ddd|THE KING$", access=100, name='waddle',
+    @command("^(waddle|ddd|THE KING)$", access=100, name='waddle',
              doc_brief="`waddle`: Prints out the dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
         dddpasta = ("🐧 **King Dedede** 🐧 is definitely **top tier**. "
@@ -117,7 +117,7 @@ class Macro(Plugin):
                     "🐧 **THE 🐧 KING 🐧 IS 🐧 TOP 🐧 TIER** 🐧")
         await self.send_message(msg.channel, dddpasta)
 
-    @command("^plumber|cancer|<:mario:[0-9]*>|mario$", access=100,
+    @command("^(plumber|cancer|<:mario:[0-9]*>|mario)$", access=100,
              name='plumber', doc_brief="`plumber`: Prints out the dankest of "
              "🚽 Plumber 🚽 memes")
     async def plumber(self, msg, arguments):
@@ -142,7 +142,7 @@ class Macro(Plugin):
                         sunglasses_mewtwo=m2))
         await self.send_message(msg.channel, mariopasta)
 
-    @command("^md|doc|doctor|💊$", access=100, name='doctor',
+    @command("^(md|MD|doc|doctor|💊)$", access=100, name='doctor',
              doc_brief="`doctor`: Prints out the dankest of 💊 Doctor 💊 memes")
     async def doctor(self, msg, arguments):
         mario = self.core.emoji.emoji(msg.server, ['mario'])
@@ -163,7 +163,7 @@ class Macro(Plugin):
                     ))
         await self.send_message(msg.channel, docpasta)
 
-    @command("^penguin|\U0001F427$", access=-1, name='penguin',
+    @command("^(penguin|\U0001F427)$", access=-1, name='penguin',
              doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
     async def penguin(self, msg, arguments):
         penguin_url = "https://i.imgur.com/MGNa91r.gif"
@@ -177,16 +177,16 @@ class Macro(Plugin):
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
 
-    @command("^olaf|integrity$", access=-1, name='integrity',
-             doc_detail="`integrity`: Embeds the face of Integrity irl")
-    async def olaftegrity(self, msg, arguments):
+    @command("^(olaf$|^integrity)$", access=-1, name='integrity',
+             doc_detail="`integrity`: Embeds the face of Integrity irl ⛄")
+    async def integrity(self, msg, arguments):
         olaf_url = "http://i.imgur.com/791NLN5.png"
         user = msg.server.get_member(self.core.user.id)
         em = discord.Embed(color=user.color)
         em.set_thumbnail(url=olaf_url)
         await self.send_message(msg.channel, embed=em)
 
-    @command("^boy|roy|🔥🔥🔥|ph1r3$", access=100, name='ph1r3',
+    @command("^(boy|roy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
              doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes")
     async def ph1r3(self, msg, arguments):
         marf = self.core.emoji.emoji(msg.server, ['ppmd_marth', 'MarthSip'])
@@ -222,7 +222,7 @@ class Macro(Plugin):
         pasta = random.choice(roypasta)
         await self.send_message(msg.channel, pasta)
 
-    @command("^oh no|uair$", access=-1, name='oh no',
+    @command("^(oh no|uair)$", access=-1, name='oh no',
              doc_brief="`oh no`: Pastes a random pasta")
     async def oh_no(self, msg, arguments):
         oh_nos = {}
@@ -353,7 +353,7 @@ class Macro(Plugin):
                 self.logger.info(verse[i])
                 await self.send_message(msg.channel, verse[i])
 
-    @command("^nipples|knuckles$", access=100, name="nipples",
+    @command("^(nipples|knuckles)$", access=100, name="nipples",
              doc_brief="`knuckles`: oh. my mistake")
     async def nipples(self, msg, arguments):
         nipples = self.core.emoji.emoji(
