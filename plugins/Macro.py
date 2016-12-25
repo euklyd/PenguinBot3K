@@ -240,7 +240,7 @@ class Macro(Plugin):
             "in 10 chats!\n"
             "🙈 🙉 🙊"
         )
-        pasta = random.choice(oh_nos.values())
+        pasta = random.choice(list(oh_nos.values()))
         await self.send_message(msg.channel, pasta)
 
     @command("^chillinrap *([123])?$", access=100, name='chillinrap',
