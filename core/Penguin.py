@@ -52,7 +52,7 @@ class PenguinBot(discord.Client):
         self.config = self.load_config("settings")
         if (type(self.config.trigger) is tuple or
                 type(self.config.trigger) is list
-        ):
+        ):  # noqa E124
             self.default_trigger = self.config.trigger[0]
         else:
             self.default_trigger = self.config.trigger

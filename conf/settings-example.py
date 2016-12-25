@@ -23,7 +23,8 @@ import logging
 
     Set by discord.Client.edit_profile()
 """
-# Name the bot will refer to itself; will change name on server if it is not this
+# Name the bot will refer to itself;
+# will change name on server if it is not this
 username = "My Penguin Bot"
 avatar = "conf/king_dedede_icon.png"
 

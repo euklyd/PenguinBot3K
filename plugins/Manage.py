@@ -171,7 +171,8 @@ class Manage(Plugin):
     async def help(self, msg, arguments):
         await self.list_all_commands(msg, arguments)
 
-    @command("^(?:help|command detail) ([^.]*).([^.]*)$", access=-1, name='help',
+    @command("^(?:help|command detail) ([^.]*).([^.]*)$", access=-1,
+             name='help',
              doc_brief="`command detail <plugin>.<command>`: prints out "
              "specific help for `<command>` in `<plugin>`.")
     async def command_detail(self, msg, arguments):
