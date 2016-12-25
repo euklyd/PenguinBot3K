@@ -177,6 +177,15 @@ class Macro(Plugin):
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
 
+    @command("^olaf|integrity$", access=-1, name='integrity',
+             doc_detail="`integrity`: Embeds the face of Integrity irl")
+    async def olaftegrity(self, msg, arguments):
+        olaf_url = "http://i.imgur.com/791NLN5.png"
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+        em.set_thumbnail(url=olaf_url)
+        await self.send_message(msg.channel, embed=em)
+
     @command("^boy|roy|🔥🔥🔥|ph1r3$", access=100, name='ph1r3',
              doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes")
     async def ph1r3(self, msg, arguments):
