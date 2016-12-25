@@ -25,6 +25,7 @@ import inspect
 
 from core.Plugin import Plugin
 
+
 class PluginManager():
     def __init__(self, core):
         self.core = core
@@ -144,15 +145,24 @@ class PluginManager():
                     continue
 
             if hasattr(callback, "is_command"):
+                # self.logger.info("{}: {}".format(callback.name, .doc_detail))
                 self.core.command.register(
-                    getattr(callback, "pattern"),
+                    # getattr(callback, "pattern"),
+                    # callback,
+                    # trigger=getattr(callback, "trigger"),
+                    # access=getattr(callback, "access"),
+                    # silent=getattr(callback, "silent"),
+                    # cmdname=getattr(callback, "name"),
+                    # doc_brief=getattr(callback, "doc_brief"),
+                    # doc_detail=getattr(callback, "doc_detail")
+                    callback.pattern,
                     callback,
-                    trigger=getattr(callback, "trigger"),
-                    access=getattr(callback, "access"),
-                    silent=getattr(callback, "silent"),
-                    cmdname=getattr(callback, "name"),
-                    doc_brief=getattr(callback, "doc_brief"),
-                    doc_detail=getattr(callback, "doc_detail")
+                    trigger=callback.trigger,
+                    access=callback.access,
+                    silent=callback.silent,
+                    cmdname=callback.name,
+                    doc_brief=callback.doc_brief,
+                    doc_detail=callback.doc_detail
                 )
 
             if hasattr(callback, "is_subscriber"):

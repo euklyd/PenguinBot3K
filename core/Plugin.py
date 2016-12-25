@@ -209,7 +209,6 @@ class Plugin(object):
         """
         return await self.core.get_user_info(user_id)
 
-
 # def reply(self, envelope, message):
 #     """
 #         Summary:
