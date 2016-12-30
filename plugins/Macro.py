@@ -18,6 +18,7 @@ from core.Plugin import Plugin
 from core.Decorators import *
 
 import discord
+import json
 import logging
 import random
 
@@ -28,11 +29,7 @@ class Macro(Plugin):
     async def activate(self):
         pass
 
-    @command("^emojify ([\u2600-\u26FF\u2700-\u27BF\U0001F1E6-\U0001F1FF\U0001F300-\U0001F5FF\U0001F600-\U0001F64F\U0001F680-\U0001F6FF]|(?:<:[A-Za-z0-9_]*:\d*>)) (.*)",
-             access=-1, name='emojify',
-             doc_brief="`emojify <emoji> <sentence>`: replace all spaces in "
-             "`<sentence>` with `<emoji>`")
-    async def emojify(self, msg, arguments):
+    emojis = (
         """
         0x1F600...0x1F64F, // Emoticons
         0x1F300...0x1F5FF, // Misc Symbols and Pictographs
@@ -41,6 +38,19 @@ class Macro(Plugin):
         0x2700...0x27BF,   // Dingbats
         0xFE00...0xFE0F    // Variation Selectors
         """
+        "\u2600-\u26FF"
+        "\u2700-\u27BF"
+        "\U0001F1E6-\U0001F1FF"
+        "\U0001F300-\U0001F5FF"
+        "\U0001F600-\U0001F64F"
+        "\U0001F680-\U0001F6FF"
+    )
+
+    @command("^emojify ([{}]|(?:<:[A-Za-z0-9_]*:\d*>)) (.*)".format(emojis),
+             access=-1, name='emojify',
+             doc_brief="`emojify <emoji> <sentence>`: replace all spaces in "
+             "`<sentence>` with `<emoji>`")
+    async def emojify(self, msg, arguments):
         self.logger.debug(arguments)
         emoji = arguments[0]
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
@@ -177,7 +187,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
 
-    @command("^(olaf$|^integrity)$", access=-1, name='integrity',
+    @command("^([Oo]laf|[Ii]ntegrity)$", access=-1, name='integrity',
              doc_detail="`integrity`: Embeds the face of Integrity irl ⛄")
     async def integrity(self, msg, arguments):
         olaf_url = "http://i.imgur.com/791NLN5.png"
@@ -186,7 +196,14 @@ class Macro(Plugin):
         em.set_thumbnail(url=olaf_url)
         await self.send_message(msg.channel, embed=em)
 
-    @command("^(boy|roy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
+    @command("^([Ss]akurai|j    ank|game blows)$", access=-1, name='sakurai',
+             doc_detail="`sakurai`: 👍")
+    async def sakurai(self, msg, arguments):
+        ayy = ["http://i.imgur.com/rbpQb3M.gif",
+               "http://i.imgur.com/ahTXT2T.gif"]
+        await self.send_message(msg.channel, random.choice(ayy))
+
+    @command("^(boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
              doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes")
     async def ph1r3(self, msg, arguments):
         marf = self.core.emoji.emoji(msg.server, ['ppmd_marth', 'MarthSip'])
@@ -369,6 +386,16 @@ class Macro(Plugin):
                         "first {nip}, feel the {nip} than the {nip} "
                         "chuckle").format(nip=nipples)
         await self.send_message(msg.channel, nipplespasta)
+
+    @command("^(magic|[Ii] prefer the magic)$", access=-1, name="magic",
+             doc_detail="`magic`: Mee6 breaks records. Nadeko breaks records. "
+             "PenguinBot3K breaks records. PenguinBot3.5K breaks the rules. "
+             "Personally, I prefer the magic.")
+    async def magic(self, msg, arguments):
+        magic = {}
+        with open("resources/macro/magic.json", 'r') as magicfile:
+            magic = json.load(magicfile)
+        await self.send_message(msg.channel, random.choice(list(magic.values())))
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
