@@ -370,7 +370,7 @@ class Macro(Plugin):
                 self.logger.info(verse[i])
                 await self.send_message(msg.channel, verse[i])
 
-    @command("^(nipples|knuckles)$", access=100, name="nipples",
+    @command("^(nipples|knuckles)$", access=100, name='nipples',
              doc_brief="`knuckles`: oh. my mistake")
     async def nipples(self, msg, arguments):
         nipples = self.core.emoji.emoji(
@@ -387,15 +387,57 @@ class Macro(Plugin):
                         "chuckle").format(nip=nipples)
         await self.send_message(msg.channel, nipplespasta)
 
-    @command("^(magic|[Ii] prefer the magic)$", access=-1, name="magic",
+    @command("^(magic|[Ii] prefer the magic)$", access=-1, name='magic',
              doc_detail="`magic`: Mee6 breaks records. Nadeko breaks records. "
              "PenguinBot3K breaks records. PenguinBot3.5K breaks the rules. "
              "Personally, I prefer the magic.")
     async def magic(self, msg, arguments):
-        magic = {}
         with open("resources/macro/magic.json", 'r') as magicfile:
             magic = json.load(magicfile)
-        await self.send_message(msg.channel, random.choice(list(magic.values())))
+            await self.send_message(
+                msg.channel,
+                random.choice(list(magic.values()))
+            )
+
+    @command("^pasta (.*)$", access=-1, name='pasta',
+             doc_brief="`pasta <pasta name>`: Prints out the associatedd "
+             "pasta for `<pasta name>`.")
+    async def pasta(self, msg, arguments):
+        pasta = arguments[0].lower()
+        with open("resources/macro/pastas.json", 'r') as pastafile:
+            pastas = json.load(pastafile)
+            if (pasta in pastas):
+                reply = pastas[pasta]
+            else:
+                reply = "No such pasta."
+            await self.send_message(
+                msg.channel,
+                reply
+            )
+
+    @command('^makepasta name:"([^"]*)" text:"([^"]*)"$', access=500,
+             name='makepasta',
+             doc_brief='`makepasta name:"<name>" text:"<pastatext>"`: Creates '
+             'a new pasta for use with the `pasta` command.',
+             doc_detail='`makepasta name:"<name>" text:"<pastatext>"`: '
+             'Creates a new pasta, accessible by using the '
+             '`pasta <name>` command, which I will respond to with <text>.')
+    async def makepasta(self, msg, arguments):
+        name = arguments[0].lower()
+        pastas = {}
+        with open("resources/macro/pastas.json", 'r') as pastafile:
+            pastas = json.load(pastafile)
+        if (name in pastas):
+            reply = "ERR: Pasta `{}` already exists.".format(name)
+        else:
+            try:
+                pastas[name] = arguments[1]
+                with open("resources/macro/pastas.json", 'w') as pastafile:
+                    json.dump(pastas, pastafile, indent=2)
+                reply = "Successfully added new pasta `{}`.".format(name)
+            except:
+                reply = "ERR: Something went wrong."
+        await self.send_message(msg.channel, reply)
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
