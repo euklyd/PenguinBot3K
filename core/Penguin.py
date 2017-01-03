@@ -153,7 +153,10 @@ class PenguinBot(discord.Client):
         if (self.config.status != ""):
             presence_args['status'] = self.config.status
         await self.change_presence(**presence_args)
-        presence_args['game'] = presence_args['game'].name
+        if (presence_args['game'] is not None):
+            presence_args['game'] = presence_args['game'].name
+        else:
+            presence_args.pop('game')
         self.logger.info("Set presence to {}".format(presence_args))
 
     async def on_message(self, msg):
