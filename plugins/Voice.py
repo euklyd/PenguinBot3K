@@ -55,7 +55,11 @@ class Voice(Plugin):
         try:
             await self.music_manager.join_voice_channel(vc)
             await self.send_message(
-                msg.channel, "Joined voice channel <#{}>".format(arguments[0])
+                msg.channel,
+                "Joined voice channel <#{name}>\nAdd songs to the queue with "
+                "`{trigger} vc yt queue youtube_url_here`".format(
+                    name=arguments[0], trigger=self.core.default_trigger
+                )
             )
         except discord.InvalidArgument:
             await self.send_message(
@@ -206,7 +210,7 @@ class Voice(Plugin):
                 await asyncio.sleep(1)
             await self.delete_message(msg)
 
-    @command("^vc yt queue (https?:\/\/www\.youtube\.com\/watch\?v=.*)$",
+    @command("^vc yt queue (https?:\/\/(?:www|m)\.youtube\.com\/(?:watch\?v|shared\?ci)=.*)$",
              access=-1, name='yt queue',
              doc_brief="`vc yt queue <youtube_url>`: Queue the audio from "
              "a YouTube video specified by `<youtube_url>`.")
@@ -354,7 +358,7 @@ class Voice(Plugin):
                                                      top=True)
             for i in range(0, 10):
                 try:
-                    reply += self.generate_playlist_line(playlist[i].song)
+                    line = self.generate_playlist_line(playlist[i].song)
                     if (len(reply) + len(line) > 1950):
                         break
                     else:
