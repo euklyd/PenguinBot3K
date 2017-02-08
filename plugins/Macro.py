@@ -284,8 +284,8 @@ class Macro(Plugin):
             "in 10 chats!\n"
             "🙈 🙉 🙊"
         )
-        if (len(arguments) == 2 and arguments[1] in oh_nos):
-            pasta = oh_nos[arguments[1]]
+        if (len(arguments) == 1 and arguments[0] in oh_nos):
+            pasta = oh_nos[arguments[0]]
         else:
             pasta = random.choice(list(oh_nos.values()))
         await self.send_message(msg.channel, pasta)
@@ -427,7 +427,7 @@ class Macro(Plugin):
                 random.choice(list(magic.values()))
             )
 
-    @command("^(?:ganon|THE PUNCH) (.+)?$",
+    @command("^(?:ganon|THE PUNCH) ?(.+)?$",
              access=100, name='the punch',
              doc_brief="I was just wondering why Ganondorf is in the very "
              "middle of the tiers.",
