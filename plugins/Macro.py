@@ -284,7 +284,7 @@ class Macro(Plugin):
             "in 10 chats!\n"
             "🙈 🙉 🙊"
         )
-        if (arguments[1] in oh_nos):
+        if (len(arguments) == 2 and arguments[1] in oh_nos):
             pasta = oh_nos[arguments[1]]
         else:
             pasta = random.choice(list(oh_nos.values()))
