@@ -24,6 +24,8 @@ import random
 
 logger = logging.getLogger(__name__)
 
+macro_path = "resources/macro/{}"
+
 
 class Macro(Plugin):
     async def activate(self):
@@ -109,25 +111,28 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, cloudcopypasta)
 
-    @command("^(waddle|ddd|THE KING)$", access=100, name='waddle',
+    @command("^(?:waddle|ddd|THE KING)$", access=100, name='waddle',
              doc_brief="`waddle`: Prints out the dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
+        gordo = self.core.emoji.emoji(msg.server, ['gordo'])
         dddpasta = ("🐧 **King Dedede** 🐧 is definitely **top tier**. "
                     "The king's got it all: disjoint ⚔, power 💪, recovery ✈, "
                     "and damaging throw combos 💥. He is the hardest character "
-                    "in the game to kill vertically 💀, and with the safest "
+                    "in the game to kill vertically ⬆💀, and with the safest "
                     "and strongest ways to kill 💀 being traditionally "
-                    "vertical, that's huge ⛰. His presence at the ledge is "
-                    "not to be ignored, as with clever Gordo setups, he can "
+                    "⬆vertical⬆, that's huge ⛰. His presence at the ledge is "
+                    "not to be ignored, as with clever {gordo} setups, he can "
                     "cover most if not all ledge options with a potentially "
                     "deadly hitbox 💀. He might be combo food 🍖, but he wants "
                     "all that 💢 rage 💢 so he can kill with his safe and "
                     "powerful back air 🔨🐻 even earlier than usual. "
                     "**An obvious member of 🐧 top tier🐧.**\n"
-                    "🐧 **THE 🐧 KING 🐧 IS 🐧 TOP 🐧 TIER** 🐧")
+                    "🐧 **THE 🐧 KING 🐧 IS 🐧 TOP 🐧 TIER** 🐧".format(
+                        gordo=gordo
+                    ))
         await self.send_message(msg.channel, dddpasta)
 
-    @command("^(plumber|cancer|<:mario:[0-9]*>|mario)$", access=100,
+    @command("^(?:plumber|cancer|<:mario:[0-9]*>|mario)$", access=100,
              name='plumber', doc_brief="`plumber`: Prints out the dankest of "
              "🚽 Plumber 🚽 memes")
     async def plumber(self, msg, arguments):
@@ -152,7 +157,7 @@ class Macro(Plugin):
                         sunglasses_mewtwo=m2))
         await self.send_message(msg.channel, mariopasta)
 
-    @command("^(md|MD|doc|doctor|💊)$", access=100, name='doctor',
+    @command("^(?:md|MD|doc|doctor|💊)$", access=100, name='doctor',
              doc_brief="`doctor`: Prints out the dankest of 💊 Doctor 💊 memes")
     async def doctor(self, msg, arguments):
         mario = self.core.emoji.emoji(msg.server, ['mario'])
@@ -173,7 +178,7 @@ class Macro(Plugin):
                     ))
         await self.send_message(msg.channel, docpasta)
 
-    @command("^(penguin|\U0001F427)$", access=-1, name='penguin',
+    @command("^(?:penguin|\U0001F427)$", access=-1, name='penguin',
              doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
     async def penguin(self, msg, arguments):
         penguin_url = "https://i.imgur.com/MGNa91r.gif"
@@ -187,7 +192,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
 
-    @command("^([Oo]laf|[Ii]ntegrity)$", access=-1, name='integrity',
+    @command("^(?:[Oo]laf|[Ii]ntegrity)$", access=-1, name='integrity',
              doc_detail="`integrity`: Embeds the face of Integrity irl ⛄")
     async def integrity(self, msg, arguments):
         olaf_url = "http://i.imgur.com/791NLN5.png"
@@ -196,14 +201,14 @@ class Macro(Plugin):
         em.set_thumbnail(url=olaf_url)
         await self.send_message(msg.channel, embed=em)
 
-    @command("^([Ss]akurai|j    ank|game blows)$", access=-1, name='sakurai',
+    @command("^(?:[Ss]akurai|j    ank|game blows)$", access=-1, name='sakurai',
              doc_detail="`sakurai`: 👍")
     async def sakurai(self, msg, arguments):
         ayy = ["http://i.imgur.com/rbpQb3M.gif",
                "http://i.imgur.com/ahTXT2T.gif"]
         await self.send_message(msg.channel, random.choice(ayy))
 
-    @command("^(boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
+    @command("^(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
              doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes")
     async def ph1r3(self, msg, arguments):
         marf = self.core.emoji.emoji(msg.server, ['ppmd_marth', 'MarthSip'])
@@ -239,7 +244,27 @@ class Macro(Plugin):
         pasta = random.choice(roypasta)
         await self.send_message(msg.channel, pasta)
 
-    @command("^(oh no|uair)$", access=-1, name='oh no',
+    @command("^ (?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='roy',
+             doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
+    async def roy(self, msg, arguments):
+        marf = self.core.emoji.emoji(msg.server, ['ppmd_marth', 'MarthSip'])
+        roypasta = (
+            "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
+            "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
+            "and a pencil  ✏ disjoint 👌 🗡 .  Let's not forget that in his "
+            "own respective game 😳 he's a total beta nerd 🤓 . "
+            "His presence all over the stage should not be ignored, "
+            "a single read 📖 gets you nothing 💀 at 40% 👀 , 🔥 🔥 🔥 you're "
+            "not at risk ⚠ 💤 when trying to gimp him, and his 🔥 ⚔ is "
+            "completely laggy 🐌 and can OHKO you at 304% 👌 👌 👌 😂 . "
+            "He may be combo food 🍖 , but he wants that DING DONG 🐒 💥 💀 , "
+            "so he can die you at 60% from a single grab 💥 💥 💥 👀 . "
+            "Roy is the bottom top 5 sword character, unlike that amazing "
+            "original character ⚔ Marth {marth} 😕 😩 😫 .\n\n"
+            "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
+        await self.send_message(msg.channel, roypasta)
+
+    @command("^(?:oh no|uair) ?([A-Za-z]+)?$", access=-1, name='oh no',
              doc_brief="`oh no`: Pastes a random pasta")
     async def oh_no(self, msg, arguments):
         oh_nos = {}
@@ -248,16 +273,20 @@ class Macro(Plugin):
             "¯\_(ツ)_/¯\n"
             "OH NO You've been Up-aired by the top-tier Anime Man!\n"
             "Repost this message in 10 chats or be up-aired again!\n"
+            "http://i.imgur.com/KCrDmIsm.jpg"
         )
         oh_nos['diddy'] = (
             "You have been visited by the 🐒 **Mankey of FREE COMBOS** 🐒\n"
-            "🍌 Bananas 🍌 and downthrows will come to you, "
+            "🍌 Bananas 🍌 and ⬇downthrows⬇ will come to you, "
             "but ONLY if you post \n"
             "**ヽ༼ຈل͜ຈ༽ﾉ HOO HAH ヽ༼ຈل͜ຈ༽ﾉ**\n"
             "in 10 chats!\n"
             "🙈 🙉 🙊"
         )
-        pasta = random.choice(list(oh_nos.values()))
+        if (arguments[1] in oh_nos):
+            pasta = oh_nos[arguments[1]]
+        else:
+            pasta = random.choice(list(oh_nos.values()))
         await self.send_message(msg.channel, pasta)
 
     @command("^chillinrap *([123])?$", access=100, name='chillinrap',
@@ -282,7 +311,9 @@ class Macro(Plugin):
         mb = self.core.emoji.emoji(msg.server, ['my_b'])
         leff = self.core.emoji.emoji(msg.server, ['5_0'])
         shine = self.core.emoji.emoji(msg.server, ['shine'])
-        leff_fox = self.core.emoji.emoji(msg.server, ['leffen_fox'])
+        leffox = self.core.emoji.emoji(
+            msg.server, ['leffen_fox', 'fox_facepalm']
+        )
         nlt = self.core.emoji.emoji(msg.server, ['notlikethis'])
         salt = self.core.emoji.emoji(msg.server, ['pjsalt'])
         verse = []
@@ -291,15 +322,14 @@ class Macro(Plugin):
                      "You're not one of the gods 👼❌, you're one of the "
                      "god-awfuls 👺✔\n"
                      "We all got gimped {shine} 😫 when "
-                     "looking at your Fox {leffen_fox}\n"
+                     "looking at your Fox {leffox}\n"
                      "Bitch, stick to 🚮 Smash 4 🚮  and losing by four stocks "
                      "🦊 🦊 🦊 🦊\n"
                      "😤 Not a fan of your style\n {leff5_0} "
                      "You ain't standing your ground\n"
                      "Get wins 🏆👌 while kicking a man when he's down 👢😩\n"
-                     "Like, {leff5_0} \"I beat Mango "
-                     "{shine}🍊, I'm the favorite if he "
-                     "chokes! {notlikethis}\n"
+                     "Like, {leff5_0} \"I beat Mango {shine}🍊, "
+                     "I'm the favorite if he chokes! {nlt}\n"
                      "\"As far as Armada 🍑 goes, I'll just wait 🤞 'til he's "
                      "a host.😏\"\n"
                      "Ain't no telling how foolish 😛 you'll be lookin' 👀\n"
@@ -310,14 +340,13 @@ class Macro(Plugin):
                         leff5_0=leff,
                         my_b=mb,
                         shine=shine,
-                        leffen_fox=leff_fox,
-                        notlikethis=nlt))
+                        leffox=leffox,
+                        nlt=nlt))
 
         verse.append("Expose {leff5_0} you as a fraud\n"
                      "Yeah I'll be blowing you up 💥\n"
                      "Who said you were a god? 👼❓\n"
-                     "I know it wasn't Plup 🚀🦊"
-                     "{notlikethis}👌\n"
+                     "I know it wasn't Plup 🚀🦊 {nlt}👌\n"
                      "Been here 🔟 ten 🗓 years and you know "
                      "{my_b} I'm showing up\n"
                      "For a man of many words {leff5_0}, "
@@ -328,7 +357,7 @@ class Macro(Plugin):
                      "'Imma put you in your place\n"
                      "Kid 👦, you a disgrace 👺\n"
                      "Get killed quick like that missile hit you in the face "
-                     "🚀{leffen_fox}💀\n"
+                     "🚀{leffox}💀\n"
                      "After all of this {leff5_0} you'll be "
                      "watching 👀 your mouth 🙊\n"
                      "Ain't no telling who'll be calling you out\n"
@@ -340,14 +369,12 @@ class Macro(Plugin):
                         my_b=mb,
                         pjsalt=salt,
                         shine=shine,
-                        leffen_fox=leff_fox,
-                        notlikethis=nlt))
+                        leffox=leff_fox,
+                        nlt=nlt))
 
-        verse.append("💌 P.S. Leffen, I ain't done yet "
-                     "{my_b}\n"
+        verse.append("💌 P.S. Leffen, I ain't done yet {my_b}\n"
                      "I'm the underdog 🐶 so place your bets 💸\n"
-                     "Whoever want to see {leff5_0} Leffen "
-                     "looking dumb 😜\n"
+                     "Whoever want to see {leff5_0} Leffen looking dumb 😜\n"
                      "Throw your money 👋💯💸 on the line cause "
                      "{my_b} I'm making some 💰👌\n"
                      "Gotta say bro 🤔 you're looking awfully weak 😩\n"
@@ -370,7 +397,7 @@ class Macro(Plugin):
                 self.logger.info(verse[i])
                 await self.send_message(msg.channel, verse[i])
 
-    @command("^(nipples|knuckles)$", access=100, name='nipples',
+    @command("^(?:nipples|knuckles)$", access=100, name='nipples',
              doc_brief="`knuckles`: oh. my mistake")
     async def nipples(self, msg, arguments):
         nipples = self.core.emoji.emoji(
@@ -387,24 +414,54 @@ class Macro(Plugin):
                         "chuckle").format(nip=nipples)
         await self.send_message(msg.channel, nipplespasta)
 
-    @command("^(magic|[Ii] prefer the magic)$", access=-1, name='magic',
+    @command("^(?:magic|[Ii] prefer the magic)$", access=-1, name='magic',
              doc_detail="`magic`: Mee6 breaks records. Nadeko breaks records. "
              "PenguinBot3K breaks records. PenguinBot3.5K breaks the rules. "
              "Personally, I prefer the magic.")
     async def magic(self, msg, arguments):
-        with open("resources/macro/magic.json", 'r') as magicfile:
+        with open(macro_path.format("magic.json"), 'r') as magicfile:
             magic = json.load(magicfile)
             await self.send_message(
                 msg.channel,
                 random.choice(list(magic.values()))
             )
 
+    @command("^(?:ganon|THE PUNCH) *([^ ]*)?$",
+             access=100, name='the punch',
+             doc_brief="I was just wondering why Ganondorf is in the very "
+             "middle of the tiers.",
+             doc_detail="I was just wondering why Ganondorf is in the very "
+             "middle of the tiers. Before I get into what I mean, allow me to "
+             "first put out there that I have been playing for years, "
+             "and I have watched MANY videos of the tournament masters.")
+    async def THE_PUNCH(self, msg, arguments):
+        with open(macro_path.format("the_punch.json"), 'r') as punchfile:
+            punch = json.load(punchfile)
+            if (arguments[0] is not None):
+                if (arguments[0] in punch['dict']):
+                    await self.send_message(
+                        msg.channel,
+                        punch['dict'][arguments[0]]
+                    )
+                else:
+                    await self.send_message(
+                        msg.channel,
+                        punch['dict']['the punch']
+                    )
+            else:
+                for meme in punch['array']:
+                    await self.send_message(msg.channel, meme)
+                    await asyncio.sleep(0.1)
+        ganon = self.core.emoji.emoji(msg.server, ['return_of_ganon'])
+        if (ganon != "`:return_of_ganon:`"):
+            await self.send_message(msg.channel, ganon)
+
     @command("^pasta (.*)$", access=-1, name='pasta',
              doc_brief="`pasta <pasta name>`: Prints out the associatedd "
              "pasta for `<pasta name>`.")
     async def pasta(self, msg, arguments):
         pasta = arguments[0].lower()
-        with open("resources/macro/pastas.json", 'r') as pastafile:
+        with open(macro_path.format("pastas.json"), 'r') as pastafile:
             pastas = json.load(pastafile)
             if (pasta in pastas):
                 reply = pastas[pasta]
@@ -425,14 +482,14 @@ class Macro(Plugin):
     async def makepasta(self, msg, arguments):
         name = arguments[0].lower()
         pastas = {}
-        with open("resources/macro/pastas.json", 'r') as pastafile:
+        with open(macro_path.format("pastas.json"), 'r') as pastafile:
             pastas = json.load(pastafile)
         if (name in pastas):
             reply = "ERR: Pasta `{}` already exists.".format(name)
         else:
             try:
                 pastas[name] = arguments[1]
-                with open("resources/macro/pastas.json", 'w') as pastafile:
+                with open(macro_path.format("pastas.json"), 'w') as pastafile:
                     json.dump(pastas, pastafile, indent=2)
                 reply = "Successfully added new pasta `{}`.".format(name)
             except:
