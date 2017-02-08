@@ -452,7 +452,7 @@ class Macro(Plugin):
             else:
                 for meme in punch['array']:
                     await self.send_message(msg.channel, meme)
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.5)
         ganon = self.core.emoji.emoji(msg.server, ['return_of_ganon'])
         if (ganon != "`:return_of_ganon:`"):
             await self.send_message(msg.channel, ganon)
