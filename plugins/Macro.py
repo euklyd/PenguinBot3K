@@ -438,15 +438,7 @@ class Macro(Plugin):
     async def THE_PUNCH(self, msg, arguments):
         with open(macro_path.format("the_punch.json"), 'r') as punchfile:
             punch = json.load(punchfile)
-            if (arguments[0] is None or arguments[0] == '-h' or arguments[0] == 'help'):
-                await self.send_message(
-                    msg.channel,
-                    ("Section keys are: `{keys}`\n"
-                     "Use with `{trigger}THE PUNCH <key>`").format(
-                        keys="`, `".join(punch['dict']),
-                        trigger=self.core.default_trigger)
-                )
-            elif (arguments[0] in punch['dict']):
+            if (arguments[0] in punch['dict']):
                 await self.send_message(
                     msg.channel,
                     punch['dict'][arguments[0]]
@@ -454,7 +446,10 @@ class Macro(Plugin):
             else:
                 await self.send_message(
                     msg.channel,
-                    punch['dict']['the punch']
+                    ("Section keys are: `{keys}`\n"
+                     "Use with `{trigger}THE PUNCH <key>`").format(
+                        keys="`, `".join(punch['dict']),
+                        trigger=self.core.default_trigger)
                 )
         ganon = self.core.emoji.emoji(msg.server, ['return_of_ganon'])
         if (ganon != "`:return_of_ganon:`"):
