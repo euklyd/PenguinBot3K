@@ -426,7 +426,7 @@ class Macro(Plugin):
                 random.choice(list(magic.values()))
             )
 
-    @command("^(?:ganon|THE PUNCH) *([^ ]*)?$",
+    @command("^(?:ganon|THE PUNCH) *([^ ]+)?$",
              access=100, name='the punch',
              doc_brief="I was just wondering why Ganondorf is in the very "
              "middle of the tiers.",
