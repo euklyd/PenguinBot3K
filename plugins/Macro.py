@@ -427,7 +427,7 @@ class Macro(Plugin):
                 random.choice(list(magic.values()))
             )
 
-    @command("^(?:ganon|THE PUNCH) *([^ ]+)?$",
+    @command("^(?:ganon|THE PUNCH) (.+)?$",
              access=100, name='the punch',
              doc_brief="I was just wondering why Ganondorf is in the very "
              "middle of the tiers.",
@@ -444,7 +444,7 @@ class Macro(Plugin):
                         msg.channel,
                         ("Section keys are: {keys}\n"
                          "Use with `{trigger}THE PUNCH <key>`").format(
-                            keys=punch['dict'].keys(),
+                            keys=", ".join(punch['dict']),
                             trigger=self.core.default_trigger)
                     )
                 elif (arguments[0] in punch['dict']):
