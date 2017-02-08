@@ -17,6 +17,7 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 
+import asyncio
 import discord
 import json
 import logging
