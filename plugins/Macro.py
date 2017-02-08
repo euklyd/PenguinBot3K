@@ -439,7 +439,15 @@ class Macro(Plugin):
         with open(macro_path.format("the_punch.json"), 'r') as punchfile:
             punch = json.load(punchfile)
             if (arguments[0] is not None):
-                if (arguments[0] in punch['dict']):
+                if (arguments[0] == '-h'):
+                    await self.send_message(
+                        msg.channel,
+                        ("Section keys are: {keys}\n"
+                         "Use with `{trigger}THE PUNCH <key>`").format(
+                            keys=punch['dict'].keys(),
+                            trigger=self.core.default_trigger)
+                    )
+                elif (arguments[0] in punch['dict']):
                     await self.send_message(
                         msg.channel,
                         punch['dict'][arguments[0]]
@@ -452,7 +460,7 @@ class Macro(Plugin):
             else:
                 for meme in punch['array']:
                     await self.send_message(msg.channel, meme)
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(1)
         ganon = self.core.emoji.emoji(msg.server, ['return_of_ganon'])
         if (ganon != "`:return_of_ganon:`"):
             await self.send_message(msg.channel, ganon)
