@@ -57,7 +57,7 @@ class Voice(Plugin):
             await self.send_message(
                 msg.channel,
                 "Joined voice channel <#{name}>\nAdd songs to the queue with "
-                "`{trigger} vc yt queue youtube_url_here`".format(
+                "`{trigger}vc yt queue youtube_url_here`".format(
                     name=arguments[0], trigger=self.core.default_trigger
                 )
             )
@@ -163,7 +163,7 @@ class Voice(Plugin):
         await asyncio.sleep(1)
         await self.delete_message(msg)
 
-    @command('^vc queue album "([^"]*)" ?(?:"([^"]*)")?$',
+    @command('^vc queue album "([^"]*)"(?: "([^"]*)")?$',
              access=ACCESS['user'], name='local queue',
              doc_brief='`vc queue album "album"`: Queue all songs '
              'contained in the album `album`.',
