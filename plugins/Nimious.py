@@ -26,11 +26,14 @@ class Nimious(Plugin):
     async def activate(self):
         pass
 
-    @command("^[Ss]tryker *(?:when he)? *\"(.*)\"$", access=-1, name='Stryker')
+    @command("^[Ss]tryker *(?:when he)? *(.*)$", access=-1, name='Stryker')
     async def stryker(self, msg, arguments):
         await self.send_message(msg.channel, "http://i.imgur.com/XpXoEDT.jpg")
-        await self.send_message(
-            msg.channel, "^ Stryker when he {}".format(msg.arguments[0]))
+        if (arguments[0] is not None):
+            await self.send_message(
+                msg.channel,
+                "^ Stryker when he {}".format(arguments[0])
+            )
         await self.delete_message(msg)
 
     @command("^(?:[Nn]imious|<@!?163167281042423810>)$", access=100,
