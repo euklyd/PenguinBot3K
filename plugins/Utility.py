@@ -98,11 +98,3 @@ class Utility(Plugin):
         )
 
         await self.send_message(msg.channel, embed=em)
-
-    @command('^find emoji "([0-9A-Za-z\_]+)"$', access=-1, name='find emoji',
-             doc_brief='`find emoji "emoji_name"`: tries to find an emoji with'
-             'the specified name on the current server.')
-    async def get_avatar(self, msg, arguments):
-        emoji = self.core.emoji.emoji(msg, [arguments[0]])
-        reply = "`{em}`: {em}".format(em=emoji)
-        await self.send_message(msg.channel, reply)
