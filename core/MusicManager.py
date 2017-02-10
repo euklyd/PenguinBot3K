@@ -224,23 +224,32 @@ class LocalSong(Song):
         # # genre = metadata['soal'] or metadata['©alb']
 
         if (self.metadata.get('sonm') is not None):
-            title = str(self.metadata['sonm'])
+            title = self.metadata['sonm']
         elif (self.metadata.get('©nam') is not None):
-            title = str(self.metadata['©nam'])
+            title = self.metadata['©nam']
         else:
             title = "{} (unknown title)".format(name)
+        try:
+            title = str(title[0])
+        except TypeError:
+            title = str(title)
         super().__init__(title, requestor, channel)
 
         if (self.metadata.get('©ART') is not None):
-            self.artist = str(self.metadata['©ART'])
+            artist = self.metadata['©ART']
         elif (self.metadata.get('soar') is not None):
-            self.artist = str(self.metadata['soar'])
+            artist = self.metadata['soar']
         elif (self.metadata.get('aART') is not None):
-            self.artist = str(self.metadata['aART'])
+            artist = self.metadata['aART']
         elif (self.metadata.get('\xa9wrt') is not None):
-            self.artist = str(self.metadata['\xa9wrt'])
+            artist = self.metadata['\xa9wrt']
         else:
-            self.artist = "Unknown Artist"
+            artist = "Unknown Artist"
+        try:
+            self.artist = str(artist[0])
+        except TypeError:
+            self.artist = str(artist)
+
 
     # Currently only works with ID3 tags.
     async def save_artwork_url(self, client):
