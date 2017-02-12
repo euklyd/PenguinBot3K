@@ -60,6 +60,7 @@ class Utility(Plugin):
             nitro = "maybe? maybe not? 👀"
         em.add_field(name="Nickname", value=nick)
         em.add_field(name="Nitro", value=nitro)
+        em.add_field(name="URL", value="(Click the title!)", inline=False)
         await self.send_message(msg.channel, embed=em)
 
     @command("^info <@!?([0-9]*)>$", access=50, name='info',
