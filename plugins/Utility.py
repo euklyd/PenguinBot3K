@@ -43,13 +43,24 @@ class Utility(Plugin):
              doc_brief="`avatar @<user>`: posts a link to `<user>`'s avatar")
     async def get_avatar(self, msg, arguments):
         """`avatar @<user>`: posts a link to `<user>`'s avatar"""
-        user = await self.core.get_user_info(arguments[0])
-        reply = "**Avatar for {}#{}:**\n{}".format(
-            user.name,
-            user.discriminator,
-            user.avatar_url
+        user = msg.server.get_member(arguments[0])
+        em = discord.Embed(color=user.color)
+        em.set_author(
+            name="{}#{}".format(user.name, user.discriminator),
+            url=user.avatar_url
         )
-        await self.send_message(msg.channel, reply)
+        em.set_thumbnail(url=user.avatar_url)
+        if (user.nick is None):
+            nick = user.name
+        else:
+            nick = user.nick
+        if (".gif" in user.avatar_url):
+            nitro = "Yes"
+        else:
+            nitro = "maybe? maybe not? 👀"
+        em.add_field(name="Nickname", value=nick)
+        em.add_field(name="Nitro", value=nitro)
+        await self.send_message(msg.channel, embed=em)
 
     @command("^info <@!?([0-9]*)>$", access=50, name='info',
              doc_brief="`info @<user>`: Gets assorted info about the "
@@ -75,26 +86,19 @@ class Utility(Plugin):
             nick = "None"
             color = "None"
             status = "None"
-            game = "None"
             role = "None"
+            game = "None"
             em.set_footer(text="Created on {}".format(user.created_at))
         em.set_author(
             name="{}#{}".format(user.name, user.discriminator),
             icon_url=user.avatar_url
         )
-        em.add_field(name="Nickname", value=nick, inline=True)
-        em.add_field(name="ID", value=user.id, inline=True)
-        em.add_field(
-            name="Color",
-            value=color,
-            inline=True
-        )
-        em.add_field(name="Status", value=status, inline=True)
-        em.add_field(name="Game", value=game, inline=True)
-        em.add_field(
-            name="Top Role",
-            value=role,
-            inline=True
-        )
+        em.add_field(name="Nickname", value=nick,    inline=True)
+        em.add_field(name="ID",       value=user.id, inline=True)
+        em.add_field(name="Color",    value=color,   inline=True)
+        em.add_field(name="Status",   value=status,  inline=True)
+        em.add_field(name="Top Role", value=role,    inline=True)
+        em.add_field(name="Game",     value=game,    inline=True)
+        em.set_thumbnail(url=user.avatar_url)
 
         await self.send_message(msg.channel, embed=em)
