@@ -48,6 +48,27 @@ def command(pattern, access=0, trigger="", silent=False, name=None,
     return decorate
 
 
+def filter(pattern, ignore=None, name=None, server=None, doc_brief=None, doc_detail=None):
+    def decorate(callback):
+        def wrapper(self, msg, arguments):
+            return callback(self, msg, arguments)
+
+        if not hasattr(wrapper, 'is_filter'):
+            wrapper.__name__ = callback.__name__
+            wrapper.__doc__ = callback.__doc__
+            setattr(wrapper, 'is_filter', True)
+            setattr(wrapper, 'pattern', pattern)
+            setattr(wrapper, 'callback', callback)
+            setattr(wrapper, 'ignore', ignore)
+            setattr(wrapper, 'name', name)
+            setattr(wrapper, 'server', server)
+            setattr(wrapper, 'doc_brief', doc_brief)
+            setattr(wrapper, 'doc_detail', doc_detail)
+
+        return wrapper
+    return decorate
+
+
 def connector(requirement):
     def decorate(callback):
         def wrapper(self, *args, **kwargs):

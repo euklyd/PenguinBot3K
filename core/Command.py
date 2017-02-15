@@ -14,7 +14,7 @@
         by the Free Software Foundation
 """
 
-import threading
+# import threading
 import re
 import logging
 
@@ -99,7 +99,7 @@ class CommandManager():
                         self.logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
 
     def register(self, pattern, callback, trigger="", access=0, silent=False,
-                 cmdname=None, doc_brief=None, doc_detail=None):
+                 command_name=None, doc_brief=None, doc_detail=None):
         """
             Summary:
                 Pushes command instance to command list
@@ -135,7 +135,7 @@ class CommandManager():
                 trigger=trigger,
                 access=access,
                 silent=silent,
-                name=cmdname,
+                name=command_name,
                 plugin=clazz,
                 doc_brief=doc_brief,
                 doc_detail=doc_detail

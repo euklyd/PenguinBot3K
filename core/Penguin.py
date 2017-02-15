@@ -29,6 +29,7 @@ from core.ACL import ACL
 from core.Command import CommandManager
 from core.Database import Database
 from core.Event import EventManager
+from core.Filter import FilterManager
 from core.PluginManager import PluginManager
 from core.Imgur import Imgur
 from core.LogManager import LogManager
@@ -62,6 +63,7 @@ class PenguinBot(discord.Client):
         self.plugin = PluginManager(self)
         self.event = EventManager(self)
         self.command = CommandManager(self)
+        self.filter = FilterManager(self)
         self.ACL = ACL(self.config.backdoor)
         self.emoji = EmojiManager(self)
 
@@ -188,8 +190,8 @@ class PenguinBot(discord.Client):
                     content=msg.content
                 )
             )
-        # await self.connector._handleMessage(msg)
         await self.command.check(msg)
+        await self.filter.check(msg)
 
         # embed debugging stuff:
         # if (msg.author.id == "136107769680887808"):
@@ -319,45 +321,45 @@ class PenguinBot(discord.Client):
             self.logger.critical("Config class not found in conf/" + name)
             exit(1)
 
-    def load_connector(self, core):
-        """
-            Summary:
-                Looks for and loads the connector defined in config
-                Will exit if cannot find or load the connector module
-
-            Args:
-                None
-
-            Returns:
-                (Connector): The low level connection manager instance
-        """
-        path.append("connectors")
-
-        try:
-            connector_candidate = find_module(
-                config.connector, path=["connectors"]
-            )
-            connector_module = load_module(
-                config.connector, *connector_candidate
-            )
-            connector = getattr(connector_module, config.connector)(
-                core, **config.connector_options
-            )
-            self.logger.info("Loaded connector from: \"\"".format(
-                connector_candidate[1]
-            ))
-
-            return connector
-
-        except ImportError as e:
-            self.logger.critical("ImportError: {}".format(str(e)))
-            exit(1)
-        except AttributeError as e:
-            print(e)
-            self.logger.critical("Could not find connector class: {}".format(
-                config.connector
-            ))
-            exit(1)
+    # def load_connector(self, core):
+    #     """
+    #         Summary:
+    #             Looks for and loads the connector defined in config
+    #             Will exit if cannot find or load the connector module
+    #
+    #         Args:
+    #             None
+    #
+    #         Returns:
+    #             (Connector): The low level connection manager instance
+    #     """
+    #     path.append("connectors")
+    #
+    #     try:
+    #         connector_candidate = find_module(
+    #             config.connector, path=["connectors"]
+    #         )
+    #         connector_module = load_module(
+    #             config.connector, *connector_candidate
+    #         )
+    #         connector = getattr(connector_module, config.connector)(
+    #             core, **config.connector_options
+    #         )
+    #         self.logger.info("Loaded connector from: \"\"".format(
+    #             connector_candidate[1]
+    #         ))
+    #
+    #         return connector
+    #
+    #     except ImportError as e:
+    #         self.logger.critical("ImportError: {}".format(str(e)))
+    #         exit(1)
+    #     except AttributeError as e:
+    #         print(e)
+    #         self.logger.critical("Could not find connector class: {}".format(
+    #             config.connector
+    #         ))
+    #         exit(1)
 
     async def load_plugins(self):
         """

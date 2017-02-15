@@ -152,7 +152,7 @@ class PluginManager():
                     # trigger=getattr(callback, "trigger"),
                     # access=getattr(callback, "access"),
                     # silent=getattr(callback, "silent"),
-                    # cmdname=getattr(callback, "name"),
+                    # command_name=getattr(callback, "name"),
                     # doc_brief=getattr(callback, "doc_brief"),
                     # doc_detail=getattr(callback, "doc_detail")
                     callback.pattern,
@@ -160,7 +160,18 @@ class PluginManager():
                     trigger=callback.trigger,
                     access=callback.access,
                     silent=callback.silent,
-                    cmdname=callback.name,
+                    command_name=callback.name,
+                    doc_brief=callback.doc_brief,
+                    doc_detail=callback.doc_detail
+                )
+
+            if hasattr(callback, "is_filter"):
+                self.core.filter.register(
+                    callback.pattern,
+                    callback,
+                    ignore=callback.ignore,
+                    filter_name=callback.name,
+                    server=callback.server,
                     doc_brief=callback.doc_brief,
                     doc_detail=callback.doc_detail
                 )
