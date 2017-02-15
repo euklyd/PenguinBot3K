@@ -33,16 +33,18 @@ class Test(Plugin):
     async def test(self, msg, arguments):
         await self.send_message(msg.channel, "Testing: `ON`")
 
-    @filter("[Cc]+\W*[Uu]+\W*[Cc]+\W*[Kk]+", name='cuckfilter',
+    # @filter("(?:^|[^\\])([Cc]+\W*[Uu]+\W*[Cc]+\W*[Kk]+)", name='cuckfilter',
+    @filter("([Cc]+\W*[Uu]+\W*[Cc]+\W*[Kk]+)", name='cuckfilter',
             # server="190782508105728000")
             server="TEST")
     async def fuck_the_cuck(self, msg, arguments):
+        content = msg.content.replace(arguments[0], "**{}**".format(arguments[0]))
         await self.send_message(
             msg.channel,
             "<@!{author}>\n"
             "> {content}\n\n"
             # "Did you mean 'Shezzy'?".format(
             "Did you mean <@!{shezzy}>?".format(
-                author=msg.author.id, content=msg.content,
+                author=msg.author.id, content=content,
                 shezzy="208708372281819147")
         )

@@ -78,7 +78,7 @@ class FilterManager():
                 self.logger.info("{}: '{}' detected".format(msg_filter.name, message.content))
                 if (msg_filter.ignore is None or self.core.ACL.getAccess(message.author.id) < msg_filter.ignore):
                     arguments = match.groups()
-                    # print(arguments)
+                    # self.logger.info(arguments)
                     self.logger.info("'{}' invoked".format(message.content))
                     await msg_filter.invoke(message, arguments)
 
