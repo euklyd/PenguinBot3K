@@ -210,6 +210,11 @@ class Voice(Plugin):
                 await asyncio.sleep(1)
             await self.delete_message(msg)
 
+    # https://youtu.be/kvDMlk3kSYg sorta thing
+    @command("^vc yt queue (https?:\/\/youtu.be\/.*)$", access=-1)
+    async def yt_queue_short(self, msg, arguments):
+        await self.yt_queue(msg, argument)
+
     @command("^vc yt queue (https?:\/\/(?:www|m)\.youtube\.com\/(?:watch\?v|shared\?ci)=.*)$",
              access=-1, name='yt queue',
              doc_brief="`vc yt queue <youtube_url>`: Queue the audio from "
