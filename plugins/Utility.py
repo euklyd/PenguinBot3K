@@ -44,16 +44,23 @@ class Utility(Plugin):
     async def get_avatar(self, msg, arguments):
         """`avatar @<user>`: posts a link to `<user>`'s avatar"""
         user = msg.server.get_member(arguments[0])
-        em = discord.Embed(color=user.color)
+        if (user is None):
+            # discord.Server.get_member() returns None if the specified user
+            # isn't a part of that server.
+            user = await self.core.get_user_info(arguments[0])
+            em = discord.Embed()
+            nick = user.name
+        else:
+            em = discord.Embed(color=user.color)
+            if (user.nick is None):
+                nick = user.name
+            else:
+                nick = user.nick
         em.set_author(
             name="{}#{}".format(user.name, user.discriminator),
             url=user.avatar_url
         )
         em.set_thumbnail(url=user.avatar_url)
-        if (user.nick is None):
-            nick = user.name
-        else:
-            nick = user.nick
         if (".gif" in user.avatar_url):
             nitro = "Yes"
         else:
