@@ -57,6 +57,7 @@ class PenguinBot(discord.Client):
             self.default_trigger = self.config.trigger[0]
         else:
             self.default_trigger = self.config.trigger
+        self.test_server = self.config.test_server
         self.bot_name = self.config.username
 
         # Setup managers

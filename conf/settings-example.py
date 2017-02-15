@@ -102,3 +102,8 @@ imgur_api = {
     'access': 'YOUR ACCESS TOKEN',
     'refresh': 'YOUR REFRESH TOKEN'
 }
+
+# Used for specifying things to happen on a designated server(s).
+# Should be a string with the server ID.
+# Can be a tuple of strings.
+test_server = "No testing allowed"

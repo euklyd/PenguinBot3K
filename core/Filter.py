@@ -70,8 +70,9 @@ class FilterManager():
             # self.logger.info("filter: {}".format(msg_filter))
             match = re.search(msg_filter.pattern, message.content)
             if (msg_filter.server is not None and
-                match and
-                (msg_filter.server is True or message.server.id in msg_filter.server)
+                match and (
+                    msg_filter.server is True or
+                    message.server.id in msg_filter.server)
             ):
                 # self.logger.debug("'{}' detected")
                 self.logger.info("{}: '{}' detected".format(msg_filter.name, message.content))
@@ -103,6 +104,9 @@ class FilterManager():
             return
         else:
             self.logger.debug("Registered filter \"" +  clazz + "." + name + "\"")
+
+            if (server == "TEST"):
+                server = self.core.test_server
 
             self.filters[name] = Filter(
                 pattern,
