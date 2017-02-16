@@ -25,6 +25,7 @@ import random
 
 logger = logging.getLogger(__name__)
 
+image_path = "resources/images/{}"
 macro_path = "resources/macro/{}"
 
 
@@ -494,6 +495,18 @@ class Macro(Plugin):
             except:
                 reply = "ERR: Something went wrong."
         await self.send_message(msg.channel, reply)
+
+    @command("^(?:animes|mangos|animes_and_mangos)(?:\.gif)?$", access=-1,
+             name='animes and mangos.gif',
+             doc_brief='`animes_and_mangos.gif`: ~silly kids~')
+    async def animes_and_mangos(self, msg, arguments):
+        filename = image_path.format("animes_and_mangos.gif")
+        with open(filename, 'rb') as anime_file:
+            sent_file = await self.send_file(
+                msg.channel,
+                anime_file,
+                filename="animes_and_mangos.gif"
+            )
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
