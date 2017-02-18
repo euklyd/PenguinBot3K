@@ -217,7 +217,7 @@ class Voice(Plugin):
     # https://youtu.be/kvDMlk3kSYg sorta thing
     @command("^vc yt queue (https?:\/\/youtu.be\/.*)$", access=-1)
     async def yt_queue_short(self, msg, arguments):
-        await self.yt_queue(msg, argument)
+        await self.yt_queue(msg, arguments)
 
     @command("^vc yt queue (https?:\/\/(?:www|m)\.youtube\.com\/(?:watch\?v|shared\?ci)=.*)$",
              access=-1, name='yt queue',
