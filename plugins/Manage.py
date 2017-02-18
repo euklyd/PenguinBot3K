@@ -277,7 +277,7 @@ class Manage(Plugin):
         url = ("https://discordapp.com/oauth2/authorize?"
                "&client_id={id}&scope=bot&permissions={permissions}".format(
                     id=self.core.user.id,
-                    permissions=perms
+                    permissions=hex(perms)
                 ))
         reply = "To add me to your server, click on this link!\n{link}".format(
             link=url
