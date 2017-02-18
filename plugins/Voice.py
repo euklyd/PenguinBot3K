@@ -60,9 +60,9 @@ class Voice(Plugin):
             await self.music_manager.join_voice_channel(vc)
             await self.send_message(
                 msg.channel,
-                "Joined voice channel <#{name}>\nAdd songs to the queue with "
+                "Joined voice channel <#{id}>\nAdd songs to the queue with "
                 "`{trigger}vc yt queue youtube_url_here`".format(
-                    name=arguments[0], trigger=self.core.default_trigger
+                    id=arguments[0], trigger=self.core.default_trigger
                 )
             )
         except discord.InvalidArgument:
@@ -419,9 +419,9 @@ class Voice(Plugin):
                 await self.music_manager.join_voice_channel(vc)
                 await self.send_message(
                     msg.channel,
-                    "Joined voice channel <#{name}>\nAdd songs to the queue "
+                    "Joined voice channel <#{id}>\nAdd songs to the queue "
                     "with `{trigger}vc yt queue youtube_url_here`".format(
-                        name=vc, trigger=self.core.default_trigger
+                        id=vc.id, trigger=self.core.default_trigger
                     )
                 )
             except discord.InvalidArgument:
