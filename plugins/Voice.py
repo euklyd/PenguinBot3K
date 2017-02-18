@@ -43,7 +43,7 @@ class Voice(Plugin):
         # self.player = None
         await self.core.wait_until_login()
         try:
-            self.default_vc = self.core.default_music_vc
+            self.default_vc = self.core.config.default_music_vc
         except NameError:
             self.default_vc = None
         self.music_manager = self.core.music_manager
