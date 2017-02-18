@@ -107,3 +107,6 @@ imgur_api = {
 # Should be a string with the server ID.
 # Can be a tuple of strings.
 test_server = "No testing allowed"
+
+# ID of default music voice channel. If this isn't a music bot, set it to None.
+default_music_vc = None

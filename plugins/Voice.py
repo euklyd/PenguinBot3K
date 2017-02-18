@@ -42,6 +42,10 @@ class Voice(Plugin):
         # self.voice = None
         # self.player = None
         await self.core.wait_until_login()
+        try:
+            self.default_vc = self.core.default_music_vc
+        except NameError:
+            self.default_vc = None
         self.music_manager = self.core.music_manager
 
     async def deactivate(self):
@@ -401,3 +405,34 @@ class Voice(Plugin):
             "Successfully restarted {}".format(
                 type(self.music_manager).__name__)
         )
+
+    @command("vc connect", access=-1, name='connect',
+             doc_brief="`vc connect`: Connect to the default music channel.")
+    async def connect(self, msg, arguments):
+        if (self.default_vc is None):
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** I don't have a default music voice channel!")
+        else:
+            vc = self.core.get_channel(self.default_vc)
+            try:
+                await self.music_manager.join_voice_channel(vc)
+                await self.send_message(
+                    msg.channel,
+                    "Joined voice channel <#{name}>\nAdd songs to the queue "
+                    "with `{trigger}vc yt queue youtube_url_here`".format(
+                        name=vc, trigger=self.core.default_trigger
+                    )
+                )
+            except discord.InvalidArgument:
+                await self.send_message(
+                    msg.channel,
+                    "**ERROR:** "
+                    "The channel you specified is not a voice channel."
+                )
+            except:
+                await self.send_message(
+                    msg.channel,
+                    "**ERROR:** "
+                    "Something went terribly, terribly wrong in `connect()`"
+                )
