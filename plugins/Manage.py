@@ -31,7 +31,7 @@ ACCESS = {
     "source":        -1,
     "ping":          50,
     "plugin_list":   50,
-    "plugin_manage": 1000,
+    "manage":        1000,
     "uptime":        50
 }
 
@@ -187,7 +187,7 @@ class Manage(Plugin):
                                     "There is no command with that name")
 
     @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$",
-             access=ACCESS["plugin_manage"], name='toggle plugin',
+             access=ACCESS["manage"], name='toggle plugin',
              doc_brief="`enable plugin <plugin>`: enables `<plugin>`.\n"
              "`disable plugin <plugin>`: disables `<plugin>`.\n"
              "`reload plugin <plugin>`: reloads `<plugin>`.\n"
@@ -230,6 +230,84 @@ class Manage(Plugin):
             await self.send_message(
                 msg.channel, "I don't have a plugin by that name."
             )
+
+    @command("^joinlink(?: (0x[a-f0-9]+))?$", access=ACCESS['manage'],
+             name='joinlink',
+             doc_detail="Responds with a URL used to "
+             "invite me to another server.")
+    async def joinlink(self, msg, arguments):
+        permissions_map = {
+            # These are either harmless or required to
+            # carry out basic non-moderation functions.
+            'ADD_REACTIONS':        0x00000040,
+            'READ_MESSAGES':        0x00000400,
+            'SEND_MESSAGES':        0x00000800,
+            'SEND_TTS_MESSAGES':    0x00001000,
+            'EMBED_LINKS':          0x00004000,
+            'ATTACH_FILES':         0x00008000,
+            'READ_MESSAGE_HISTORY': 0x00010000,
+            'MENTION_EVERYONE':     0x00020000,
+            'USE_EXTERNAL_EMOJIS':  0x00040000,
+            'CONNECT':              0x00100000,
+            'SPEAK':                0x00200000,
+            'USE_VAD':              0x02000000,
+            'CHANGE_NICKNAME':      0x04000000
+        }
+        required_permissions = [
+            # permissions_map['READ_MESSAGES'],
+            # permissions_map['SEND_MESSAGES'],
+            # permissions_map['EMBED_LINKS'],
+            # permissions_map['READ_MESSAGE_HISTORY']
+            'READ_MESSAGES',
+            'SEND_MESSAGES',
+            'EMBED_LINKS',
+            'READ_MESSAGE_HISTORY'
+        ]
+
+        default_permissions = 0
+        for perm in permissions_map.values():
+            default_permissions |= perm
+        # default_permissions = hex(default_permissions)
+        if (arguments[0] is None or arguments[0] == ""):
+            # use default set of permissions
+            perms = default_permissions
+        else:
+            perms = int(arguments[0], 16)
+            # perms = int(perms, 16)
+        url = ("https://discordapp.com/oauth2/authorize?"
+               "&client_id={id}&scope=bot&permissions={permissions}".format(
+                    id=self.core.user.id,
+                    permissions=perms
+                ))
+        reply = "To add me to your server, click on this link!\n{link}".format(
+            link=url
+        )
+        if (perms != default_permissions):
+            # Honestly, this is completely useless, since I don't care about
+            # other servers and nefarious actors can remove or modify this
+            # as they please.
+            # Making users conscious of the level of control over their
+            # servers they're granting to random bots is good, though.
+            reply += ("\n\n⚠ **WARNING** ⚠\n"
+                      "You have specified non-standard permissions to be "
+                      "granted to this bot with this link; please make sure "
+                      "you know what you're doing! While the author believes "
+                      "their own self to be trustworthy, that's no excuse for "
+                      "you to be careless!\n")
+        missing_perms = []
+        for perm in required_permissions:
+            if (perms & permissions_map[perm] == 0):
+                missing_perms.append(perm)
+
+        if (missing_perms != []):
+            reply += ("\nYou've failed to grant some permissions necessary "
+                      "for even minimum functionality! Please reconsider!\n"
+                      "Missing:\n")
+            for perm in missing_perms:
+                reply += "`{perm} ({hex})`\n".format(
+                    perm=perm, hex=hex(permissions_map[perm])
+                )
+        await self.send_message(msg.channel, reply)
 
     @command("^uptime$", access=ACCESS['uptime'], name='uptime',
              doc_brief="`uptime`: prints the duration that "
