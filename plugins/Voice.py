@@ -239,7 +239,13 @@ class Voice(Plugin):
                  "Request: `{}`").format(msg.content)
             )
         await asyncio.sleep(1)
-        await self.delete_message(msg)
+        try:
+            await self.delete_message(msg)
+        except discord.errors.Forbidden:
+            self.logger.error(
+                "ERROR: Failed to delete message; "
+                "missing 'MANAGE_MESSAGES' permissions"
+            )
         if (error_msg is not None):
             self.logger.info(
                 "Error message w/ ID {} in response to Message ID {} "
@@ -429,6 +435,38 @@ class Voice(Plugin):
                     msg.channel,
                     "**ERROR:** "
                     "The channel you specified is not a voice channel."
+                )
+            except:
+                await self.send_message(
+                    msg.channel,
+                    "**ERROR:** "
+                    "Something went terribly, terribly wrong in `connect()`"
+                )
+
+    @command("vc summon", access=-1, name='summon',
+             doc_brief="`vc summon`: Connect to the voice channel you're "
+             "currently in.")
+    async def summon(self, msg, arguments):
+        vc = msg.author.voice_channel
+        if (vc is None):
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** You're not connected to a voice channel!"
+            )
+        elif (vc.server != msg.server):
+            await self.send_message(
+                msg.channel,
+                "**ERROR:** You're not connected to voice in this server!"
+            )
+        else:
+            try:
+                await self.music_manager.join_voice_channel(vc)
+                await self.send_message(
+                    msg.channel,
+                    "Joined voice channel <#{id}>\nAdd songs to the queue "
+                    "with `{trigger}vc yt queue youtube_url_here`".format(
+                        id=vc.id, trigger=self.core.default_trigger
+                    )
                 )
             except:
                 await self.send_message(
