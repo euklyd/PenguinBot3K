@@ -203,7 +203,7 @@ class Macro(Plugin):
         em.set_thumbnail(url=olaf_url)
         await self.send_message(msg.channel, embed=em)
 
-    @command("^(?:[Ss]akurai|j    ank|game blows)$", access=-1, name='sakurai',
+    @command("^(?:[Ss]akurai|jank|game blows)$", access=-1, name='sakurai',
              doc_detail="`sakurai`: 👍")
     async def sakurai(self, msg, arguments):
         ayy = ["http://i.imgur.com/rbpQb3M.gif",
