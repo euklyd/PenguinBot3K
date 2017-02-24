@@ -46,7 +46,7 @@ class Manage(Plugin):
     async def ping(self, msg, arguments):
         await self.send_message(msg.channel, "Pong")
 
-    @command("^source|git|github$", access=ACCESS['source'], name='source',
+    @command("^(?:source|git|github)$", access=ACCESS['source'], name='source',
              doc_brief="`source`: link to my github repository.")
     async def source(self, msg, arguments):
         await self.send_message(msg.channel, self.core.config.repo)
@@ -167,8 +167,18 @@ class Manage(Plugin):
                 await self.send_message(msg.channel, command_block)
 
     @command("^help$", access=-1, name='help',
-             doc_brief="`help`: alias for `list commands`.")
+             doc_brief="`help`: bring up base help menu.")
     async def help(self, msg, arguments):
+        await self.list_plugins(msg, arguments)
+        await self.send_message(
+            msg.channel,
+            "If you **__really__** need to list all commands from "
+            "every plugin, use `{}help --all`"
+        )
+
+    @command("^help \--all$", access=-1, name='help',
+             doc_brief="`help`: alias for `list commands`.")
+    async def help_all(self, msg, arguments):
         await self.list_all_commands(msg, arguments)
 
     @command("^(?:help|command detail) ([^.]*).([^.]*)$", access=-1,
