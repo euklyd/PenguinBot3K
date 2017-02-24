@@ -77,7 +77,7 @@ class Query(Plugin):
             if (len(replies) > 1 or replies[0].count('\n') > 10):
                 await self.send_message(
                     msg.channel,
-                    "{}: Too many results; sending responde via DM".format(
+                    "{}: Too many results; sending response via DM".format(
                         msg.author.name
                     )
                 )
