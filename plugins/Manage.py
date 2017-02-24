@@ -172,8 +172,11 @@ class Manage(Plugin):
         await self.list_plugins(msg, arguments)
         await self.send_message(
             msg.channel,
+            "To list the commands in a plugin, use "
+            "`{trig}list commands <plugin>`\n"
             "If you **__really__** need to list all commands from "
-            "every plugin, use `{}help --all`"
+            "every plugin, use `{trig}help --all`".format(
+                trig=self.core.default_trigger)
         )
 
     @command("^help \--all$", access=-1, name='help',
