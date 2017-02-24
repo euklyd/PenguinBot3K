@@ -9,3 +9,4 @@ databases/*.json
 *\~
 .DS_Store
 *.mp3
+resources/query/sorted_unique_cf.txt

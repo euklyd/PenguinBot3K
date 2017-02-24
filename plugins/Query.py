@@ -53,17 +53,36 @@ class Query(Plugin):
         sites = arguments[0].split(' ')
         line_num = 0
         count = 0
-        reply = ""
+        replies = [""]
+        n_replies = 0
         self.logger.info(sites)
         for line in open(fname):
             for site in sites:
                 if (site in line):
-                    reply += "`L{0:0>7}`: {l}".format(line_num, l=line)
+                    replies[n_replies] += "`L{0:0>7}`: {l}".format(
+                        line_num, l=line
+                    )
+                    if (len(replies[n_replies]) >= 1800):
+                        n_replies += 1
+                        replies.append("")
                     count += 1
             line_num += 1
-        if (reply == ""):
+        if (replies == []):
             await self.send_message(msg.channel,
                                     "None of your sites were found!")
         else:
-            reply = "**Found on {} lines:**\n{}".format(count, reply)
-            await self.send_message(msg.channel, reply)
+            replies[0] = "**{}: Found on {} lines:**\n{}".format(
+                msg.author.name, count, replies[0]
+            )
+            if (len(replies) > 1 or replies[0].count('\n') > 10):
+                await self.send_message(
+                    msg.channel,
+                    "{}: Too many results; sending responde via DM".format(
+                        msg.author.name
+                    )
+                )
+                ch = msg.author
+            else:
+                ch = msg.channel
+            for reply in replies:
+                await self.send_message(ch, reply)
