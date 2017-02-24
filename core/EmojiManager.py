@@ -1,6 +1,6 @@
 """
     Class Name : Emoji
-    Class Version: 0.1
+    Class Version: 1.0
 
     Description:
         Attempts to manage custom emoji between servers.
