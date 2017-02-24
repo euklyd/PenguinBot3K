@@ -430,8 +430,8 @@ class Macro(Plugin):
 
     @command("^(?:ganon|THE PUNCH) ?(.+)?$",
              access=100, name='the punch',
-             doc_brief="I was just wondering why Ganondorf is in the very "
-             "middle of the tiers.",
+             doc_brief="`THE PUNCH`: I was just wondering why Ganondorf is "
+             "in the very middle of the tiers.",
              doc_detail="I was just wondering why Ganondorf is in the very "
              "middle of the tiers. Before I get into what I mean, allow me to "
              "first put out there that I have been playing for years, "
