@@ -9,4 +9,6 @@ databases/*.json
 *\~
 .DS_Store
 *.mp3
+resources/macro/magic.json
+resources/macro/pastas.json
 resources/query/sorted_unique_cf.txt
