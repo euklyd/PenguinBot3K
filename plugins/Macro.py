@@ -456,14 +456,20 @@ class Macro(Plugin):
         if (ganon != "`:return_of_ganon:`"):
             await self.send_message(msg.channel, ganon)
 
-    @command("^pasta (.*)$", access=-1, name='pasta',
+    @command("^pasta ?(.*)$", access=-1, name='pasta',
              doc_brief="`pasta <pasta name>`: Prints out the associatedd "
-             "pasta for `<pasta name>`.")
+             "pasta for `<pasta name>`. Use without arguments to list "
+             "available pastas.")
     async def pasta(self, msg, arguments):
         pasta = arguments[0].lower()
         with open(macro_path.format("pastas.json"), 'r') as pastafile:
             pastas = json.load(pastafile)
-            if (pasta in pastas):
+            if (pasta == "" or pasta == "--list" or pasta == "--help"):
+                reply = "**Available pastas:** "
+                for k in pastas:
+                    reply += "`{}`, ".format(k)
+                reply = reply[0:-2]
+            elif (pasta in pastas):
                 reply = pastas[pasta]
             else:
                 reply = "No such pasta."
@@ -485,7 +491,9 @@ class Macro(Plugin):
         with open(macro_path.format("pastas.json"), 'r') as pastafile:
             pastas = json.load(pastafile)
         if (name in pastas):
-            reply = "ERR: Pasta `{}` already exists.".format(name)
+            reply = "**ERR:** Pasta `{}` already exists.".format(name)
+        elif (name[0:2] == "--"):
+            reply = "**ERR:** `--` is a reserved sequence."
         else:
             try:
                 pastas[name] = arguments[1]
