@@ -72,7 +72,7 @@ class Moderation(Plugin):
                 name=role.name,
                 color=role.color,
                 mention=role.mention,
-                permissions=role.permissions
+                permissions=hex(role.permissions.value)
             )
             if (len(role_block) >= 1700):
                 self.logger.info(role_block)
