@@ -17,10 +17,11 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 
+import discord
+import json
 import random
 import re
 import string
-import discord
 
 ACCESS = {
     'pushPop': 300,
@@ -59,21 +60,58 @@ class Moderation(Plugin):
         await self.send_message(channel, arguments[1])
         await self.delete_message(msg)
 
-    @command("^list roles$", access=500, name='list roles',
+    @command("^(?:permissions|perms) hex ?([A-Za-z_ ]*)?$", access=-1, name='perms hex',
+             doc_brief="`permissions hex <PERM1> <PERM2> ...`: Generate a hex "
+             "representation of the permissions associated with the inputs.")
+    async def perms_hex(self, msg, arguments):
+        perms = arguments[0].split(' ')
+        self.logger.info("perms: {}".format(perms))
+        with open("resources/permissions_keys.json") as perms_fp:
+            perms_map = json.load(perms_fp)
+        if (arguments[0] is None):
+            reply = "**Permissions keys:**\n"
+            for perm in perms_map:
+                reply += "`{}`: `{}`\n".format(perm, perm['value'])
+            await self.send_message(msg.author, reply)
+            return
+        invalid_keys = []
+        perms_hex = 0
+        for perm in perms:
+            if (perm.upper() in perms_map):
+                perms_hex |= int(perms_map[perm.upper()]['value'], 0)
+                self.logger.info("{}, {}".format(
+                    perm, int(perms_map[perm.upper()]['value'], 0))
+                )
+            else:
+                invalid_keys.append(perm.upper())
+        reply = "**{}**, those permissions have the hex code `{}`".format(
+            msg.author.name, hex(perms_hex)
+        )
+        if (invalid_keys == []):
+            reply += "\nInvalid keys: `{}`".format(invalid_keys)
+        await self.send_message(msg.channel, reply)
+
+    @command("^list roles ?(0x[0-9]*)?$", access=500, name='list roles',
              doc_brief="`list roles`: Lists all roles on the current "
              "server in an IM.")
     async def list_all_roles(self, msg, arguments):
+        if (arguments[0] is None):
+            search_perms = 0xffffffff
+        else:
+            search_perms = int(arguments[0], 0)
         roles = msg.server.roles
         roles.sort(key=lambda role: role.position, reverse=True)
         role_block = "**List of roles on {}:**".format(msg.server.name)
         for role in roles:
-            role_block += "\n{n}) {name} ({color}): `{mention}`, `{permissions}`".format(
-                n=role.position,
-                name=role.name,
-                color=role.color,
-                mention=role.mention,
-                permissions=hex(role.permissions.value)
-            )
+            if (role.permissions.value & search_perms != 0):
+                role_block += ("\n{n}) {name} ({color}): `{mention}`, "
+                               "`{permissions}`").format(
+                    n=role.position,
+                    name=role.name,
+                    color=role.color,
+                    mention=role.mention,
+                    permissions=hex(role.permissions.value)
+                )
             if (len(role_block) >= 1700):
                 self.logger.info(role_block)
                 try:

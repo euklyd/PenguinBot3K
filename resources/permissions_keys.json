@@ -1,0 +1,137 @@
+{
+    "CREATE_INSTANT_INVITE": {
+        "name": "CREATE_INSTANT_INVITE",
+        "value": "0x00000001",
+        "desc": "Allows creation of instant invites"
+    },
+    "KICK_MEMBERS": {
+        "name": "KICK_MEMBERS",
+        "value": "0x00000002",
+        "desc": "Allows kicking members"
+    },
+    "BAN_MEMBERS": {
+        "name": "BAN_MEMBERS",
+        "value": "0x00000004",
+        "desc": "Allows banning members"
+    },
+    "ADMINISTRATOR": {
+        "name": "ADMINISTRATOR",
+        "value": "0x00000008",
+        "desc": "Allows all permissions and bypasses channel permission overwrites"
+    },
+    "MANAGE_CHANNELS": {
+        "name": "MANAGE_CHANNELS",
+        "value": "0x00000010",
+        "desc": "Allows management and editing of channels"
+    },
+    "MANAGE_GUILD": {
+        "name": "MANAGE_GUILD",
+        "value": "0x00000020",
+        "desc": "Allows management and editing of the guild"
+    },
+    "ADD_REACTIONS": {
+        "name": "ADD_REACTIONS",
+        "value": "0x00000040",
+        "desc": "Allows for the addition of reactions to messages"
+    },
+    "READ_MESSAGES": {
+        "name": "READ_MESSAGES",
+        "value": "0x00000400",
+        "desc": "Allows reading messages in a channel. The channel will not appear for users without this permission"
+    },
+    "SEND_MESSAGES": {
+        "name": "SEND_MESSAGES",
+        "value": "0x00000800",
+        "desc": "Allows for sending messages in a channel."
+    },
+    "SEND_TTS_MESSAGES": {
+        "name": "SEND_TTS_MESSAGES",
+        "value": "0x00001000",
+        "desc": "Allows for sending of /tts messages"
+    },
+    "MANAGE_MESSAGES": {
+        "name": "MANAGE_MESSAGES",
+        "value": "0x00002000",
+        "desc": "Allows for deletion of other users messages"
+    },
+    "EMBED_LINKS": {
+        "name": "EMBED_LINKS",
+        "value": "0x00004000",
+        "desc": "Links sent by this user will be auto-embedded"
+    },
+    "ATTACH_FILES": {
+        "name": "ATTACH_FILES",
+        "value": "0x00008000",
+        "desc": "Allows for uploading images and files"
+    },
+    "READ_MESSAGE_HISTORY": {
+        "name": "READ_MESSAGE_HISTORY",
+        "value": "0x00010000",
+        "desc": "Allows for reading of message history"
+    },
+    "MENTION_EVERYONE": {
+        "name": "MENTION_EVERYONE",
+        "value": "0x00020000",
+        "desc": "Allows for using the @everyone tag to notify all users in a channel, and the @here tag to notify all online users in a channel"
+    },
+    "USE_EXTERNAL_EMOJIS": {
+        "name": "USE_EXTERNAL_EMOJIS",
+        "value": "0x00040000",
+        "desc": "Allows the usage of custom emojis from other servers"
+    },
+    "CONNECT": {
+        "name": "CONNECT",
+        "value": "0x00100000",
+        "desc": "Allows for joining of a voice channel"
+    },
+    "SPEAK": {
+        "name": "SPEAK",
+        "value": "0x00200000",
+        "desc": "Allows for speaking in a voice channel"
+    },
+    "MUTE_MEMBERS": {
+        "name": "MUTE_MEMBERS",
+        "value": "0x00400000",
+        "desc": "Allows for muting members in a voice channel"
+    },
+    "DEAFEN_MEMBERS": {
+        "name": "DEAFEN_MEMBERS",
+        "value": "0x00800000",
+        "desc": "Allows for deafening of members in a voice channel"
+    },
+    "MOVE_MEMBERS": {
+        "name": "MOVE_MEMBERS",
+        "value": "0x01000000",
+        "desc": "Allows for moving of members between voice channels"
+    },
+    "USE_VAD": {
+        "name": "USE_VAD",
+        "value": "0x02000000",
+        "desc": "Allows for using voice-activity-detection in a voice channel"
+    },
+    "CHANGE_NICKNAME": {
+        "name": "CHANGE_NICKNAME",
+        "value": "0x04000000",
+        "desc": "Allows for modification of own nickname"
+    },
+    "MANAGE_NICKNAMES": {
+        "name": "MANAGE_NICKNAMES",
+        "value": "0x08000000",
+        "desc": "Allows for modification of other users nicknames"
+    },
+    "MANAGE_ROLES": {
+        "name": "MANAGE_ROLES",
+        "value": "0x10000000",
+        "desc": "Allows management and editing of roles"
+    },
+    "MANAGE_WEBHOOKS": {
+        "name": "MANAGE_WEBHOOKS",
+        "value": "0x20000000",
+        "desc": "Allows management and editing of webhooks"
+    },
+    "MANAGE_EMOJIS": {
+        "name": "MANAGE_EMOJIS",
+        "value": "0x40000000",
+        "desc": "Allows management and editing of emojis"
+    }
+}
