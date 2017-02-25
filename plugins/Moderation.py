@@ -60,11 +60,11 @@ class Moderation(Plugin):
         await self.send_message(channel, arguments[1])
         await self.delete_message(msg)
 
-    @command("^(?:permissions|perms) hex ?([A-Za-z_ ]*)?$", access=-1, name='perms hex',
+    @command("^(?:permissions|perms) hex ?(.*)?$", access=-1, name='perms hex',
              doc_brief="`permissions hex <PERM1> <PERM2> ...`: Generate a hex "
              "representation of the permissions associated with the inputs.")
     async def perms_hex(self, msg, arguments):
-        perms = arguments[0].split(' ')
+        perms = arguments[0].upper().split(' ')
         self.logger.info("perms: {}".format(perms))
         with open("resources/permissions_keys.json") as perms_fp:
             perms_map = json.load(perms_fp)
@@ -77,17 +77,17 @@ class Moderation(Plugin):
         invalid_keys = []
         perms_hex = 0
         for perm in perms:
-            if (perm.upper() in perms_map):
-                perms_hex |= int(perms_map[perm.upper()]['value'], 0)
+            if (perm in perms_map):
+                perms_hex |= int(perms_map[perm]['value'], 0)
                 self.logger.info("{}, {}".format(
-                    perm, int(perms_map[perm.upper()]['value'], 0))
+                    perm, int(perms_map[perm]['value'], 0))
                 )
             else:
-                invalid_keys.append(perm.upper())
+                invalid_keys.append(perm)
         reply = "**{}**, those permissions have the hex code `{}`".format(
             msg.author.name, hex(perms_hex)
         )
-        if (invalid_keys == []):
+        if (invalid_keys != []):
             reply += "\nInvalid keys: `{}`".format(invalid_keys)
         await self.send_message(msg.channel, reply)
 
