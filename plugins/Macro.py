@@ -180,6 +180,21 @@ class Macro(Plugin):
                     ))
         await self.send_message(msg.channel, docpasta)
 
+    @command("^(?:birb|falco)$", access=100, name='birb',
+             doc_brief="`birb`: Prints out the dankest of birb memes")
+    async def birb(self, msg, arguments):
+        hoohah = self.core.emoji.emoji(
+            msg.server, ['hoo_hah', 'HooHah', 'hoohah']
+        )
+        birbpasta = (
+            "Falco's 🐦 only better than 5 🖐 characters (8 with miis ✊ ⚔ 🔫 ) "
+            "❔ 😐   😮 Clearly they haven't seen 👀 me 🤳 beat random people 👤 "
+            "in wifi crew battles 💻 👥 😆 What a joke 🃏 😂 , can't wait for "
+            "ZeRo 0⃣ {diddy} to call 📞 them out 📤 🤣".format(
+                diddy=hoohah
+            ))
+        await self.send_message(msg.channel, birbpasta)
+
     @command("^(?:penguin|\U0001F427)$", access=-1, name='penguin',
              doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
     async def penguin(self, msg, arguments):
@@ -193,6 +208,19 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
         self.logger.debug(em.to_dict())
+
+    @command("^(?:thinking|🤔)$", access=-1, name='thinking',
+             doc_brief="`thinking`: Embeds the `:thinking:` emoji's ultimate form")
+    async def thinking(self, msg, arguments):
+        thinking_url = "http://i.imgur.com/oHPYovk.gif"
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+        em.set_thumbnail(url=thinking_url)
+        em.set_footer(
+            text="",
+            icon_url=user.avatar_url
+        )
+        await self.send_message(msg.channel, embed=em)
 
     @command("^(?:[Oo]laf|[Ii]ntegrity)$", access=-1, name='integrity',
              doc_detail="`integrity`: Embeds the face of Integrity irl ⛄")
