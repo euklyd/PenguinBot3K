@@ -323,67 +323,97 @@ class Voice(Plugin):
             "Playlist shuffled. Use `vc playlist` to see the new order."
         )
 
-    def generate_playlist_line(self, song, top=False):
-        """
-            Helper function for the playlist commands.
+    # def generate_playlist_line(self, song, top=False):
+    #     """
+    #         Helper function for the playlist commands.
+    #
+    #         Takes a Song, and formats an entry for either
+    #         YouTubeSong or LocalSong.
+    #     """
+    #     if (top is True):
+    #         bullet = "🔊"
+    #     else:
+    #         bullet = "-"
+    #     if (type(song) is YouTubeSong):
+    #         entry = ("{bullet} ***{song}***, by {uploader} "
+    #                  "(requested by {requestor})\n").format(
+    #             bullet=bullet,
+    #             song=song.title,
+    #             uploader=song.uploader,
+    #             requestor=song.requestor
+    #         )
+    #     else:
+    #         entry = ("{bullet} ***{song}***, by {artist} "
+    #                  "(requested by {requestor})\n").format(
+    #             bullet=bullet,
+    #             song=song.title,
+    #             artist=song.artist,
+    #             requestor=song.requestor
+    #         )
+    #     return entry
+    #
+    # @command("^vc playlist$", access=-1, name='playlist',
+    #          doc_brief="`vc playlist`: Show current playlist.")
+    # async def show_playlist(self, msg, arguments):
+    #     current_song, playlist = await self.music_manager.list_playlist()
+    #     reply = "**Current Playlist:**\n"
+    #     if (current_song is not None):
+    #         reply += self.generate_playlist_line(current_song.song, top=True)
+    #         for entry in playlist:
+    #             reply += self.generate_playlist_line(entry.song)
+    #             # if (len(reply) > 1500):
+    #             #     await self.send_message(msg.channel, reply)
+    #             #     reply = ""
+    #     else:
+    #         reply += "Playlist is empty!"
+    #     if (len(reply) > 2000):
+    #         reply = "**Next Ten Songs in YouTube Playlist:**\n"
+    #         if (current_song is not None):
+    #             reply += self.generate_playlist_line(current_song.song,
+    #                                                  top=True)
+    #         for i in range(0, 10):
+    #             try:
+    #                 line = self.generate_playlist_line(playlist[i].song)
+    #                 if (len(reply) + len(line) > 1950):
+    #                     break
+    #                 else:
+    #                     reply += line
+    #             except IndexError:
+    #                 break
+    #         reply += "...followed by others."
+    #     # if (reply != ""):
+    #     #     await self.send_message(msg.channel, reply)
+    #     await self.send_message(msg.channel, reply)
 
-            Takes a Song, and formats an entry for either
-            YouTubeSong or LocalSong.
-        """
-        if (top is True):
-            bullet = "🔊"
-        else:
-            bullet = "-"
+    def generate_embed_line(self, song):
         if (type(song) is YouTubeSong):
-            entry = ("{bullet} ***{song}***, by {uploader} "
-                     "(requested by {requestor})\n").format(
-                bullet=bullet,
-                song=song.title,
-                uploader=song.uploader,
-                requestor=song.requestor
-            )
+            return "{} (requested by {})".format(song.uploader, song.requestor)
         else:
-            entry = ("{bullet} ***{song}***, by {artist} "
-                     "(requested by {requestor})\n").format(
-                bullet=bullet,
-                song=song.title,
-                artist=song.artist,
-                requestor=song.requestor
-            )
-        return entry
+            return "{} (requested by {})".format(song.artist, song.requestor)
 
     @command("^vc playlist$", access=-1, name='playlist',
              doc_brief="`vc playlist`: Show current playlist.")
     async def show_playlist(self, msg, arguments):
         current_song, playlist = await self.music_manager.list_playlist()
-        reply = "**Current Playlist:**\n"
-        if (current_song is not None):
-            reply += self.generate_playlist_line(current_song.song, top=True)
-            for entry in playlist:
-                reply += self.generate_playlist_line(entry.song)
-                # if (len(reply) > 1500):
-                #     await self.send_message(msg.channel, reply)
-                #     reply = ""
-        else:
-            reply += "Playlist is empty!"
-        if (len(reply) > 2000):
-            reply = "**Next Ten Songs in YouTube Playlist:**\n"
-            if (current_song is not None):
-                reply += self.generate_playlist_line(current_song.song,
-                                                     top=True)
-            for i in range(0, 10):
-                try:
-                    line = self.generate_playlist_line(playlist[i].song)
-                    if (len(reply) + len(line) > 1950):
-                        break
-                    else:
-                        reply += line
-                except IndexError:
-                    break
-            reply += "...followed by others."
-        # if (reply != ""):
-        #     await self.send_message(msg.channel, reply)
-        await self.send_message(msg.channel, reply)
+        if (current_song is None):
+            reply = "Playlist is empty!"
+            await self.send_message(msg.channel, reply)
+            return
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+
+        em.add_field(
+            name=current_song.title,
+            value=self.generate_embed_line(current_song),
+            inline=False
+        )
+        for song in playlist[0:9]:
+            em.add_field(
+                name=song[0],
+                value=self.generate_embed_line(song),
+                inline=False
+            )
+        await self.send_message(msg.channel, embed=em)
 
     @command("^vc url$", access=-1, name='show url',
              doc_brief="`vc url`: Shows the URL of the current song.")
