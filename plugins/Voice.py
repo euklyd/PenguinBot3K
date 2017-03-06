@@ -278,7 +278,7 @@ class Voice(Plugin):
             )
         else:
             for i in range(0, len(valid)):
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
                 try:
                     response = await self.music_manager.yt_add(
                         valid[i], msg.embeds[i], msg.author, msg.channel
@@ -403,13 +403,13 @@ class Voice(Plugin):
         em = discord.Embed(color=user.color)
 
         em.add_field(
-            name=current_song.title,
-            value=self.generate_embed_line(current_song),
+            name=current_song.song.title,
+            value=self.generate_embed_line(current_song.song),
             inline=False
         )
         for entry in playlist[0:9]:
             em.add_field(
-                name=song[0],
+                name=entry.song,
                 value=self.generate_embed_line(entry.song),
                 inline=False
             )
