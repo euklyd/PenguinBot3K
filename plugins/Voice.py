@@ -409,7 +409,7 @@ class Voice(Plugin):
         )
         for entry in playlist[0:9]:
             em.add_field(
-                name=entry.song,
+                name=entry.song.title,
                 value=self.generate_embed_line(entry.song),
                 inline=False
             )
