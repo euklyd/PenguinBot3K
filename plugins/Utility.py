@@ -39,6 +39,14 @@ class Utility(Plugin):
             "<@!{}>, your selection is **{}**!".format(msg.author.id, choice)
         )
 
+    @command("^shuffle (.*)", access=-1, name='shuffle',
+             doc_brief="`shuffle <list of items>`: Returns the list in a "
+             "random order.")
+    async def shuffle(self, msg, arguments):
+        items = arguments[0].split(' ')
+        random.shuffle(items)
+        await self.send_message(msg.channel, items)
+
     @command("^avatar <@!?([0-9]*)>$", access=-1, name='avatar',
              doc_brief="`avatar @<user>`: posts a link to `<user>`'s avatar")
     async def get_avatar(self, msg, arguments):
