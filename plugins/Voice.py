@@ -407,10 +407,10 @@ class Voice(Plugin):
             value=self.generate_embed_line(current_song),
             inline=False
         )
-        for song in playlist[0:9]:
+        for entry in playlist[0:9]:
             em.add_field(
                 name=song[0],
-                value=self.generate_embed_line(song),
+                value=self.generate_embed_line(entry.song),
                 inline=False
             )
         await self.send_message(msg.channel, embed=em)
