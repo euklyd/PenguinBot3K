@@ -48,3 +48,34 @@ class Test(Plugin):
                 author=msg.author.id, content=content,
                 shezzy="208708372281819147")
         )
+
+    @command("^test playlist embed$", name="test playlist embed")
+    async def playlist_embed(self, msg, arguments):
+        now_playing = ("Darius Gaiden (Arcade) - 01 - VISIONNERZ Arrange Version", "CaptainGordonVGM", "(Nightmarre#5295)")
+        playlist = [
+            ("Darius Gaiden - VISIONNERZ Music", "Video Game Music", "Nightmarre#5295"),
+            ("Brigandine Legend of Forsena OST ► Carleon Map BGM", "AGC Adam Stephensons", "Nightmarre#5295"),
+            ("Brigandine- Carleon Attack", "Paul John Sumaya", "Nightmarre#5295"),
+            ("Final Fantasy VII - Main Theme [HQ]", "Cloud183", "Nightmarre#5295"),
+            ("Paper Mario - Bowser, King of the Koopas (In-Game Ver.)", "Usagi-Chan", "Jedisupersonic#2765"),
+            ("[HQ] Ys VI Napishtim Opening", "Galaga Forever", "Jedisupersonic#2765"),
+            ("Dynasty Tactics 2 Soundtrack - Sun Ce's Theme", "squallimdying", "Jedisupersonic#2765"),
+            ("Axelay (SNES) - Colony", "AccelJoe", "Nightmarre#5295"),
+            ("Ogre Battle - Accretion Disk", "spokompton1983", "Jedisupersonic#2765"),
+        ]
+
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+        em.add_field(name=now_playing[0], value="{} (requested by {})".format(now_playing[1], now_playing[2]), inline=True)
+        # em.add_field(name="Uploader/Artist", value=now_playing[1], inline=True)
+        # em.add_field(name="Requestor", value=now_playing[2], inline=True)
+        for song in playlist:
+            # em.add_field(name=song[0], value=song[1], inline=False)
+            # em.add_field(name="Uploader/Artist", value=song[1], inline=True)
+            # em.add_field(name="Requestor", value=song[2], inline=True)
+            em.add_field(name=song[0], value="{} (requested by {})".format(song[1], song[2]), inline=False)
+        await self.send_message(msg.channel, embed=em)
+
+    @command("^access testing$", name="access testing", access=500)
+    async def access_testing(self, msg, arguments):
+        await self.send_message(msg.channel, "You have permission for this!")

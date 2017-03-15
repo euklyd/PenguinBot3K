@@ -27,7 +27,8 @@ ACCESS = {
     "claim": -1,
     "deleteAccess": 500,
     "setAccess": 500,
-    "ban": 900
+    "ban": 900,
+    "roleAccess": 999
 }
 
 
@@ -195,3 +196,26 @@ class ACL(Plugin):
                 msg,
                 "You cannot modify access of a user with more access"
             )
+
+    @command("^set role access <@&([0-9]+)> ([A-Za-z0-9]+) ([0-9]+)$", access=ACCESS["roleAccess"],
+             doc_brief=("`set role access @<role> <access>`: sets the access level "
+             "of `<role>` to `<access>`."))
+    async def set_role_access(self, msg, arguments):
+        role_id = arguments[0]
+        plugin  = arguments[1]
+        access  = int(arguments[2])
+        self.logger.info("{}, {}, {}".format(role_id, plugin, access))
+        self.logger.info(self.core.plugin.plugins.keys())
+        if (plugin in self.core.plugin.plugins):
+            reply = self.core.ACL.set_role_access(role_id, plugin, access)
+            if (reply is None):
+                await self.send_message(
+                    msg.channel,
+                    "Set `{role}` to access level `{access}` "
+                    "for plugin '**{plugin}**'".format(
+                        role=role_id, plugin=plugin, access=access)
+                )
+            else:
+                await self.send_message(msg.channel, reply)
+        else:
+            await self.send_message(msg.channel, "No such plugin!")

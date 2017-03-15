@@ -18,6 +18,9 @@ from peewee import *
 from core.Database import *
 
 import discord
+import json
+import os
+
 
 class ACLUser(Model):
     id      = IntegerField(primary_key=True)
@@ -25,11 +28,18 @@ class ACLUser(Model):
     access  = IntegerField(default=0, constraints=[Check('access >= 0'), Check('access <= 1000') ])
     owner   = BooleanField(default=False)
 
+
 class ACL():
-    def __init__(self, backdoor):
+    def __init__(self, core, backdoor):
+        self.core = core
         self.backdoor = backdoor
         self.database = Database(databaseName="databases/ACL.db")
         self.database.addTable(ACLUser)
+        if (not os.path.isfile("databases/role_permissions.json")):
+            self.roles = {}
+        else:
+            with open("databases/role_permissions.json") as rolesfp:
+                self.roles = json.load(rolesfp)
 
     @property
     def owner(self):
@@ -128,6 +138,30 @@ class ACL():
                 return user.access
         except:
             return -1
+
+    def set_role_access(self, role_id, plugin, access=-1):
+        """
+        """
+        if (plugin not in self.core.plugin.plugins):
+            return "Error: no such plugin"
+        if (type(access) is str):
+            access = int(access)
+        if (self.roles.get(role_id) is None):
+            self.roles[role_id] = {plugin: access}
+        else:
+            self.roles[role_id][plugin] = access
+        with open("databases/role_permissions.json", 'w') as rolesfp:
+            json.dump(self.roles, rolesfp)
+
+    def get_role_access(self, user, plugin):
+        max_access = -1
+        for role in user.roles:
+            rid = role.id
+            if (rid in self.roles and plugin in self.roles[rid] and
+                    self.roles[rid][plugin] > max_access
+            ):
+                max_access = self.roles[rid][plugin]
+        return max_access
 
     def query_users(self, access="0", limit=0, offset=0):
         """

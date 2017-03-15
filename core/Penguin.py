@@ -65,7 +65,7 @@ class PenguinBot(discord.Client):
         self.event = EventManager(self)
         self.command = CommandManager(self)
         self.filter = FilterManager(self)
-        self.ACL = ACL(self.config.backdoor)
+        self.ACL = ACL(self, self.config.backdoor)
         self.emoji = EmojiManager(self)
 
         if (self.config.channel_logging is True):

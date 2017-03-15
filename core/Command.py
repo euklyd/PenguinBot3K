@@ -86,7 +86,10 @@ class CommandManager():
                     # self.logger.info("trigger '{}' matched!".format(t))  # debug
                     # self.logger.debug("'{}' detected")
                     self.logger.info("'{}' detected".format(message.content))
-                    if (self.core.ACL.getAccess(message.author.id) >= command.access or message.author.id == self.core.config.backdoor):
+                    if (self.core.ACL.getAccess(message.author.id) >= command.access or
+                            message.author.id == self.core.config.backdoor or
+                            self.core.ACL.get_role_access(message.author, command.plugin) >= command.access
+                    ):
                         message.content = content
                         # message.arguments = match
                         arguments = match.groups()
