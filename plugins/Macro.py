@@ -399,7 +399,7 @@ class Macro(Plugin):
                         my_b=mb,
                         pjsalt=salt,
                         shine=shine,
-                        leffox=leff_fox,
+                        leffox=leffox,
                         nlt=nlt))
 
         verse.append("💌 P.S. Leffen, I ain't done yet {my_b}\n"
