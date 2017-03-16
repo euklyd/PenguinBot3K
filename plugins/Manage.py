@@ -110,7 +110,7 @@ class Manage(Plugin):
         plugin = arguments[0]
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
-        if (plugin in plugin_list):
+        if (plugin in plugin_list or plugin.capitalize() in plugin_list):
 
             # # debug stuff
             # module = plugin_list[plugin]['instance']
@@ -129,7 +129,7 @@ class Manage(Plugin):
                     command_list.values(),
                     key=lambda cmd: str(cmd.name)
             ):
-                if (plugin == command.plugin and command.access <= access):
+                if (plugin.lower() == command.plugin.lower() and command.access <= access):
                     blurb = command.doc_brief
                     if (blurb is not None):
                         command_block += blurb + '\n'
