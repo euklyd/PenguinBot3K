@@ -37,6 +37,38 @@ class EmojiManager():
                                      check for.
 
         Returns:
+            (discord.Emoji): If the emoji isn't found, returns None.
+        """
+        if (server is None):
+            self.logger.info("server is None")
+            return None
+        self.logger.info("searching for :{}: in server {}".format(
+            emoji_names[0], server.name
+        ))
+        for emoji_name in emoji_names:
+            for emoji in server.emojis:
+                self.logger.debug("{} ?= {}".format(
+                    repr(emoji.name), repr(emoji_name)
+                ))
+                if (emoji.name.lower() == emoji_name.lower()):
+                    self.logger.debug(str(emoji))
+                    return emoji
+        self.logger.info("no emoji found")
+        return None
+
+    def emoji_str(self, server, emoji_names):
+        """
+        Summary:
+            Finds a custom emoji matching the first of a list of possible emoji
+            names, and returns a string formatted with the snowflake for that
+            server.
+
+        Args:
+            server (discord.Server): The server w/ emoji list.
+            emoji_names (list(str)): An ordered list of emoji names to
+                                     check for.
+
+        Returns:
             (str):  Formatted emoji string, e.g. '<:my_b:232583716189241346>'
                     If the emoji isn't found, returns the first element of the
                     list.
@@ -49,7 +81,7 @@ class EmojiManager():
         ))
         for emoji_name in emoji_names:
             for emoji in server.emojis:
-                self.logger.info("{} ?= {}".format(
+                self.logger.debug("{} ?= {}".format(
                     repr(emoji.name), repr(emoji_name)
                 ))
                 if (emoji.name.lower() == emoji_name.lower()):

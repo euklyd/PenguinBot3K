@@ -84,11 +84,19 @@ repo = "https://github.com/euklyd/PenguinBot3K/tree/discord.py"
 
 # Names of plugins to be loaded. Will search the "plugin/" directory.
 plugins = [
-    'ACL',
-    'Manage',
-    'Macro',
-    'Moderation',
-    'Utility'
+    "ACL",
+    # "LogManager",
+    "Manage",
+    "Macro",
+    "Moderation",
+    # "Nimious",
+    # "Pokemon",
+    # "Query",
+    "React",
+    # "Test",
+    # "Tournament",
+    "Utility",
+    # "Voice"
 ]
 
 # imgur API
