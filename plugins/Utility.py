@@ -28,6 +28,27 @@ class Utility(Plugin):
     async def activate(self):
         pass
 
+    @command("^flip$", access=-1, name='flip',
+             doc_brief="`flip`: Flips a coin that will come up either heads "
+             "or tails. Images of many types of coins are included.")
+    async def flip(self, msg, arguments):
+        coin = random.randint(0, 10)
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+        em.set_footer(
+            text="",
+            icon_url=user.avatar_url
+        )
+        if (coin % 2 == 0):
+            em.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/a/a0/2006_Quarter_Proof.png")
+        else:
+            tails = random.randint(0, 10)
+            if (tails % 10 == 0):
+                em.set_thumbnail(url="http://i.imgur.com/jiLvSSL.png")
+            else:
+                em.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/4/4e/COBREcentavosecuador2000-2.png")
+        await self.send_message(msg.channel, embed=em)
+
     @command("^pick(?:[- ]one)? (.*)", access=-1, name='pick',
              doc_brief="`pick one <list of items>`: Selects one item out of "
              "a list of space-separated items.")
@@ -37,6 +58,20 @@ class Utility(Plugin):
         await self.send_message(
             msg.channel,
             "<@!{}>, your selection is **{}**!".format(msg.author.id, choice)
+        )
+
+    @command("^(?:r|roll) ([0-9]{1,4})d([0-9]{1,4})", access=-1, name='roll',
+             doc_brief="`r XdY`: Rolls X Y-sided dice.")
+    async def roll(self, msg, arguments):
+        roll = 0
+        for i in range(0, int(arguments[0])):
+            roll += random.randint(1, int(arguments[1]))
+        await self.send_message(
+            msg.channel,
+            "{user}, you rolled `{x}d{y}` and got **{roll}**".format(
+                user=msg.author.mention,
+                x=arguments[0], y=arguments[1],
+                roll=roll)
         )
 
     @command("^shuffle (.*)", access=-1, name='shuffle',
