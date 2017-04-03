@@ -35,3 +35,11 @@ class React(Plugin):
             # await self.add_reaction(msg, lemonbot)
         lemonbot = self.core.emoji.emoji(msg.server, ["lemonbot", "lemon_bot"])
         await self.add_reaction(msg, lemonbot)
+
+    @filter("^<:expand:[0-9]{16,20}>$", name='expand dong',
+            server="190782508105728000")
+    async def expand_dong(self, msg, arguments):
+        expand = self.core.emoji.emoji(msg.server, ["expand"])
+        dong = self.core.emoji.emoji(msg.server, ["dong"])
+        await self.add_reaction(msg, expand)
+        await self.add_reaction(msg, dong)
