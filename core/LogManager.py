@@ -107,7 +107,6 @@ class LogManager():
                 srv=server.name))
             for channel in server.channels:
                 self.core.logger.info(channel.name)
-                self.core.logger.info(channel.name)
                 self.update_channel_map(channel)
 
         self.logger.info("initial: {}".format(self.channel_map))
@@ -236,6 +235,7 @@ class LogManager():
 
             # Update channel map.
             # """update channel here"""
+            self.logger.info(old_channel)
             self.channel_map[channel.id]['name'] = channel.name
             if (self.channel_map[channel.id]['server_name'] != self.server_map[old_channel['server_id']]['name']):  # noqa E501)
                 self.logger.info(
