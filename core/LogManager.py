@@ -232,6 +232,13 @@ class LogManager():
             # Update channel map.
             # """update channel here"""
             self.channel_map[channel.id]['name'] = channel.name
+            if (self.channel_map[channel.id]['server_name'] != self.server_map[old_channel['server_id']]['name']):  # noqa E501)
+                self.logger.debug(
+                    "updating 'server_name' of #{ch} from {old} to {new}".format(
+                        ch=channel.name,
+                        self.channel_map[channel.id]['server_name'],
+                        self.server_map[old_channel['server_id']]['name']
+                    ))
             self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']  # noqa E501
 
     def update_jsons(self, smod=False, cmod=False):
