@@ -46,7 +46,6 @@ import time
 
 class PenguinBot(discord.Client):
     def __init__(self, *args, **kwargs):
-        numeric_level = getattr(logging, loglevel.upper(), None)
         super().__init__(*args, **kwargs)
         self.plugins_loaded = False
         # Setup logger and load config

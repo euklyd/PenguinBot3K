@@ -237,7 +237,7 @@ class LogManager():
             # """update channel here"""
             self.channel_map[channel.id]['name'] = channel.name
             if (self.channel_map[channel.id]['server_name'] != self.server_map[old_channel['server_id']]['name']):  # noqa E501)
-                self.logger.debug(
+                self.logger.info(
                     "updating 'server_name' of #{ch} from {old} to {new}".format(
                         ch=channel.name,
                         old=self.channel_map[channel.id]['server_name'],
@@ -516,7 +516,7 @@ class LogManager():
                                 bot.py resides).
         """
         ch = self.channel_map[channel.id]
-        self.logger.debug(ch)
+        self.logger.debug("updating {}".format(ch))
 
         channel_dir = "logs/servers/{srv}-{srv_id}/{ch}-{ch_id}/".format(
             srv=ch['server_name'],
@@ -533,7 +533,7 @@ class LogManager():
 
         files = os.listdir(channel_dir)
         return_files = []
-        self.logger.debug(files)
+        self.logger.info(files)
         for i in range(0, days+1):
             past_date_dt = dt.utcnow() - datetime.timedelta(days=i)
             past_date_str = past_date_dt.strftime("%Y-%m-%d")
