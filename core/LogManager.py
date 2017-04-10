@@ -103,6 +103,10 @@ class LogManager():
             self.update_server_map(server)
 
         for server in self.core.servers:
+            self.core.debug("Server '{srv}' has channels:\n{chlist}".format(
+                srv=server.name,
+                chlist=server.channels
+            ))
             for channel in server.channels:
                 self.core.logger.info(channel.name)
                 self.update_channel_map(channel)
