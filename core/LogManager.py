@@ -109,9 +109,9 @@ class LogManager():
                 self.core.logger.info(channel.name)
                 self.update_channel_map(channel)
 
-        self.logger.info("initial: {}".format(self.channel_map))
+        # self.logger.info("initial: {}".format(self.channel_map))
         self.update_jsons(smod=True, cmod=True)
-        self.logger.info("after:   {}".format(self.channel_map))
+        # self.logger.info("after:   {}".format(self.channel_map))
 
     def update_server_map(self, server):
         """
@@ -235,7 +235,7 @@ class LogManager():
 
             # Update channel map.
             # """update channel here"""
-            self.logger.info(old_channel)
+            self.logger.info("old ch looks like: ".format(old_channel))
             self.channel_map[channel.id]['name'] = channel.name
             if (self.channel_map[channel.id]['server_name'] != self.server_map[old_channel['server_id']]['name']):  # noqa E501)
                 self.logger.info(
