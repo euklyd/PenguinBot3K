@@ -266,9 +266,11 @@ class LogManager():
         if (smod is True):
             server_fp = open("databases/servers.json", 'w')
             json.dump(self.server_map, server_fp)
+            self.logger.info("updated 'databases/servers.json')
         if (cmod is True):
             channel_fp = open("databases/channels.json", 'w')
             json.dump(self.channel_map, channel_fp)
+            self.logger.info("updated 'databases/channels.json')
 
     def update_channel(self, after):
         """
