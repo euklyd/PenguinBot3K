@@ -260,7 +260,7 @@ class LogManager():
             Returns:
                 None
         """
-        self.logger("updating jsons: smod={s}, cmod={c}".format(
+        self.logger.info("updating jsons: smod={s}, cmod={c}".format(
             s=smod, c=cmod)
         )
         if (smod is True):
