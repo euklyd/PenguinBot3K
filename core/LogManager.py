@@ -111,7 +111,9 @@ class LogManager():
                 self.core.logger.info(channel.name)
                 self.update_channel_map(channel)
 
+        self.logger.info("initial: {}".format(self.channel_map))
         self.update_jsons(smod=True, cmod=True)
+        self.logger.info("after:   {}".format(self.channel_map))
 
     def update_server_map(self, server):
         """
