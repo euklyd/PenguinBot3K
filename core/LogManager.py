@@ -260,6 +260,9 @@ class LogManager():
             Returns:
                 None
         """
+        self.logger("updating jsons: smod={s}, cmod={c}".format(
+            s=smod, c=cmod)
+        )
         if (smod is True):
             server_fp = open("databases/servers.json", 'w')
             json.dump(self.server_map, server_fp)
