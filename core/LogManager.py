@@ -504,8 +504,8 @@ class LogManager():
                                 top-level directory of the bot (whereever
                                 bot.py resides).
         """
-        self.logger.info("Retrieving {} days of logs".format(days))
         ch = self.channel_map[channel.id]
+        self.logger.debug(ch)
 
         channel_dir = "logs/servers/{srv}-{srv_id}/{ch}-{ch_id}/".format(
             srv=ch['server_name'],
@@ -513,9 +513,16 @@ class LogManager():
             ch=ch['name'],
             ch_id=channel.id
         )
+        self.logger.info(
+            "Retrieving {} days of logs from {}".format(
+                days,
+                channel_dir
+            )
+        )
 
         files = os.listdir(channel_dir)
         return_files = []
+        self.logger.debug(files)
         for i in range(0, days+1):
             past_date_dt = dt.utcnow() - datetime.timedelta(days=i)
             past_date_str = past_date_dt.strftime("%Y-%m-%d")
