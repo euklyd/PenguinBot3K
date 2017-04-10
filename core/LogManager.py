@@ -103,7 +103,7 @@ class LogManager():
             self.update_server_map(server)
 
         for server in self.core.servers:
-            self.core.debug("Server '{srv}' has channels:\n{chlist}".format(
+            self.core.logger.info("Server '{srv}' has channels:\n{chlist}".format(
                 srv=server.name,
                 chlist=server.channels
             ))
@@ -516,7 +516,7 @@ class LogManager():
                                 bot.py resides).
         """
         ch = self.channel_map[channel.id]
-        self.logger.debug("updating {}".format(ch))
+        self.logger.info("updating {}".format(ch))
 
         channel_dir = "logs/servers/{srv}-{srv_id}/{ch}-{ch_id}/".format(
             srv=ch['server_name'],
