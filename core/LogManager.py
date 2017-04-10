@@ -240,8 +240,8 @@ class LogManager():
                 self.logger.debug(
                     "updating 'server_name' of #{ch} from {old} to {new}".format(
                         ch=channel.name,
-                        self.channel_map[channel.id]['server_name'],
-                        self.server_map[old_channel['server_id']]['name']
+                        old=self.channel_map[channel.id]['server_name'],
+                        new=self.server_map[old_channel['server_id']]['name']
                     ))
             self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']  # noqa E501
 
