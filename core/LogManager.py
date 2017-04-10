@@ -183,10 +183,11 @@ class LogManager():
                 'server_id': channel.server.id,
                 'server_name': channel.server.name
             }
+        old_channel = self.channel_map[channel.id]
+        self.logger.info("old ch looks like: ".format(old_channel))
         if (channel.name != self.channel_map[channel.id]['name']):
             # If the channel's name has changed, update the stored filename
             # and move the channel's log directory.
-            old_channel = self.channel_map[channel.id]
             # """update filetree here"""
             try:
                 for log in os.listdir(
@@ -235,16 +236,16 @@ class LogManager():
 
             # Update channel map.
             # """update channel here"""
-            self.logger.info("old ch looks like: ".format(old_channel))
             self.channel_map[channel.id]['name'] = channel.name
-            if (self.channel_map[channel.id]['server_name'] != self.server_map[old_channel['server_id']]['name']):  # noqa E501)
-                self.logger.info(
-                    "updating 'server_name' of #{ch} from {old} to {new}".format(
-                        ch=channel.name,
-                        old=self.channel_map[channel.id]['server_name'],
-                        new=self.server_map[old_channel['server_id']]['name']
-                    ))
-            self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']  # noqa E501
+        if (self.channel_map[channel.id]['server_name'] != self.server_map[old_channel['server_id']]['name']):  # noqa E501)
+            # If the channel's server name has changed, update
+            self.logger.info(
+                "updating 'server_name' of #{ch} from {old} to {new}".format(
+                    ch=channel.name,
+                    old=self.channel_map[channel.id]['server_name'],
+                    new=self.server_map[old_channel['server_id']]['name']
+                ))
+        self.channel_map[channel.id]['server_name'] = self.server_map[old_channel['server_id']]['name']  # noqa E501
 
     def update_jsons(self, smod=False, cmod=False):
         """
