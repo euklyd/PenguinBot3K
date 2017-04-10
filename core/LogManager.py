@@ -104,7 +104,7 @@ class LogManager():
 
         for server in self.core.servers:
             self.core.logger.info(
-                "Server '{srv}' has channels:\n{chlist.name}".format(
+                "Server '{srv}' has channels:\n{chlist[name]}".format(
                     srv=server.name,
                     chlist=server.channels
             ))
