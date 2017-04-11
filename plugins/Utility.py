@@ -86,11 +86,12 @@ class Utility(Plugin):
              doc_brief="`avatar @<user>`: posts a link to `<user>`'s avatar")
     async def get_avatar(self, msg, arguments):
         """`avatar @<user>`: posts a link to `<user>`'s avatar"""
-        user = msg.server.get_member(arguments[0])
-        if (user is None):
-            # discord.Server.get_member() returns None if the specified user
-            # isn't a part of that server.
-            user = await self.core.get_user_info(arguments[0])
+        # user = msg.server.get_member(arguments[0])
+        user = msg.mentions[0]
+        if (type(user) is discord.User):
+            # # discord.Server.get_member() returns None if the specified user
+            # # isn't a part of that server.
+            # user = await self.core.get_user_info(arguments[0])
             em = discord.Embed()
             nick = user.name
         else:
@@ -117,11 +118,8 @@ class Utility(Plugin):
              doc_brief="`info @<user>`: Gets assorted info about the "
              "specified <user>.")
     async def get_info(self, msg, arguments):
-        user = msg.server.get_member(arguments[0])
-        if (user is None):
-            # discord.Server.get_member() returns None if the specified user
-            # isn't a part of that server.
-            user = await self.core.get_user_info(arguments[0])
+        # user = msg.server.get_member(arguments[0])
+        user = msg.mentions[0]
         if (type(user) == discord.Member):
             # If the user isn't on this server, then they're a discord.User
             # rather than discord.Member, and so are missing a lot of fields.

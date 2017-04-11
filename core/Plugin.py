@@ -217,3 +217,23 @@ class Plugin(object):
                 discord.User object
         """
         return await self.core.get_user_info(user_id)
+
+    def get_role_info(self, role_id, server):
+        """
+            Summary:
+                Gets info about a role for a specific server
+
+            Args:
+                role_id (str): ID of role to get info about.
+                server (discord.Server): Server on which role resides
+
+            Returns:
+                discord.Role object
+        """
+        role = None
+        for r in server.roles:
+            if (r.id == role_id):
+                role = r
+                break
+            pass
+        return role

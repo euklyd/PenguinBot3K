@@ -20,12 +20,13 @@ from core.Decorators import *
 from peewee import *
 from tabulate import tabulate
 
+import discord
 import random
 import string
 
 ACCESS = {
     "claim": -1,
-    "deleteAccess": 500,
+    "queryAccess": 100,
     "setAccess": 500,
     "ban": 900,
     "roleAccess": 999
@@ -58,21 +59,29 @@ class ACL(Plugin):
             await self.send_whisper(msg.author, 'You are now my owner! Wooo')
 
     @command("^whois <@!?([0-9]+)>", access=50, name='whois',
-             doc_brief="`whois @<user>`: prints the access level of `<user>`, along with misc. information.")
+             doc_brief="`whois @<user>`: prints the access level of `<user>`, "
+             "along with misc. information.")
     async def whois(self, msg, arguments):
-        user = await self.get_user_info(arguments[0])
+        # user = await self.get_user_info(arguments[0])
+        user = msg.mentions[0]
         access = self.core.ACL.getAccess(user.id)
-
-        await self.send_message(
-            msg.channel,
-            "**Username:**\t`{}#{}`\nUser ID:\t`{}`\nAccess:\t`{}`".format(
-                user.name, user.discriminator, user.id, access
-                # user['user']['username'], user['user']['discriminator'],
-                # user['user']['id'], access
-            )
+        em = discord.Embed(color=user.color)
+        em.set_author(
+            name="{}#{}".format(user.name, user.discriminator),
+            icon_url=user.avatar_url
         )
+        em.add_field(name="ID", value=user.id, inline=True)
+        em.add_field(name="User Access", value=access, inline=True)
 
-    @command("^whoami", access=-1, name="whoami",
+        # await self.send_message(
+        #     msg.channel,
+        #     "**Username:**\t`{}#{}`\nUser ID:\t`{}`\nAccess:\t`{}`".format(
+        #         user.name, user.discriminator, user.id, access
+        #     )
+        # )
+        await self.send_message(msg.channel, embed=em)
+
+    @command("^whoami", access=-1, name='whoami',
              doc_brief="`whoami`: prints your own access level.")
     async def whoami(self, msg, arguments):
         access = self.core.ACL.getAccess(msg.author.id)
@@ -81,15 +90,15 @@ class ACL(Plugin):
             msg.author, access)
         )
 
-    @command('^list users (-?[0-9]+)(?: ([0-9]+))?(?: ([0-9]+))?$', access=100,
-             name='list users',
-             doc_brief=("`list users <access>`: list all users with the specified "
-             "access level."),
-             doc_detail=("`list users <access>`: list all users with the specified "
-             "access level.\n"
+    @command('^list users (-?[0-9]+)(?: ([0-9]+))?(?: ([0-9]+))?$',
+             access=ACCESS['queryAccess'], name='list users',
+             doc_brief="`list users <access>`: list all users with the "
+             "specified access level.",
+             doc_detail="`list users <access>`: list all users with the "
+             "specified access level.\n"
              "More specifically, if `access` != 0, then a maximum of `limit` "
              "users with access equal to `access`, offset by `offset`, are "
-             "returned."))
+             "returned.")
     async def get_some_users(self, msg, arguments):
         access, limit, offset = arguments
         self.logger.info(arguments)
@@ -110,9 +119,9 @@ class ACL(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command('^list users$', access=100, name='list users',
-             doc_brief=("`list users`: list all users with non-default access "
-             "levels."))
+    @command('^list users$', access=ACCESS['queryAccess'], name='list users',
+             doc_brief="`list users`: list all users with non-default access "
+             "levels.")
     async def list_users(self, msg, arguments):
         table = []
         for user in self.core.ACL.query_users():
@@ -130,7 +139,8 @@ class ACL(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command("^delete access <@!?([0-9]+)>", access=ACCESS["deleteAccess"],
+    @command("^delete access <@!?([0-9]+)>", access=ACCESS['setAccess'],
+             name='delete access',
              doc_brief=("`delete access @<user>`: deletes the access "
              "permissions of `<user>`."))
     async def deleteAccess(self, msg, arguments):
@@ -144,7 +154,8 @@ class ACL(Plugin):
         # Check if requestor is allowed to do this
         if (self.core.ACL.getAccess(requestor) >= self.core.ACL.getAccess(target) or
                 requestor != self.core.config.backdoor):
-            user = await self.get_user_info(target)
+            # user = await self.get_user_info(target)
+            user = msg.mentions[0]
             if (self.core.ACL.deleteUser(user) is True):
                 await self.send_message(
                     msg.channel,
@@ -162,6 +173,7 @@ class ACL(Plugin):
             )
 
     @command("^set access <@!?([0-9]+)> ([0-9]+)", access=ACCESS["setAccess"],
+             name='set access',
              doc_brief=("`set access @<user> <access>`: sets the access level "
              "of `<user>` to `<access>`."))
     async def setAccess(self, msg, arguments):
@@ -178,8 +190,8 @@ class ACL(Plugin):
             access = int(arguments[1])
             if (access >= 0 and access < 1000 or
                     requestor == self.core.config.backdoor):
-                # name = self.core.connection.getUser(target)["name"]
-                user = await self.get_user_info(target)
+                # user = await self.get_user_info(target)
+                user = msg.mentions[0]
 
                 self.core.ACL.setAccess(user, access)
                 await self.send_message(
@@ -197,15 +209,17 @@ class ACL(Plugin):
                 "You cannot modify access of a user with more access"
             )
 
-    @command("^set role access <@&([0-9]+)> ([A-Za-z0-9]+) ([0-9]+)$", access=ACCESS["roleAccess"],
-             doc_brief=("`set role access @<role> <access>`: sets the access level "
-             "of `<role>` to `<access>`."))
+    @command("^set role access <@&([0-9]+)> ([A-Za-z0-9]+) ([0-9]+)$",
+             access=ACCESS['roleAccess'], name='set role access',
+             doc_brief="`set role access @<role> <plugin> <access>`: "
+             "sets the access level of `<role>` to `<access>` for the "
+             "specified <plugin>.")
     async def set_role_access(self, msg, arguments):
         role_id = arguments[0]
         plugin  = arguments[1]
         access  = int(arguments[2])
-        self.logger.info("{}, {}, {}".format(role_id, plugin, access))
-        self.logger.info(self.core.plugin.plugins.keys())
+        # self.logger.info("{}, {}, {}".format(role_id, plugin, access))
+        # self.logger.info(self.core.plugin.plugins.keys())
         if (plugin in self.core.plugin.plugins):
             reply = self.core.ACL.set_role_access(role_id, plugin, access)
             if (reply is None):
@@ -219,3 +233,53 @@ class ACL(Plugin):
                 await self.send_message(msg.channel, reply)
         else:
             await self.send_message(msg.channel, "No such plugin!")
+
+    @command("^delete role access <@&([0-9]+)> ([A-Za-z0-9]+)$",
+             access=ACCESS['roleAccess'], name='delete role access',
+             doc_brief="`delete role access @<role> <plugin>`: removes the "
+             "access level of `<role>` for the specified <plugin>.")
+    async def delete_role_access(self, msg, arguments):
+        role_id = arguments[0]
+        plugin  = arguments[1]
+        try:
+            self.core.ACL.delete_role_access(role_id, plugin)
+            reply = ("Deleted access of `{role}` for plugin "
+                     "'**{plugin}**'").format(role=role_id, plugin=plugin)
+        except KeyError as e:
+            reply = str(e).strip('"\'')
+        await self.send_message(msg.channel, reply)
+
+    @command("^access (?:<@!?([0-9]+)>|<@&([0-9]+)>|([0-9]+))$",
+             access=ACCESS['queryAccess'], name='access',
+             doc_brief="`access @<user/role>`: Returns the access level of "
+             "the specified user or role.")
+    async def access(self, msg, arguments):
+        if (arguments[0] is not None):
+            # it's a user
+            self.whois(msg, [arguments[0]])
+            return
+        elif (arguments[1] is not None):
+            # it's a role mention
+            # access_map = self.core.ACL.get_role_accesses(arguments[1])
+            role = msg.role_mentions[0]
+            access_map = self.core.ACL.get_role_accesses(role)
+        elif (arguments[2] is not None):
+            # it's a role id
+            role = self.get_role_info(arguments[2], msg.server)
+            access_map = self.core.ACL.get_role_accesses(role)
+        else:
+            # it went wrong
+            self.logger.warning(
+                "something went wrong with command '{}'".format(msg.content))
+            return
+        reply = access_map
+        # em = discord.Embed(color=user.color)
+        # em.set_author(
+        #     name="{}#{}".format(user.name, user.discriminator),
+        #     icon_url=user.avatar_url
+        # )
+        # em.add_field(name="ID", value=user.id, inline=True)
+        # em.add_field(name="User Access", value=access, inline=True)
+        # for plugin in access_map:
+        #     reply +=
+        await self.send_message(msg.channel, reply)
