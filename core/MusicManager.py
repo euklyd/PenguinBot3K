@@ -126,24 +126,6 @@ class YouTubeSong(Song):
         self.duration = player.duration
         return player
 
-"""
-don't use this anymore
-# class LocalSong(Song):
-#     def __init__(self, title, name, requestor, channel):
-#         super().__init__(title, requestor, channel)
-#         self.path = None
-#         ...
-#
-# class MP4Song(LocalSong):
-#     ...
-#     # Key fields here for artist, artwork, and title:
-#     self.title = metadata['sonm'] or metadata['©nam']
-#     self.artist = metadata['soar'] or metadata['aART'] or metadata['©ART']
-#     self.thumbnail = metadata['covr']
-#     # If you care:
-#     genre = metadata['soal'] or metadata['©alb']
-"""
-
 
 class LocalSong(Song):
     def __init__(self, name, requestor, channel):
@@ -316,17 +298,6 @@ class LocalSong(Song):
             return 0
 
     def announcement(self):
-        # announcement = ("**Now playing:** *{title}* "
-        #                 "[{min:0>2.0f}:{sec:0>2d}], "
-        #                 "by {artist}\n*Requested by {user}*").format(
-        #     title=self.title,
-        #     min=int(self.duration / 60),
-        #     sec=int(self.duration % 60),
-        #     artist=self.artist,
-        #     user=self.requestor.name
-        # )
-        # return announcement
-
         em = discord.Embed(color=self.requestor.color)
         if (self.thumbnail is not None):
             # em.set_author(name=self.title, icon_url=self.thumbnail)
@@ -377,10 +348,6 @@ class PlaylistEntry():
             print(traceback.format_exc())
             return {'type': "error", 'response': error_msg}
         else:
-            # self.announcement = self.song.announcement().format(
-            #     min=int(self.player.duration / 60),
-            #     sec=int(self.player.duration % 60),
-            # )
             self.announcement = self.song.announcement()
             return {'type': "success", 'response': self.announcement}
 
@@ -476,23 +443,6 @@ class MusicManager():
             thumbnail=yt_embed['thumbnail']['url']
         )
         self.logger.info("yt_add: Created song {}".format(yt_embed['title']))
-        # try:
-        #     player = await self.voice.create_ytdl_player(
-        #         yt_url, after=self.advance_queue
-        #     )
-        # except:
-        #     error_msg = "ERROR: Couldn't process request"
-        #     return {'type': "error", 'response': error_msg}
-        # else:
-        #     announcement = ("**Now playing:** *{title}* "
-        #                     "[{min:0>2.0f}:{sec:0>2d}], by {uploader}\n"
-        #                     "*Requested by {user}*").format(
-        #         title=song.title,
-        #         min=player.duration / 60,
-        #         sec=player.duration % 60,
-        #         uploader=song.uploader,
-        #         user=song.requestor.name
-        #     )
         playlist_entry = PlaylistEntry(song)
         self.logger.info(
             "yt_add: Created playlist_entry {}".format(yt_embed['title'])
@@ -544,8 +494,7 @@ class MusicManager():
     async def pause(self):
         if (self.is_connected() is False):
             return "**ERROR:** I'm not connected to voice right now."
-        # elif (self.player.is_playing()):
-        elif (self.is_active() is True):
+        elif (self.is_active() and self.current_song.player.is_playing()):
             self.current_song.player.pause()
             return None
         else:
@@ -554,7 +503,7 @@ class MusicManager():
     async def resume(self):
         if (self.is_connected() is False):
             return "**ERROR:** I'm not connected to voice right now."
-        elif (self.is_active() is False):
+        elif (self.is_active() and self.current_song.player.is_playing() is False):
             self.current_song.player.resume()
             return None
 
@@ -580,8 +529,6 @@ class MusicManager():
             return None
 
     async def list_playlist(self):
-        # playlist = list(self.playlist_queue.queue)
-        # playlist.insert(0, self.current_song)
         return self.current_song, list(self.playlist_queue.queue)
 
     def get_current_url(self):
