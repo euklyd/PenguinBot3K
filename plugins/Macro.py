@@ -546,27 +546,28 @@ class Macro(Plugin):
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
+        weed = self.emoji.emoji_str(['YEAH_WEED', 'yeahweed'])
         w_char = """
-<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>             <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
-"""
+{weed}                                       {weed}
+{weed}             {weed}             {weed}
+{weed}             {weed}             {weed}
+{weed}             {weed}             {weed}
+{weed}{weed}{weed}{weed}{weed}
+""".format(weed=weed)
         e_char = """
-<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
-"""
+{weed}{weed}{weed}{weed}{weed}
+{weed}
+{weed}{weed}{weed}{weed}
+{weed}
+{weed}{weed}{weed}{weed}{weed}
+""".format(weed=weed)
         d_char = """
-<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392>                                       <:YEAH_WEED:242233070051131392>
-<:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392><:YEAH_WEED:242233070051131392>
-"""
+{weed}{weed}{weed}{weed}
+{weed}                                       {weed}
+{weed}                                       {weed}
+{weed}                                       {weed}
+{weed}{weed}{weed}{weed}
+""".format(weed=weed)
         await self.delete_message(msg)
         await self.send_message(msg.channel, w_char)
         await self.send_message(msg.channel, e_char)
