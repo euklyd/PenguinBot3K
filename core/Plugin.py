@@ -237,3 +237,11 @@ class Plugin(object):
                 break
             pass
         return role
+
+    async def ban_user(self, user, server, delete_message_days=0):
+        """
+            Summary:
+                Bans any User from a server, bypassing discord.py's requirement
+                that it be a discord.Member
+        """
+        await self.core.http.ban(user.id, server.id, delete_message_days)

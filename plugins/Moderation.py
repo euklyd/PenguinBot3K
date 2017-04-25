@@ -17,6 +17,7 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 
+import datetime
 import discord
 import json
 import random
@@ -133,26 +134,59 @@ class Moderation(Plugin):
     @command("^ban <@!?([0-9]+)>", access=ACCESS['ban'], name='ban',
              doc_brief="`ban @<user>`: bans `<user>` from the current server.")
     async def server_ban(self, msg, arguments):
-        user = self.core.get_member(arguments[0])
-        user.server = msg.server
+        user = await self.core.get_user_info(arguments[0])
+        # user = msg.mentions[0]  # can't do this because they're not a Member
+        # user = discord.Member(
+        #     user=user,
+        #     voice=discord.VoiceState(),
+        #     joined_at=datetime.datetime.now(),
+        #     status=discord.Status("online"),
+        #     server=msg.server,
+        #     color=discord.Colour.default()
+        # )
+        # user.id = arguments[0]
+        # user.server = msg.server
+        self.logger.info("banbanban")
+        self.logger.info(type(msg.author))
+        self.logger.info(msg.author)
         if (int(self.core.ACL.getAccess(msg.author)) <= int(self.core.ACL.getAccess(user))):
+            self.logger.info("{}, {}".format(
+                int(self.core.ACL.getAccess(msg.author)),
+                int(self.core.ACL.getAccess(user))
+            ))
             await self.send_message(
                 msg.channel,
-                "Nice try, <@!{}>. <@!100165629373337600> has been notified."
+                "Nice try, {}. <@!{}> has been notified.".format(
+                    msg.author.mention,
+                    self.core.config.backdoor
+                )
             )
             return
         else:
-            mtg_banish = {'grip_of_desolation': "http://i.imgur.com/vgbxZsH.png",
-                          'vindicate': "http://i.imgur.com/ZVXcGmu.jpg"}
-            banish = mtg_banish[random.choice(list(mtg_banish.keys()))]
+            mtg_banish = {
+                'vindicate': "http://i.imgur.com/ZVXcGmu.jpg",
+                'grip of desolation': "http://i.imgur.com/vgbxZsH.png",
+                'destruction punch': (
+                    "http://i.imgur.com/UkETEEb.png",
+                    "I activate my trap card, {}!".format(user.mention)
+                ),
+                'dark core': "http://i.imgur.com/40v2nK2.png"
+            }
+            key = random.choice(list(mtg_banish.keys()))
+            if (type(mtg_banish[key]) is tuple):
+                banish = mtg_banish[key][0]
+                reply = mtg_banish[key][1]
+            else:
+                banish = mtg_banish[key]
+                reply = "Geeeeeet **dunked on**, {}!".format(user.mention)
 
             # self.core.connection.ban_user(server, user, delete_msgs=0) ##FIX?
-            await self.core.ban(user, delete_message_days=0)
             await self.send_message(msg.channel, banish) ##CHANGE? to upload
             await self.send_message(
                 msg.channel,
-                "Geeeeeet **dunked on**, <@!{}>!".format(user)
+                reply
             )
+            await self.ban_user(user, msg.server, delete_message_days=0)
 
     @command("^nuke <@!?([0-9]+)> ([1-7])$", access=ACCESS["ban"], name='nuke',
              doc_brief=("`nuke @<user> <days>`: bans `<user>` from the current "
