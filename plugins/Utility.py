@@ -20,6 +20,7 @@ from core.Decorators import *
 import discord
 import logging
 import random
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,56 @@ class Utility(Plugin):
                 x=arguments[0], y=arguments[1],
                 roll=roll)
         )
+
+    @command("^(?:er|eroll) (?P<dice>\d{1,3}d\d{1,3}(?:[+-]\d{1,3}d\d{1,3}){0,8})(?:(?P<mod>[+-]\d{1,3}))?(?: # (?P<comment>.*))?",
+             access=-1, name='eroll',
+             doc_brief="`er <dice expression>`: extended roll")
+    async def eroll(self, msg, arguments):
+        self.logger.info(arguments)
+        # dice = re.split('+|-', arguments['dice'])
+        dice = re.split('\+|\-', arguments[0])
+        self.logger.info('dice: {}'.format(dice))
+        dice2 = []
+        results = []
+        for d in dice:
+            die = d.split('d')
+            die[0], die[1] = int(die[0]), int(die[1])
+            dice2.append(die)
+            res = []
+            for i in range(0, die[0]):
+                roll = random.randint(1, die[1])
+                res.append(roll)
+            results.append(res)
+        self.logger.info('results: {}'.format(results))
+        result = 0
+        rmsg = ""
+        for r in results:
+            dmsg = ""
+            for d in r:
+                result += d
+                if dmsg == "":
+                    dmsg = str(d)
+                else:
+                    dmsg += " + {}".format(d)
+            if (rmsg == ""):
+                rmsg = "({})".format(dmsg)
+            else:
+                rmsg += " + ({})".format(dmsg)
+        if (arguments[1] is not None):
+            if (arguments[1][0] == '+'):
+                # mod = int(arguments['mod'].strip('+-'))
+                mod = int(arguments[1].strip('+-'))
+                rmsg += " + {}".format(mod)
+            else:
+                # mod = -1 * int(arguments['mod'].strip('+-'))
+                mod = -1 * int(arguments[1].strip('+-'))
+                rmsg += " - {}".format(mod)
+            result += mod
+        rmsg += "\n**= {}**".format(result)
+        # rmsg += "\n({})".format(arguments['comment'])
+        if (arguments[2] is not None):
+            rmsg += "\n({})".format(arguments[2])
+        await self.send_message(msg.channel, rmsg)
 
     @command("^shuffle (.*)", access=-1, name='shuffle',
              doc_brief="`shuffle <list of items>`: Returns the list in a "
