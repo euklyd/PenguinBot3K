@@ -207,7 +207,19 @@ class Macro(Plugin):
             icon_url=user.avatar_url
         )
         await self.send_message(msg.channel, embed=em)
-        self.logger.debug(em.to_dict())
+
+    @command("^(?:cat|\U0001F408|\:3)$", access=-1, name='cat',
+             doc_brief="`cat`: Embeds the Skype `(cat)` emoji")
+    async def cat(self, msg, arguments):
+        cat_url = "http://i.imgur.com/G4KuYIi.gif"
+        user = msg.server.get_member(self.core.user.id)
+        em = discord.Embed(color=user.color)
+        em.set_thumbnail(url=cat_url)
+        em.set_footer(
+            text="",
+            icon_url=user.avatar_url
+        )
+        await self.send_message(msg.channel, embed=em)
 
     @command("^(?:thinking|🤔)$", access=-1, name='thinking',
              doc_brief="`thinking`: Embeds the `:thinking:` emoji's ultimate form")
