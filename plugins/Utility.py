@@ -165,7 +165,7 @@ class Utility(Plugin):
         em.add_field(name="URL", value="(Click the title!)", inline=False)
         await self.send_message(msg.channel, embed=em)
 
-    @command("^info <@!?([0-9]*)>$", access=50, name='info',
+    @command("^info <@!?([0-9]*)>$", access=-1, name='info',
              doc_brief="`info @<user>`: Gets assorted info about the "
              "specified <user>.")
     async def get_info(self, msg, arguments):
