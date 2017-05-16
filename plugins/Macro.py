@@ -211,7 +211,7 @@ class Macro(Plugin):
     @command("^(?:cat|\U0001F408|\:3)$", access=-1, name='cat',
              doc_brief="`cat`: Embeds the Skype `(cat)` emoji")
     async def cat(self, msg, arguments):
-        cat_url = "http://i.imgur.com/G4KuYIi.gif"
+        cat_url = "http://i.imgur.com/kJYNv51.gif"
         user = msg.server.get_member(self.core.user.id)
         em = discord.Embed(color=user.color)
         em.set_thumbnail(url=cat_url)
