@@ -250,12 +250,12 @@ class Macro(Plugin):
                "http://i.imgur.com/ahTXT2T.gif"]
         await self.send_message(msg.channel, random.choice(ayy))
 
-    @command("^(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
-             doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes")
+    @command("^( )?(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
+             doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes",
+             doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
     async def ph1r3(self, msg, arguments):
         marf = self.core.emoji.emoji_str(msg.server, ['ppmd_marth', 'MarthSip'])
-        roypasta = []
-        roypasta.append(
+        roypasta = [
             "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
             "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
             "and a pencil  ✏ disjoint 👌 🗡 .  Let's not forget that in his "
@@ -268,8 +268,8 @@ class Macro(Plugin):
             "so he can die you at 60% from a single grab 💥 💥 💥 👀 . "
             "Roy is the bottom top 5 sword character, unlike that amazing "
             "original character ⚔ Marth {marth} 😕 😩 😫 .\n\n"
-            "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
-        roypasta.append(
+            "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf),
+
             "🔥 **Roy** 🔥 is definitely **top tier**.  The boy got it all:  "
             "Speed 🏃 , KO Power 💥 , 💯 off throws, and disjoint 👌 ⚔ .  "
             "Let's not forget that in his own respective game 😘 he has "
@@ -282,32 +282,106 @@ class Macro(Plugin):
             "so he can kill you at *10%* with a read 📖 💥 💥 💥 👀 . "
             "Roy is the real top 5 sword character, unlike that worthless "
             "clone {marth}  😕 😩 😫\n\n"
-            "**🔥 ROY'S 🔥 OUR 🔥 BOY 🔥**".format(marth=marf))
-        pasta = random.choice(roypasta)
+            "**🔥 ROY'S 🔥 OUR 🔥 BOY 🔥**".format(marth=marf)
+        ]
+        if (arguments[0] == " "):
+            pasta = roypasta[0]
+        else:
+            pasta = random.choice(roypasta)
         await self.send_message(msg.channel, pasta)
 
-    @command("^ (?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='roy',
-             doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
-    async def roy(self, msg, arguments):
-        marf = self.core.emoji.emoji_str(msg.server, ['ppmd_marth', 'MarthSip'])
-        roypasta = (
-            "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
-            "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
-            "and a pencil  ✏ disjoint 👌 🗡 .  Let's not forget that in his "
-            "own respective game 😳 he's a total beta nerd 🤓 . "
-            "His presence all over the stage should not be ignored, "
-            "a single read 📖 gets you nothing 💀 at 40% 👀 , 🔥 🔥 🔥 you're "
-            "not at risk ⚠ 💤 when trying to gimp him, and his 🔥 ⚔ is "
-            "completely laggy 🐌 and can OHKO you at 304% 👌 👌 👌 😂 . "
-            "He may be combo food 🍖 , but he wants that DING DONG 🐒 💥 💀 , "
-            "so he can die you at 60% from a single grab 💥 💥 💥 👀 . "
-            "Roy is the bottom top 5 sword character, unlike that amazing "
-            "original character ⚔ Marth {marth} 😕 😩 😫 .\n\n"
-            "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
-        await self.send_message(msg.channel, roypasta)
+    # @command("^ (?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='roy',
+    #          doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
+    # async def roy(self, msg, arguments):
+    #     marf = self.core.emoji.emoji_str(msg.server, ['ppmd_marth', 'MarthSip'])
+    #     roypasta = (
+    #         "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
+    #         "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
+    #         "and a pencil  ✏ disjoint 👌 🗡 .  Let's not forget that in his "
+    #         "own respective game 😳 he's a total beta nerd 🤓 . "
+    #         "His presence all over the stage should not be ignored, "
+    #         "a single read 📖 gets you nothing 💀 at 40% 👀 , 🔥 🔥 🔥 you're "
+    #         "not at risk ⚠ 💤 when trying to gimp him, and his 🔥 ⚔ is "
+    #         "completely laggy 🐌 and can OHKO you at 304% 👌 👌 👌 😂 . "
+    #         "He may be combo food 🍖 , but he wants that DING DONG 🐒 💥 💀 , "
+    #         "so he can die you at 60% from a single grab 💥 💥 💥 👀 . "
+    #         "Roy is the bottom top 5 sword character, unlike that amazing "
+    #         "original character ⚔ Marth {marth} 😕 😩 😫 .\n\n"
+    #         "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
+    #     await self.send_message(msg.channel, roypasta)
+
+    @command("^ (?:[Zz]ard|[Cc]harizard|[Ll]izardon|🔥[🐲🐉])$", access=99,
+            name='charizard',
+            doc_detail="`charizard`: Prints out the dankest of 🔥🐲 memes.")
+    async def charizard(self, msg, arguments):
+        zardpasta = [
+            ":fire::dragon_face: **Charizard** (リザードン, **Lizardon** :lizard:) is "
+            "a playable character in {shine} *Super Smash Bros. 4* :wastebasket:. "
+            ":fire::dragon_face: **Charizard** is a fucking :muscle: beast :lion:. "
+            "He does lots of :camel: neck :bicyclist: exercises :lifter:. "
+            "Also, never skip :muscle: tail :dragon: day :muscle:.",
+
+            ":fire::dragon_face: Charizard is :medal: top 15 :trophy:. "
+            "He's a good character. He's {salt} underrated. :sob:"
+            "Everyone thinks he's 💤 bad, but he's actually not :fire::muscle:. "
+            "He's top 15. MKLeo said so. He has it all: speed 🏃, KO power 💥:muscle:, 💯% off throws, "
+            "and disjoint 👌⚔. Let's not forget :confused: that in his own respective "
+            "series, he learns Sunny Day :sun_with_face: and Solar Beam :mag::flashlight: and has two :fire::dragon: Mega "
+            "Evolutions :muscle::dragon: that utterly thrash :skull: the majority of the OU tier :medal:👌. "
+            "His presence all over the stage should not be ignored; a single "
+            "read can kill :skull: at 20%, puts you at risk ⚠ when you try to gimp him, "
+            "and his back air 🐻 is completely lagless and can OHKO you 👌 👌 👌. "
+            "He may be combo food 🍖, but he wants that 💢R💢A💢G💢E💢 so he can kill "
+            "you at 0% with a read 📖 💥 💥 💥 👀. As the Patron Saint of Genwunners, "
+            "Charizard is the second-most powerful character on the roster, "
+            "and playing as him against a Unovabortion results in an "
+            "automatic victory out of hatred and despair, especially since "
+            "the Zard got in over that Zoroark loser due to his clear "
+            "superiority. Charizard is so badass that Alain was able to "
+            "defeat Ash Ketchum and his brand spanking new superpowered "
+            "Greninja just by owning a Mega Charizard X, causing millions "
+            "of grown men who still watch a children's cartoon to unleash "
+            "their rage.",
+
+            "The only character that Charizard loses against on principle is "
+            "God-Emperor of the Universe Captain Falcon, and even that's "
+            "debatable as most Falcon vs. Charizard matches end with our "
+            "manly heroic Captain jumping on the dragon's back and soaring "
+            "through the skies to bring GREAT BURNING JUSTICE to the galaxy. "
+            "Charizard is the real top 15 character.",
+
+            "While the Smash Back Room initially committed the heretical "
+            "crime of listing Charizard as a bottom-tier character "
+            "(TWICE IN A ROW), they finally started learning the error of "
+            "their ways and moved him to the upper low tier. Of course, "
+            "they still fail to recognize the power of the ultimate badass "
+            "of Pokémon, but hey, it's a start."
+        ]
+
+    @command("^(?:secret|daddy'?s|cummies) forest(?: invite)?$", access=-1,
+             name='secret forest',
+             doc_brief="`secret forest invite`: The invite link for the "
+             "💦Secret Forest💦 Discord server.")
+    async def secretforest(self, msg, arguments):
+        daddy = (
+            "Hello💦 💦 💦\n"
+            "I'm a  😻 DADDY 😻  from SF, I want to invite you to the 💦 "
+            "Cummies💦😩Forest😩.\n"
+            "https://discord.gg/DADDYFOREST\n\n"
+            "A solution for the bad implemented and shitty "
+            "Slutty Forest Discord Server.\n"
+            "We have a lot of 👅 features 👅.\n"
+            "- 💦Daddy💦 bot\n"
+            "- 😻 DADDY 😻 Channel\n"
+            "- Awesome 🍆NUT🍆 and 💦CUMMIES💦 Channel 😩\n"
+            "- 💔 No Daddies 💔  from the 😾 SF Staff 😾\n"
+            "- Bots that ""help"" 👀 👀 👀 😍\n"
+            "- 😻And a lot of daddies😻.😩\n"
+        )
+        await self.send_message(msg.channel, daddy)
 
     @command("^(?:oh no|uair) ?([A-Za-z]+)?$", access=-1, name='oh no',
-             doc_brief="`oh no`: Pastes a random pasta")
+             doc_brief="`oh no`: Pastes a random 'oh no' pasta")
     async def oh_no(self, msg, arguments):
         oh_nos = {}
         oh_nos['cloud'] = (
