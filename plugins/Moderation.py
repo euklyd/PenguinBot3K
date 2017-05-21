@@ -61,6 +61,12 @@ class Moderation(Plugin):
         await self.send_message(channel, arguments[1])
         await self.delete_message(msg)
 
+    @command("^whisper <@!?([0-9]*)> (.*)", access=ACCESS['debug'],
+             name='whisper')
+    async def whisper(self, msg, arguments):
+        user = await self.core.get_user_info(arguments[0])
+        await self.send_message(user, arguments[1])
+
     @command("^(?:permissions|perms) hex ?(.*)?$", access=-1, name='perms hex',
              doc_brief="`permissions hex <PERM1> <PERM2> ...`: Generate a hex "
              "representation of the permissions associated with the inputs.")
