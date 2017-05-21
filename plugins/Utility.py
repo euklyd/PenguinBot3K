@@ -41,13 +41,13 @@ class Utility(Plugin):
             icon_url=user.avatar_url
         )
         if (coin % 2 == 0):
-            em.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/a/a0/2006_Quarter_Proof.png")
+            em.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/a/a0/2006_Quarter_Proof.png")  # noqa E501
         else:
             tails = random.randint(0, 10)
             if (tails % 10 == 0):
                 em.set_thumbnail(url="http://i.imgur.com/jiLvSSL.png")
             else:
-                em.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/4/4e/COBREcentavosecuador2000-2.png")
+                em.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/4/4e/COBREcentavosecuador2000-2.png")  # noqa E501
         await self.send_message(msg.channel, embed=em)
 
     @command("^pick(?:[- ]one)? (.*)", access=-1, name='pick',
