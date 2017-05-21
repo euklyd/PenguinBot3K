@@ -111,18 +111,16 @@ class Utility(Plugin):
                 rmsg += " + ({})".format(dmsg)
         if (arguments[1] is not None):
             if (arguments[1][0] == '+'):
-                # mod = int(arguments['mod'].strip('+-'))
                 mod = int(arguments[1].strip('+-'))
                 rmsg += " + {}".format(mod)
             else:
-                # mod = -1 * int(arguments['mod'].strip('+-'))
                 mod = -1 * int(arguments[1].strip('+-'))
-                rmsg += " - {}".format(mod)
+                rmsg += " - {}".format(-1 * mod)
             result += mod
         rmsg += "\n**= {}**".format(result)
         # rmsg += "\n({})".format(arguments['comment'])
         if (arguments[2] is not None):
-            rmsg += "\n({})".format(arguments[2])
+            rmsg += "\n*({})*".format(arguments[2])
         await self.send_message(msg.channel, rmsg)
 
     @command("^shuffle (.*)", access=-1, name='shuffle',
