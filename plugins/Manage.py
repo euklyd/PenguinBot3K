@@ -111,16 +111,6 @@ class Manage(Plugin):
         plugin_list = self.core.plugin.list()
         access = self.core.ACL.getAccess(msg.author.id)
         if (plugin in plugin_list or plugin.capitalize() in plugin_list):
-
-            # # debug stuff
-            # module = plugin_list[plugin]['instance']
-            # for name, callback in inspect.getmembers(
-            #         module, inspect.ismethod
-            # ):
-            #     self.logger.info("{} -> {} : {}".format(
-            #         module, name, inspect.getdoc(callback))
-            #     )
-
             command_list = self.core.command.commands
             command_block = "**List of commands in plugin `{}`:**\n".format(
                 plugin
@@ -215,7 +205,7 @@ class Manage(Plugin):
         if plugin in plugins:
             if action == "enable":
                 if plugins[plugin]['status'] == "Disabled":
-                    self.core.plugin.load(plugin)
+                    await self.core.plugin.load(plugin)
                     await self.send_message(
                         msg.channel, "Enabled plugin: **{}**".format(plugin)
                     )
@@ -226,7 +216,7 @@ class Manage(Plugin):
 
             elif action == "disable":
                 if plugins[plugin]['status'] == "Enabled":
-                    self.core.plugin.unload(plugin)
+                    await self.core.plugin.unload(plugin)
                     await self.send_message(
                         msg.channel, "Disabled plugin: **{}**".format(plugin)
                     )
@@ -236,11 +226,15 @@ class Manage(Plugin):
                     )
 
             elif action == "reload":
-                if plugins[plugin]['status'] == "Disabled":
-                    self.core.plugin.reload(plugin)
-                    await self.send_message(
-                        msg.channel, "Reloaded plugin: **{}**".format(plugin)
-                    )
+                # if plugins[plugin]['status'] == "Disabled":
+                #     await self.core.plugin.reload(plugin)
+                #     await self.send_message(
+                #         msg.channel, "Reloaded plugin: **{}**".format(plugin)
+                #     )
+                await self.core.plugin.reload(plugin)
+                await self.send_message(
+                    msg.channel, "Reloaded plugin: **{}**".format(plugin)
+                )
         else:
             await self.send_message(
                 msg.channel, "I don't have a plugin by that name."

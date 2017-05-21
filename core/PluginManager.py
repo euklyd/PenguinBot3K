@@ -152,7 +152,7 @@ class PluginManager():
                     # trigger=getattr(callback, "trigger"),
                     # access=getattr(callback, "access"),
                     # silent=getattr(callback, "silent"),
-                    # command_name=getattr(callback, "name"),
+                    # cmd_name=getattr(callback, "name"),
                     # doc_brief=getattr(callback, "doc_brief"),
                     # doc_detail=getattr(callback, "doc_detail")
                     callback.pattern,
@@ -160,7 +160,7 @@ class PluginManager():
                     trigger=callback.trigger,
                     access=callback.access,
                     silent=callback.silent,
-                    command_name=callback.name,
+                    cmd_name=callback.name,
                     doc_brief=callback.doc_brief,
                     doc_detail=callback.doc_detail
                 )
@@ -218,21 +218,21 @@ class PluginManager():
 
         # Unregister plugin commands and events
         for name, callback in inspect.getmembers(plugin, inspect.ismethod):
-            if( hasattr(callback, "is_command") ):
+            if (hasattr(callback, "is_command")):
                 commandName = clazz + "." + callback.__name__
                 self.core.command.unregister(commandName)
 
-            if( hasattr(callback, "is_subscriber") ):
+            if (hasattr(callback, "is_subscriber")):
                 self.core.event.unsubscribe(getattr(callback, "event"), callback)
 
-            if( hasattr(callback, "is_publisher") ):
+            if (hasattr(callback, "is_publisher")):
                 self.core.event.unregister(getattr(callback, "event"))
 
         # Remove from our hashtable
         self.plugins[plugin_name] = {"instance":None, "module":None, "status": "Disabled"}
         self.logger.info("Unloaded plugin \"" + plugin_name + "\"")
 
-    def reload(self, name):
+    async def reload(self, name):
         """
             Summary:
                 Wrapper for unload + load
@@ -247,10 +247,13 @@ class PluginManager():
         plugin = self.plugins[name]
 
         if not plugin:
+            self.logger.info("No plugin '{}' found".format(name))
             return
 
         elif(plugin['status'] == 'Disabled'):
-            self.load(name)
+            self.logger.info("Plugin '{}' found disabled; loading".format(name))
+            await self.load(name)
         else:
-            self.unload(name)
-            self.load(name)
+            self.logger.info("Plugin '{}' found enabled; reloading".format(name))
+            await self.unload(name)
+            await self.load(name)
