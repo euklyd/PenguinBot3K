@@ -46,6 +46,12 @@ class Manage(Plugin):
     async def ping(self, msg, arguments):
         await self.send_message(msg.channel, "Pong")
 
+    @command("^shutdown$", access=ACCESS['manage'], name='shutdown',
+             doc_brief="`shutdown`: Cleanly exits all running processes and "
+             "shuts down the bot.")
+    async def shutdown(self, msg, arguments):
+        await self.core.shutdown()
+
     @command("^(?:source|git|github)$", access=ACCESS['source'], name='source',
              doc_brief="`source`: link to my github repository.")
     async def source(self, msg, arguments):
