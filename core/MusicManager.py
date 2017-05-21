@@ -100,14 +100,13 @@ class YouTubeSong(Song):
             em.set_thumbnail(url=self.thumbnail)
         else:
             em.set_author(name=self.title, url=self.url)
-        em.add_field(name="Uploader", value=self.uploader, inline=True)
+        em.add_field(name="Uploader", value=self.uploader)
         em.add_field(
             name="Duration",
             value="[{min:0>2.0f}:{sec:0>2d}]".format(
                 min=int(self.duration / 60),
-                sec=int(self.duration % 60),
-            ),
-            inline=True)
+                sec=int(self.duration % 60))
+        )
         if (self.requestor.nick is None):
             em.set_footer(
                 text="(Requested by {})".format(self.requestor.name),
@@ -305,14 +304,13 @@ class LocalSong(Song):
             em.set_thumbnail(url=self.thumbnail)
         else:
             em.set_author(name=self.title)
-        em.add_field(name="Artist", value=self.artist, inline=True)
+        em.add_field(name="Artist", value=self.artist)
         em.add_field(
             name="Duration",
             value="[{min:0>2.0f}:{sec:0>2d}]".format(
                 min=int(self.duration / 60),
-                sec=int(self.duration % 60),
-            ),
-            inline=True)
+                sec=int(self.duration % 60))
+        )
         if (self.requestor.nick is None):
             em.set_footer(
                 text="(Requested by {})".format(self.requestor.name),

@@ -191,12 +191,12 @@ class Utility(Plugin):
             name="{}#{}".format(user.name, user.discriminator),
             icon_url=user.avatar_url
         )
-        em.add_field(name="Nickname", value=nick,    inline=True)
-        em.add_field(name="ID",       value=user.id, inline=True)
-        em.add_field(name="Color",    value=color,   inline=True)
-        em.add_field(name="Status",   value=status,  inline=True)
-        em.add_field(name="Top Role", value=role,    inline=True)
-        em.add_field(name="Game",     value=game,    inline=True)
+        em.add_field(name="Nickname", value=nick, inline=True)
+        em.add_field(name="ID",       value="`{}`".format(user.id))
+        em.add_field(name="Color",    value=color)  # inline is True by default
+        em.add_field(name="Status",   value=status)
+        em.add_field(name="Top Role", value=role)
+        em.add_field(name="Game",     value=game)
         em.set_thumbnail(url=user.avatar_url)
 
         await self.send_message(msg.channel, embed=em)
