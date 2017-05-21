@@ -38,6 +38,7 @@ from core.EmojiManager import EmojiManager
 
 from imp import load_module, find_module
 from sys import stdout, path, exit
+import asyncio
 import inspect
 import logging
 import logging.handlers
@@ -79,8 +80,6 @@ class PenguinBot(discord.Client):
         if (self.config.imgur_api['id'] is not None):
             self.imgur = Imgur(self)
 
-        # Setup connection
-        # self.connector = self.load_connector(self)
         self.last_update = time.time()
 
     def run(self, *args):
@@ -89,12 +88,21 @@ class PenguinBot(discord.Client):
                 token (str): Bot auth token.
         """
         self.logger.info("Starting event loop")
-        self.loop.run_until_complete(
-            self.start(self.config.connector_options['token'])
-        )
-        self.loop.close()
+        try:
+            self.loop.run_until_complete(
+                self.start(self.config.connector_options['token'])
+            )
+        except KeyboardInterrupt:
+            self.exit()
+        finally:
+            self.loop.close()
+            self.logger.info("self.loop closed")
 
     def exit(self):
+        self.loop.run_until_complete(self.shutdown())
+        self.logger.info("exit() complete")
+
+    async def shutdown(self):
         """
             Summary:
                 Does any nessessary clean up (like killing threads)
@@ -106,14 +114,15 @@ class PenguinBot(discord.Client):
             Returns:
                 None
         """
+        # for task in asyncio.Task.all_tasks():
+        #     self.logger.info(task)
         for plugin in config.plugins:
-            self.loop.run_until_complete(
-                self.plugin.unload(plugin)
-            )
-        # for plugin in config.plugins:
-        #     self.plugin.unload(plugin)
+            await self.plugin.unload(plugin)
+        await self.logout()
 
-        self.logout()
+        for task in asyncio.Task.all_tasks():
+            self.logger.info(task)
+        self.logger.info("shutdown() complete")
 
     async def on_ready(self):
         """
@@ -129,38 +138,24 @@ class PenguinBot(discord.Client):
         if (self.plugins_loaded is False):
             await self.load_plugins()
 
-        profile_args = {}
-        avatarfile = None
-        if (self.config.username != "" and self.config.username is not None):
-            profile_args['username'] = self.config.username
-
-        try:
-            if (self.config.avatar != "" and self.config.avatar is not None):
-                profile_args['avatar'] = open(self.config.avatar, 'rb').read()
-                avatarfile = self.config.avatar
-        except FileNotFoundError:
-            profile_args['avatar'] = open("conf/avatar.png", 'rb').read()
-            avatarfile = "conf/avatar.png"
-
-        await self.edit_profile(**profile_args)
-
-        if (avatarfile is not None):
-            profile_args['avatar'] = avatarfile
-        self.logger.info("Set profile to {}".format(profile_args))
-
-        presence_args = {}
-        if (self.config.game != ""):
-            presence_args['game'] = discord.Game(name=self.config.game)
-        else:
-            presence_args['game'] = None
-        if (self.config.status != ""):
-            presence_args['status'] = self.config.status
-        await self.change_presence(**presence_args)
-        if (presence_args['game'] is not None):
-            presence_args['game'] = presence_args['game'].name
-        else:
-            presence_args.pop('game')
-        self.logger.info("Set presence to {}".format(presence_args))
+    # async def cycle_games(self, games):
+    #     while (True):
+    #         for game in games:
+    #             self.presence_args = {
+    #                 'game': discord.Game(
+    #                     name=game,
+    #                     url=self.config.repo,
+    #                     type=1
+    #                 )
+    #             }
+    #             try:
+    #                 await self.change_presence(**self.presence_args)
+    #                 self.logger.info("changed game to '{}'".format(game))
+    #             except discord.errors.HTTPException as e:
+    #                 self.logger.warning("cycle_games: {}".format(e))
+    #                 await asyncio.sleep(5.0)
+    #             finally:
+    #                 await asyncio.sleep(10.0)
 
     async def on_message(self, msg):
         """
