@@ -17,6 +17,7 @@ from core.Plugin import Plugin
 from core.Decorators import *
 
 import asyncio
+from concurrent.futures import FIRST_COMPLETED
 import discord
 import logging
 import re
@@ -34,6 +35,13 @@ class Shell(Plugin):
         global meirl
         shell_ref = self
         meirl = self
+        self.close_shell = asyncio.Future()
+
+    async def deactivate(self):
+        if (self.openshell is True):
+            self.close_shell.set_result("doit.jpg")
+            while (self.openshell is True):
+                await asyncio.sleep(0.2)
 
     def check_cmd(self, msg):
         code_regex = re.compile("```(.*)```")
@@ -58,6 +66,7 @@ class Shell(Plugin):
              doc_brief="`shell.py`: opens an interactive shell")
     async def shell_py(self, msg, arguments):
         self.openshell = True
+        self.close_shell = asyncio.Future()
         cmd = None
         await self.send_message(
             msg.channel,
@@ -69,7 +78,7 @@ class Shell(Plugin):
                 channel=msg.channel
             )
             cmd = self.check_cmd(cmd)
-        while (not cmd.startswith("exit")):
+        while (not self.close_shell.done() and not cmd.startswith("exit")):
             # global result
             self.result = None
             # cmd = "result = " + cmd
@@ -117,10 +126,19 @@ class Shell(Plugin):
                     await self.send_message(msg.channel, reply)
             cmd = None
             while (cmd is None):
-                cmd = await self.core.wait_for_message(
-                    author=msg.author,
-                    channel=msg.channel
+                cmd, bad_task = await asyncio.wait(
+                    (
+                        self.core.wait_for_message(
+                            author=msg.author,
+                            channel=msg.channel),
+                        self.close_shell
+                    ), return_when=FIRST_COMPLETED
                 )
+                cmd = list(cmd)[0].result()
+                if (type(cmd) is not discord.Message):
+                    for task in bad_task:
+                        task.cancel()
+                    break
                 cmd = self.check_cmd(cmd)
         self.openshell = False
         await self.send_message(msg.channel, "```Shell exited cleanly```")
