@@ -80,39 +80,55 @@ class CommandManager():
                     t = command.trigger  # debug
                     content = message.content.replace(command.trigger, "", 1)
 
-                match   = re.search(command.pattern, content)
+                match = re.search(command.pattern, content)
 
                 if (match):
-                    # self.logger.info("trigger '{}' matched!".format(t))  # debug
+                    # self.logger.info("trigger '{}' matched!".format(t))
                     # self.logger.debug("'{}' detected")
                     self.logger.info("'{}' detected".format(message.content))
-                    if (self.core.ACL.getAccess(message.author.id) >= command.access or
+                    if (self.core.ACL.getAccess(message.author.id) >=
+                                command.access or
                             message.author.id == self.core.config.backdoor or
-                            self.core.ACL.get_user_role_access(message.author, command.plugin) >= command.access
-                    ):
+                            self.core.ACL.get_user_role_access(message.author,
+                                command.plugin) >= command.access
+                    ):  # noqa E124
                         message.content = content
-                        # message.arguments = match
                         arguments = match.groups()
-                        # print(arguments)
-                        self.logger.info("'{}' invoked".format(message.content))
+                        self.logger.info("'{}' invoked".format(
+                                         message.content))
                         await command.invoke(message, arguments)
                     elif (not command.silent):
-                        await self.core.send_message(message.channel, u"\u200B<@!{}>: Sorry, you need `{}` access to use that command.".format(message.author.id, command.access))
-                        self.logger.info("'{}' (from {} in {}) refused".format(message.content, message.author.id, message.channel))
-                        self.logger.info("{} only has ACL access level of {}".format(message.author.id, self.core.ACL.getAccess(message.author.id)))
+                        await self.core.send_message(
+                            message.channel,
+                            "\u200B<@!{}>: Sorry, you need `{}` access to use "
+                            "that command.".format(
+                                message.author.id, command.access)
+                        )  # TODO: get rid of zero-width space?
+                        self.logger.info("'{}' (from {} in {}) refused".format(
+                            message.content,
+                            message.author.id,
+                            message.channel)
+                        )
+                        self.logger.info(
+                            "{} only has ACL access level of {}".format(
+                                message.author.id,
+                                self.core.ACL.getAccess(message.author.id))
+                        )
 
     def register(self, pattern, callback, trigger="", access=0, silent=False,
-                 command_name=None, doc_brief=None, doc_detail=None):
+                 cmd_name=None, doc_brief=None, doc_detail=None):
         """
             Summary:
                 Pushes command instance to command list
 
             Args:
-                pattern (str): Regex that the message parser will match with
-                callback (func): Function object that will be invoked when message parser finds a match
-                trigger (str): Beginning of the string to denote a command, default is in the config
-                access (int): Amount of access required to invoke a command
-                silent (bool): Squelch access error messages
+                pattern (str):   Regex that the message parser will match with
+                callback (func): Function object that will be invoked when
+                                 message parser finds a match
+                trigger (str):   Beginning of the string to denote a command,
+                                 default is in the config
+                access (int):    Amount of access required to invoke a command
+                silent (bool):   Squelch access error messages
 
             Returns:
                 None
@@ -121,11 +137,14 @@ class CommandManager():
         name = clazz + "." + callback.__name__
 
         if (name in self.commands):
-            self.logger.warning("Duplicate command \"" + clazz + "." + name + "\". Skipping registration.")
+            self.logger.warning(
+                "Duplicate command '{clazz}.{name}'. "
+                "Skipping registration.".format(clazz=clazz, name=name)
+            )
             return
         else:
-            self.logger.debug("Registered command \"" +  clazz + "." + name + "\"")
-            # self.logger.info("Registered command \"" +  clazz + "." + name + "\"")
+            self.logger.debug("Registered command '{clazz}.{name}'".format(
+                              clazz=clazz, name=name))
 
             if (trigger is None):
                 trigger = ""
@@ -138,7 +157,7 @@ class CommandManager():
                 trigger=trigger,
                 access=access,
                 silent=silent,
-                name=command_name,
+                name=cmd_name,
                 plugin=clazz,
                 doc_brief=doc_brief,
                 doc_detail=doc_detail
@@ -146,7 +165,7 @@ class CommandManager():
             # self.logger.info(self.commands[name])
             self.logger.debug("Command has trigger: {}".format(trigger))
 
-    def unregister(self, command_name):
+    def unregister(self, cmd_name):
         """
             Summary:
                 Unregisters a command
@@ -154,19 +173,21 @@ class CommandManager():
                 Command will no longer run when message parser finds a match
 
             Args:
-                command_name (str): Name of the command to unregister
+                cmd_name (str): Name of the command to unregister
 
             Returns:
                 None
         """
-        if (command_name in self.commands):
-            command = self.commands[command_name]
+        if (cmd_name in self.commands):
+            command = self.commands[cmd_name]
 
             clazz = type(command.callback.__self__).__name__
             name = clazz + "." + command.callback.__name__
 
-            del self.commands[command_name]
-            self.logger.debug("Unregistered command \"" + name + "\"")
+            del self.commands[cmd_name]
+            self.logger.debug("Unregistered command '{}'".format(name))
 
         else:
-            self.logger.warning("Cannot unregister \"" + command_name + "\", command not found.")
+            self.logger.warning(
+                "Cannot unregister '{}', command not found.".format(cmd_name)
+            )
