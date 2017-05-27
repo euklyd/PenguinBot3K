@@ -56,6 +56,35 @@ class EmojiManager():
         self.logger.info("no emoji found")
         return None
 
+    def any_emoji(self, emoji_names):
+        """
+        Summary:
+            Finds a custom emoji matching the first of a list of possible emoji
+            names, and returns a string formatted with the snowflake for that
+            server.
+
+        Args:
+            emoji_names (list(str)): An ordered list of emoji names to
+                                     check for.
+
+        Returns:
+            (discord.Emoji): If the emoji isn't found, returns None.
+        """
+        for emoji_name in emoji_names:
+            for server in self.core.servers:
+                self.logger.info("searching for :{}: in server {}".format(
+                    emoji_name, server.name
+                ))
+                for emoji in server.emojis:
+                    self.logger.debug("{} ?= {}".format(
+                        repr(emoji.name), repr(emoji_name)
+                    ))
+                    if (emoji.name.lower() == emoji_name.lower()):
+                        self.logger.debug(str(emoji))
+                        return emoji
+        self.logger.info("no emoji found")
+        return None
+
     def emoji_str(self, server, emoji_names):
         """
         Summary:

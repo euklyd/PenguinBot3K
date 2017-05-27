@@ -43,3 +43,14 @@ class React(Plugin):
         dong = self.core.emoji.emoji(msg.server, ["dong"])
         await self.add_reaction(msg, expand)
         await self.add_reaction(msg, dong)
+
+    @filter("^<:(?:fe1_)?(cain|abel):[0-9]{16,20}>$", name='christmas cavaliers',
+            server="190782508105728000")
+    async def fe1_cavs(self, msg, arguments):
+        # TODO: replace with code for the emoji itself, maybe?
+        # abel = "<:fe1_abel:278834746652360704>"
+        if (arguments[0] == 'cain'):
+            cav = self.core.emoji.any_emoji(["fe1_abel", "abel"])
+        else:
+            cav = self.core.emoji.any_emoji(["fe1_cain", "cain"])
+        await self.add_reaction(msg, cav)
