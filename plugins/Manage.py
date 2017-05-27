@@ -50,6 +50,10 @@ class Manage(Plugin):
              doc_brief="`shutdown`: Cleanly exits all running processes and "
              "shuts down the bot.")
     async def shutdown(self, msg, arguments):
+        penguin = self.core.emoji.emoji_str(msg.server, ["skype_penguin"])
+        if (penguin is None):
+            penguin = ":penguin:"
+        await self.send_message(msg.channel, penguin)
         await self.core.shutdown()
 
     @command("^(?:source|git|github)$", access=ACCESS['source'], name='source',
