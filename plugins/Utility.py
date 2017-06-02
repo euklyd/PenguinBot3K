@@ -210,3 +210,57 @@ class Utility(Plugin):
         em.set_thumbnail(url=user.avatar_url)
 
         await self.send_message(msg.channel, embed=em)
+
+    @command("^server(:? info)?$", access=100, name='info',
+             doc_brief="`sever info`: Gets assorted info about the "
+             "current server.")
+    async def get_server_info(self, msg, arguments):
+        user = msg.server.get_member(self.core.user.id)
+        server = msg.server
+
+        owner = server.owner
+
+        region_dict = {
+            discord.ServerRegion.us_west: "🇺🇸",
+            discord.ServerRegion.us_east: "🇺🇸",
+            discord.ServerRegion.us_central: "🇺🇸",
+            discord.ServerRegion.eu_west: "🇪🇺",
+            discord.ServerRegion.eu_central: "🇪🇺",
+            discord.ServerRegion.singapore: "🇸🇬",
+            discord.ServerRegion.london: "🇬🇧",
+            discord.ServerRegion.sydney: "🇦🇺",
+            discord.ServerRegion.amsterdam: "🇳🇱",
+            discord.ServerRegion.frankfurt: "🇩🇪",
+            discord.ServerRegion.brazil: "🇧🇷",
+            discord.ServerRegion.vip_us_east: "🇺🇸⭐",
+            discord.ServerRegion.vip_us_west: "🇺🇸⭐",
+            discord.ServerRegion.vip_amsterdam: "🇳🇱⭐",
+        }
+
+        em = discord.Embed(color=user.color)
+        em.set_author(
+            name="{} {}".format(server.name, region_dict[server.region]),
+            icon_url=server.icon_url
+        )
+        em.set_thumbnail(url=server.icon_url)
+
+        em.add_field(name="Region",    value=str(server.region), inline=True)
+        em.add_field(name="ID",        value="`{}`".format(server.id))
+        em.add_field(name="# members", value=server.member_count)
+        em.add_field(name="# roles",   value=str(len(server.roles)))
+        em.add_field(name="Top Role",  value="<@&{}>".format(
+            server.role_hierarchy[0].id)
+        )
+        em.add_field(name="Owner",     value=server.owner.mention)
+        em.add_field(name="Default channel", value="<#{}>".format(
+            server.default_channel.id)
+        )
+        # em.add_field(name="Default voice",     value=???)
+        em.add_field(name="Verification",    value=server.verification_level)
+
+        em.set_footer(
+            text="Created on {}".format(server.created_at),
+            icon_url=user.avatar_url
+        )
+
+        await self.send_message(msg.channel, embed=em)
