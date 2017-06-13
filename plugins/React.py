@@ -61,10 +61,10 @@ class React(Plugin):
         ])
         await self.add_reaction(msg, nipples)
 
-    @filter("^[Ll][Oo][Ll]$", name='lol(i)', server="190782508105728000")
-    async def lol_i(self, msg, arguments):
-        if (msg.author.id == "174228029403430913"):
-            await self.add_reaction(msg, "🇱")
-            await self.add_reaction(msg, "🇴")
-            await self.add_reaction(msg, "🇮")
-            await self.add_reaction(msg, "ℹ")
+    # @filter("\b[Ll][Oo][Ll]\b", name='lol(i)', server="190782508105728000")
+    # async def lol_i(self, msg, arguments):
+    #     if (msg.author.id == "174228029403430913"):
+    #         await self.add_reaction(msg, "🇱")
+    #         await self.add_reaction(msg, "🇴")
+    #         await self.add_reaction(msg, "🇮")
+    #         await self.add_reaction(msg, "ℹ")
