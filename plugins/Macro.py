@@ -92,7 +92,7 @@ class Macro(Plugin):
         await self.send_whisper(msg.author, reply)
 
     @command("^cloud$", access=100, name='cloud',
-             doc_brief="`cloud`: Prints out the dankest of ☁ memes")
+             doc_brief="`cloud`: The dankest of ☁ memes")
     async def cloud(self, msg, arguments):
         cloudcopypasta = (
             "║\\\n"
@@ -114,7 +114,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, cloudcopypasta)
 
     @command("^(?:waddle|ddd|THE KING)$", access=100, name='waddle',
-             doc_brief="`waddle`: Prints out the dankest of 🐧 Penguin 🐧 memes")
+             doc_brief="`waddle`: The dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
         gordo = self.core.emoji.emoji_str(msg.server, ['gordo'])
         dddpasta = ("🐧 **King Dedede** 🐧 is definitely **top tier**. "
@@ -135,7 +135,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, dddpasta)
 
     @command("^(?:plumber|cancer|<:mario:[0-9]*>|mario)$", access=100,
-             name='plumber', doc_brief="`plumber`: Prints out the dankest of "
+             name='plumber', doc_brief="`plumber`: The dankest of "
              "🚽 Plumber 🚽 memes")
     async def plumber(self, msg, arguments):
         mario = self.core.emoji.emoji_str(msg.server, ['mario'])
@@ -160,7 +160,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, mariopasta)
 
     @command("^(?:md|MD|doc|doctor|💊)$", access=100, name='doctor',
-             doc_brief="`doctor`: Prints out the dankest of 💊 Doctor 💊 memes")
+             doc_brief="`doctor`: The dankest of 💊 Doctor 💊 memes")
     async def doctor(self, msg, arguments):
         mario = self.core.emoji.emoji_str(msg.server, ['mario'])
         docpasta = ("💊Dr Mario💊 is definitely top tier. "
@@ -181,7 +181,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, docpasta)
 
     @command("^(?:birb|falco)$", access=100, name='birb',
-             doc_brief="`birb`: Prints out the dankest of birb memes")
+             doc_brief="`birb`: The dankest of birb memes")
     async def birb(self, msg, arguments):
         hoohah = self.core.emoji.emoji_str(
             msg.server, ['hoo_hah', 'HooHah', 'hoohah']
@@ -222,7 +222,8 @@ class Macro(Plugin):
         await self.send_message(msg.channel, embed=em)
 
     @command("^(?:thinking|🤔)$", access=-1, name='thinking',
-             doc_brief="`thinking`: Embeds the `:thinking:` emoji's ultimate form")
+             doc_brief="`thinking`: Embeds the `:thinking:` emoji's ultimate "
+             "form")
     async def thinking(self, msg, arguments):
         thinking_url = "http://i.imgur.com/oHPYovk.gif"
         user = msg.server.get_member(self.core.user.id)
@@ -251,10 +252,11 @@ class Macro(Plugin):
         await self.send_message(msg.channel, random.choice(ayy))
 
     @command("^( )?(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
-             doc_brief="`ph1r3`: Prints out the dankest of 🔥 ph1r3 🔥 memes",
+             doc_brief="`ph1r3`: The dankest of 🔥 ph1r3 🔥 memes",
              doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
     async def ph1r3(self, msg, arguments):
-        marf = self.core.emoji.emoji_str(msg.server, ['ppmd_marth', 'MarthSip'])
+        marf = self.core.emoji.emoji_str(msg.server,
+                                         ['ppmd_marth', 'MarthSip'])
         roypasta = [
             "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
             "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
@@ -310,9 +312,9 @@ class Macro(Plugin):
     #         "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
     #     await self.send_message(msg.channel, roypasta)
 
-    @command("^ (?:[Zz]ard|[Cc]harizard|[Ll]izardon|🔥[🐲🐉])$", access=99,
-            name='charizard',
-            doc_detail="`charizard`: Prints out the dankest of 🔥🐲 memes.")
+    @command("^(?:[Zz]ard|[Cc]harizard|[Ll]izardon|🔥[🐲🐉])$", access=99,
+             name='charizard',
+             doc_detail="`charizard`: The dankest of 🔥🐲 memes.")
     async def charizard(self, msg, arguments):
         zardpasta = [
             ":fire::dragon_face: **Charizard** (リザードン, **Lizardon** :lizard:) is "
@@ -357,6 +359,75 @@ class Macro(Plugin):
             "they still fail to recognize the power of the ultimate badass "
             "of Pokémon, but hey, it's a start."
         ]
+
+    @command("^(?:thwomp|[Aa]rdan|[Dd]oga+)$", access=99, name='thwomp',
+             doc_detail="`thwomp`: The dankest of "
+             "<:thwomp:249488838689423360> memes.")
+    async def thwomp(self, msg, arguments):
+        thwomp = self.core.emoji.any_emoji(['thwomp'])
+        return_of_ganon = self.core.emoji.any_emoji(['return_of_ganon', 'ganon'])
+        ppmd_kreygasm = self.core.emoji.any_emoji(['ppmd_kreygasm', 'ppmdKreygasm'])
+        expand = self.core.emoji.any_emoji(['expand_dong', 'expand'])
+        dong = self.core.emoji.any_emoji(['dong'])
+        cunedd = self.core.emoji.any_emoji(['cunedd'])
+        ok_marth = self.core.emoji.any_emoji(['ok_marth'])
+        blobthink = self.core.emoji.any_emoji(['blobthinking', 'blobthink'])
+        cain = self.core.emoji.any_emoji(['cain', 'fe1_cain', 'abel', 'fe1_abel'])
+        extra_thicc = self.core.emoji.any_emoji(['EXTRA_THICC'])
+        dogaaaa = self.core.emoji.any_emoji(['dogaaaa', 'fe1_dogaaaa', 'doga', 'fe1_doga'])
+        shine = self.core.emoji.any_emoji(['shine'])
+        sanic = self.core.emoji.any_emoji(['sanic'])
+        ardan = self.core.emoji.any_emoji(['ardan', 'fe4_ardan'])
+        bitf_ddd = self.core.emoji.any_emoji(['bitf_ddd'])
+        leff5_0 = self.core.emoji.any_emoji(['5_0'])
+        arvis = self.core.emoji.any_emoji(['grillmaster', 'fe4_arvis', 'arvis'])
+        savage_blow = self.core.emoji.any_emoji(['savage_blow'])
+        thwomppasta = (
+            "Ask ❓ yourself, are you man 💪 enough, thwomp {thwomp} enough, "
+            "insane {ganon} enough to play this game with two of the greatest "
+            "{kreygasm} units in all of Fire Emblem?  If you answered yes, "
+            "you're a big {expand}, fat {dong} liar {cunedd} !\n"
+            "But that's okay {ok_marth}, because Intelligent {think} Systems "
+            "is bringing back generals into your home 🏚 for a special Dynasty"
+            "Warriors clone {cain} !  First, it's survival of the fittest "
+            "{thicc} in our selection process.\n"
+            "Be there as Doga {doga} - DOGAAAA {doga} - unleashes his fury 💥 "
+            "on the rest of the cast 🏥. Doga has gone undefeated in 500 "
+            "straight matches in the animal shelter 😿. But if their "
+            "restraining order 📋 doesn't do it for you, then the power 💪 of "
+            "pursuit {shine} will!\n"
+            "Taste the adrenaline {sanic} as the cast faces off against our "
+            "Hero Sword general, the legendary Ardan {ardan} ! Ardan {ardan}, "
+            "Ardaaaan {ardan}. No living creature {ddd} is a match for this "
+            "machine {leff5_0}. Watch six tons of general hunt for his prey "
+            "<:grillmaster:321854179586998272>.  There's no consolation "
+            "prize 🥈 , cause this bad boy's programmed to show no mercy "
+            "{savage_blow}.\n"
+            "So, what are you waiting for ❓ ❓ ❓ ?  Preorder now to bring "
+            "Doga {doga} and Ardan {ardan} into your living room :🏚 , "
+            "but put away the fine china :🍽 ! "
+            "You can only find these generals in Fire Emblem Warriors, "
+            "so call your local Amazon 🌴 now!".format(
+                thwomp=thwomp,
+                ganon=return_of_ganon,
+                kreygasm=ppmd_kreygasm,
+                expand=expand,
+                dong=dong,
+                cunedd=cunedd,
+                ok_marth=ok_marth,
+                think=blobthink,
+                cain=cain,
+                thicc=extra_thicc,
+                doga=dogaaaa,
+                shine=shine,
+                sanic=sanic,
+                ardan=ardan,
+                ddd=bitf_ddd,
+                leff5_0=leff5_0,
+                savage_blow=savage_blow
+            )
+        )
+        await self.send_message(msg.channel, thwomppasta)
 
     @command("^(?:secret|daddy'?s|cummies) forest(?: invite)?$", access=-1,
              name='secret forest',
@@ -571,7 +642,7 @@ class Macro(Plugin):
             await self.send_message(msg.channel, ganon)
 
     @command("^pasta ?(.*)$", access=-1, name='pasta',
-             doc_brief="`pasta <pasta name>`: Prints out the associatedd "
+             doc_brief="`pasta <pasta name>`: The associatedd "
              "pasta for `<pasta name>`. Use without arguments to list "
              "available pastas.")
     async def pasta(self, msg, arguments):
