@@ -245,3 +245,8 @@ class Plugin(object):
                 that it be a discord.Member
         """
         await self.core.http.ban(user.id, server.id, delete_message_days)
+
+    async def change_game(self, game):
+        presence_args = {'game': discord.Game(name=game)}
+        await self.core.change_presence(**presence_args)
+        self.logger.info("changed game to '{}'".format(game))
