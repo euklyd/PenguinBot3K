@@ -52,8 +52,8 @@ class Voice(Plugin):
         await self.music_manager.close()
 
     @command("^vc joinvc <#([0-9]+)>$", access=ACCESS['conductor'],
-             name='joinvc', doc_brief=("`vc joinvc <#channel_id>`: "
-             "Joins the voice channel whose ID is `channel_id`."))
+             name='joinvc', doc_brief="`vc joinvc <#channel_id>`: "
+             "Joins the voice channel whose ID is `channel_id`.")
     async def joinvc(self, msg, arguments):
         vc = self.core.get_channel(arguments[0])
         try:
