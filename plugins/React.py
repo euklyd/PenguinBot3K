@@ -61,10 +61,13 @@ class React(Plugin):
         ])
         await self.add_reaction(msg, nipples)
 
-    # @filter("\b[Ll][Oo][Ll]\b", name='lol(i)', server="190782508105728000")
-    # async def lol_i(self, msg, arguments):
-    #     if (msg.author.id == "174228029403430913"):
-    #         await self.add_reaction(msg, "🇱")
-    #         await self.add_reaction(msg, "🇴")
-    #         await self.add_reaction(msg, "🇮")
-    #         await self.add_reaction(msg, "ℹ")
+    @filter("^.*$", name='catface', server="320996033268154378")
+    async def catface(self, msg, arguments):
+        if (msg.channel.id == "332721908019625989" and msg.content != ":3"):
+            await self.delete_message(msg)
+            tsktsk = await self.send_message(
+                msg.channel,
+                "*We have rules here, heretic :3*"
+            )
+            await asyncio.sleep(5)
+            await self.delete_message(tsktsk)
