@@ -312,6 +312,7 @@ class Macro(Plugin):
     #         "**🔥 ROY'S 🔥 ACTUAL 🔥 SHIT 🔥**".format(marth=marf))
     #     await self.send_message(msg.channel, roypasta)
 
+    # TODO: finish
     @command("^(?:[Zz]ard|[Cc]harizard|[Ll]izardon|🔥[🐲🐉])$", access=99,
              name='charizard',
              doc_detail="`charizard`: The dankest of 🔥🐲 memes.")
@@ -365,22 +366,27 @@ class Macro(Plugin):
              "<:thwomp:249488838689423360> memes.")
     async def thwomp(self, msg, arguments):
         thwomp = self.core.emoji.any_emoji(['thwomp'])
-        return_of_ganon = self.core.emoji.any_emoji(['return_of_ganon', 'ganon'])
-        ppmd_kreygasm = self.core.emoji.any_emoji(['ppmd_kreygasm', 'ppmdKreygasm'])
+        return_of_ganon = self.core.emoji.any_emoji(
+            ['return_of_ganon', 'ganon'])
+        ppmd_kreygasm = self.core.emoji.any_emoji(
+            ['ppmd_kreygasm', 'ppmdKreygasm'])
         expand = self.core.emoji.any_emoji(['expand_dong', 'expand'])
         dong = self.core.emoji.any_emoji(['dong'])
         cunedd = self.core.emoji.any_emoji(['cunedd'])
         ok_marth = self.core.emoji.any_emoji(['ok_marth'])
         blobthink = self.core.emoji.any_emoji(['blobthinking', 'blobthink'])
-        cain = self.core.emoji.any_emoji(['cain', 'fe1_cain', 'abel', 'fe1_abel'])
+        cain = self.core.emoji.any_emoji(
+            ['cain', 'fe1_cain', 'abel', 'fe1_abel'])
         extra_thicc = self.core.emoji.any_emoji(['EXTRA_THICC'])
-        dogaaaa = self.core.emoji.any_emoji(['dogaaaa', 'fe1_dogaaaa', 'doga', 'fe1_doga'])
+        dogaaaa = self.core.emoji.any_emoji(
+            ['dogaaaa', 'fe1_dogaaaa', 'doga', 'fe1_doga'])
         shine = self.core.emoji.any_emoji(['shine'])
         sanic = self.core.emoji.any_emoji(['sanic'])
         ardan = self.core.emoji.any_emoji(['ardan', 'fe4_ardan'])
         bitf_ddd = self.core.emoji.any_emoji(['bitf_ddd'])
         leff5_0 = self.core.emoji.any_emoji(['5_0'])
-        arvis = self.core.emoji.any_emoji(['grillmaster', 'fe4_arvis', 'arvis'])
+        arvis = self.core.emoji.any_emoji(
+            ['grillmaster', 'fe4_arvis', 'arvis'])
         savage_blow = self.core.emoji.any_emoji(['savage_blow'])
         thwomppasta = (
             "Ask ❓ yourself, are you man 💪 enough, thwomp {thwomp} enough, "
@@ -703,30 +709,35 @@ class Macro(Plugin):
 
     @command("^YEAH[_ ]WEED", access=100)
     async def yeah_weed(self, msg, arguments):
-        weed = self.emoji.emoji_str(['YEAH_WEED', 'yeahweed'])
+        weed = str(self.core.emoji.any_emoji(['YEAH_WEED', 'yeahweed']))
+        blank = str(self.core.emoji.any_emoji(
+            ['blankspace', 'blank_space', 'blank']))
         w_char = """
-{weed}                                       {weed}
-{weed}             {weed}             {weed}
-{weed}             {weed}             {weed}
-{weed}             {weed}             {weed}
+{weed}{blank}{blank}{blank}{weed}
+{weed}{blank}{weed}{blank}{weed}
+{weed}{blank}{weed}{blank}{weed}
+{weed}{blank}{weed}{blank}{weed}
 {weed}{weed}{weed}{weed}{weed}
-""".format(weed=weed)
+""".format(weed=weed, blank=blank)
         e_char = """
 {weed}{weed}{weed}{weed}{weed}
 {weed}
 {weed}{weed}{weed}{weed}
 {weed}
 {weed}{weed}{weed}{weed}{weed}
-""".format(weed=weed)
+""".format(weed=weed, blank=blank)
         d_char = """
 {weed}{weed}{weed}{weed}
-{weed}                                       {weed}
-{weed}                                       {weed}
-{weed}                                       {weed}
+{weed}{blank}{blank}{blank}{weed}
+{weed}{blank}{blank}{blank}{weed}
+{weed}{blank}{blank}{blank}{weed}
 {weed}{weed}{weed}{weed}
-""".format(weed=weed)
+""".format(weed=weed, blank=blank)
+        # superweed = "{w}\n{e}\n{e}\n{d}".format(w=w_char, e=e_char, d=d_char)
+        # self.logger.info(superweed)
         await self.delete_message(msg)
         await self.send_message(msg.channel, w_char)
         await self.send_message(msg.channel, e_char)
         await self.send_message(msg.channel, e_char)
         await self.send_message(msg.channel, d_char)
+        # await self.send_message(msg.channel, superweed) # too many characters
