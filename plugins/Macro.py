@@ -91,6 +91,16 @@ class Macro(Plugin):
         await self.delete_message(msg)
         await self.send_whisper(msg.author, reply)
 
+    @command("^BScop (.*)$", name='bullshit police')
+    async def bullshit_police(self, msg, arguments):
+        cops = self.core.emoji.any_emoji(['blobpatrol'])
+        reply = (
+            "{cops} LOOK {cops} OUT {cops} {name} {cops} IT'S {cops} THE "
+            "{cops} BULLSHIT {cops} POLICE {cops}"
+        ).format(cops=cops, name=arguments[0])
+        await self.delete_message(msg)
+        await self.send_message(msg.channel, reply)
+
     @command("^cloud$", access=100, name='cloud',
              doc_brief="`cloud`: The dankest of ☁ memes")
     async def cloud(self, msg, arguments):
