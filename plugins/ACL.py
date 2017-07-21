@@ -275,7 +275,7 @@ class ACL(Plugin):
             self.logger.warning(
                 "something went wrong with command '{}'".format(msg.content))
             return
-        self.logger.info("access_map)
+        self.logger.info(access_map)
         if access_map is not None:
             reply = access_map
         else:
