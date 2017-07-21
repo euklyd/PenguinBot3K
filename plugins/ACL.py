@@ -256,7 +256,7 @@ class ACL(Plugin):
     async def access(self, msg, arguments):
         if (arguments[0] is not None):
             # it's a user
-            self.whois(msg, [arguments[0]])
+            await self.whois(msg, [arguments[0]])
             return
         elif (arguments[1] is not None):
             # it's a role mention
