@@ -264,18 +264,18 @@ class ACL(Plugin):
             if (len(msg.role_mentions) > 0):
                 role = msg.role_mentions[0]
             else:
-                role = self.core.get_role_info(msg.raw_role_mentions[0], msg.server)
+                role = self.get_role_info(msg.raw_role_mentions[0], msg.server)
             access_map = self.core.ACL.get_role_accesses(role)
         elif (arguments[2] is not None):
             # it's a role id
-            role = self.core.get_role_info(arguments[2], msg.server)
+            role = self.get_role_info(arguments[2], msg.server)
             access_map = self.core.ACL.get_role_accesses(role)
         else:
             # it went wrong
             self.logger.warning(
                 "something went wrong with command '{}'".format(msg.content))
             return
-        self.logger.info(access_map)
+        self.logger.info("access_map)
         if access_map is not None:
             reply = access_map
         else:
