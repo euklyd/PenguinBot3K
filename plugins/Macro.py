@@ -101,7 +101,7 @@ class Macro(Plugin):
         await self.delete_message(msg)
         await self.send_message(msg.channel, reply)
 
-    @command("^cloud$", access=100, name='cloud',
+    @command("^cloud$", access=50, name='cloud',
              doc_brief="`cloud`: The dankest of ☁ memes")
     async def cloud(self, msg, arguments):
         cloudcopypasta = (
@@ -123,7 +123,7 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, cloudcopypasta)
 
-    @command("^(?:waddle|ddd|THE KING)$", access=100, name='waddle',
+    @command("^(?:waddle|ddd|THE KING)$", access=50, name='waddle',
              doc_brief="`waddle`: The dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
         gordo = self.core.emoji.emoji_str(msg.server, ['gordo'])
@@ -261,7 +261,7 @@ class Macro(Plugin):
                "http://i.imgur.com/ahTXT2T.gif"]
         await self.send_message(msg.channel, random.choice(ayy))
 
-    @command("^( )?(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=99, name='ph1r3',
+    @command("^( )?(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=50, name='ph1r3',
              doc_brief="`ph1r3`: The dankest of 🔥 ph1r3 🔥 memes",
              doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
     async def ph1r3(self, msg, arguments):
@@ -630,7 +630,7 @@ class Macro(Plugin):
             )
 
     @command("^(?:ganon|THE PUNCH) ?(.+)?$",
-             access=100, name='the punch',
+             access=50, name='the punch',
              doc_brief="`THE PUNCH`: I was just wondering why Ganondorf is "
              "in the very middle of the tiers.",
              doc_detail="I was just wondering why Ganondorf is in the very "
