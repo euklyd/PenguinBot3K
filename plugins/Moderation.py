@@ -38,24 +38,24 @@ class Moderation(Plugin):
         pass
 
     @command("^repeat (.*)", access=ACCESS['anonymous'], name='repeat',
-             doc_brief=("`repeat <message>`: Sends `<message>` to the channel "
-             "anonymously."))
+             doc_brief="`repeat <message>`: Sends `<message>` to the channel "
+             "anonymously.")
     async def repeat(self, msg, arguments):
         await self.send_message(msg.channel, arguments[0])
         await self.delete_message(msg)
 
     @command("^announce <#([0-9]*)> (.*)", access=ACCESS['anonymous'],
              name='announce',
-             doc_brief=("`announce #<channel> <message>`: Sends `<message>` "
-             "to `<channel>` anonymously."))
+             doc_brief="`announce #<channel> <message>`: Sends `<message>` "
+             "to `<channel>` anonymously.")
     async def announce(self, msg, arguments):
         channel = self.core.get_channel(arguments[0])
         await self.send_message(channel, arguments[1])
 
     @command("^announce -d <#([0-9]*)> (.*)", access=ACCESS['anonymous'],
-             name='announce', doc_brief=("`announce -d #<channel> <message>`: "
+             name='announce', doc_brief="`announce -d #<channel> <message>`: "
              "Sends `<message>` to `<channel>` anonymously, and "
-             "deletes command message."))
+             "deletes command message.")
     async def announce_delete(self, msg, arguments):
         channel = self.core.get_channel(arguments[0])
         await self.send_message(channel, arguments[1])
@@ -195,9 +195,9 @@ class Moderation(Plugin):
             await self.ban_user(user, msg.server, delete_message_days=0)
 
     @command("^nuke <@!?([0-9]+)> ([1-7])$", access=ACCESS["ban"], name='nuke',
-             doc_brief=("`nuke @<user> <days>`: bans `<user>` from the current "
+             doc_brief="`nuke @<user> <days>`: bans `<user>` from the current "
              "server and deletes their messages from the past <`days`> "
-             "days."))
+             "days.")
     async def nuke(self, msg, arguments):
         user = self.core.get_member(arguments[0])
         user.server = msg.server
@@ -217,8 +217,8 @@ class Moderation(Plugin):
             await self.send_message(msg.channel, "Geeeeeet **dunked on**, <@!{}>!".format(user))
 
     @command("^push ([0-9]+)$", access=ACCESS['pushPop'], name='push',
-             doc_brief=("`push <number>`: saves the last `<number>` messages "
-             "from the current channel to the stack."))
+             doc_brief="`push <number>`: saves the last `<number>` messages "
+             "from the current channel to the stack.")
     async def copy_messages(self, msg, arguments):
         if (self.saved_messages.get(msg.author.id)) is None:
             self.saved_messages[msg.author.id] = []
@@ -237,13 +237,13 @@ class Moderation(Plugin):
         )
 
     @command("^push -d ([0-9]+)$", access=ACCESS['pushPop'], name='push',
-             doc_brief=("`push -d <number>`: saves the last `<number>` "
+             doc_brief="`push -d <number>`: saves the last `<number>` "
              "messages from the current channel to the stack, and deletes "
-             "them from the channel."))
+             "them from the channel.")
     async def push_messages(self, msg, arguments):
         if (self.saved_messages.get(msg.author.id)) is None:
             self.saved_messages[msg.author.id] = []
-        n_msgs = arguments[0]
+        n_msgs = int(arguments[0])
         messages = await self.core.purge_from(
             msg.channel,
             limit=n_msgs+1
@@ -282,8 +282,8 @@ class Moderation(Plugin):
         return reply_line
 
     @command("^pop <#([0-9]*)>$", access=ACCESS['pushPop'], name='pop',
-             doc_brief=("`pop #<channel>`: posts all the messages on the stack to "
-             "`<channel>`, and clears the stack."))
+             doc_brief="`pop #<channel>`: posts all the messages on the stack to "
+             "`<channel>`, and clears the stack.")
     async def pop_messages(self, msg, arguments):
         # channel = await self.core.get_channel(arguments[0])
         channel = self.core.get_channel(arguments[0])
@@ -313,8 +313,8 @@ class Moderation(Plugin):
             self.saved_messages[msg.author.id] = []
 
     @command("^pop here$", access=ACCESS['pushPop'], name='pop',
-             doc_brief=("`pop here`: posts all the messages on the stack to the "
-             "current channel, and clears the stack."))
+             doc_brief="`pop here`: posts all the messages on the stack to the "
+             "current channel, and clears the stack.")
     async def pop_here(self, msg, arguments):
         if (len(self.saved_messages[msg.author.id]) == 0):
             await self.send_message(
@@ -348,8 +348,8 @@ class Moderation(Plugin):
         self.saved_messages[msg.author.id] = []
 
     @command("^pop all stacks$", access=ACCESS['ban'], name='pop',
-             doc_brief=("`pop all stacks`: clears all the messages on the stack "
-             "for **all** users with stacks."))
+             doc_brief="`pop all stacks`: clears all the messages on the stack "
+             "for **all** users with stacks.")
     async def pop_all(self, msg, arguments):
         self.saved_messages = {}
 
