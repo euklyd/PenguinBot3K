@@ -72,7 +72,7 @@ class ACL():
             Returns:
                 None
         """
-        user, created = self.database.ACLUser.get_or_create(id=usr)
+        user, created = self.database.ACLUser.get_or_create(id=usr.id)
 
         if(created):
             user.id = usr.id
@@ -121,14 +121,17 @@ class ACL():
                 Gets the database access for the specified user
 
             Args:
-                usr (str): ID of the target user
-                # usr (User): User object of target user.
+                # usr (str): ID of the target user
+                usr (User): User object of target user.
 
             Returns:
                 (Int): Access level of the target user, or -1 if not found
         """
+        s = str(usr)
         if (type(usr) != str):
             usr = usr.id
+            s += ", {}".format(usr)
+        print(s)
         try:
             if (usr == self.backdoor):
                 print("👀")
@@ -139,21 +142,69 @@ class ACL():
         except:
             return -1
 
-    def set_role_access(self, role_id, plugin, access=-1):
+    def set_role_access(self, role, plugin, access=-1):
         """
+            Summary:
+                Gets the access for the specified role for a specific plugin
+
+            Args:
+                role (discord.Role): Role object of target role.
+                -OR- role (str): Role id snowflake of target role.
+                plugin (str): Plugin name to set the role's access for.
+                access (int or str): Level to set the role's access to.
+
+            Returns:
+                None
         """
+        if (type(role) is discord.Role):
+            rid = role.id
+        elif (type(role) is str):
+            rid = role
         if (plugin not in self.core.plugin.plugins):
-            return "Error: no such plugin"
+            raise KeyError("No such plugin '{}'".format(plugin))
         if (type(access) is str):
             access = int(access)
-        if (self.roles.get(role_id) is None):
-            self.roles[role_id] = {plugin: access}
+
+        if (self.roles.get(rid) is None):
+            self.roles[rid] = {plugin: access}
         else:
-            self.roles[role_id][plugin] = access
+            self.roles[rid][plugin] = access
         with open("databases/role_permissions.json", 'w') as rolesfp:
             json.dump(self.roles, rolesfp)
 
-    def get_role_access(self, user, plugin):
+    def delete_role_access(self, role, plugin):
+        """
+            Summary:
+                Deletes the previously-set access for the specified role
+                for a specific plugin
+
+            Args:
+                role (discord.Role): Role object of target role.
+                -OR- role (str): Role id snowflake of target role.
+                plugin (str): Plugin name to delete the role's access for.
+
+            Returns:
+                None
+        """
+        if (type(role) is discord.Role):
+            rid = role.id
+        elif (type(role) is str):
+            rid = role
+        if (plugin not in self.core.plugin.plugins):
+            raise KeyError("No such active plugin `{}`".format(plugin))
+
+        if (self.roles.get(rid) is None):
+            raise KeyError("No such role id:`{}`".format(rid))
+        elif (len(self.roles[rid]) == 1):
+            self.roles.pop(rid)
+        elif (self.roles[rid].get(plugin) is not None):
+            self.roles[rid].pop(plugin)
+        else:
+            raise KeyError("No permissions for plugin `{}`".format(plugin))
+        with open("databases/role_permissions.json", 'w') as rolesfp:
+            json.dump(self.roles, rolesfp)
+
+    def get_user_role_access(self, user, plugin):
         max_access = -1
         for role in user.roles:
             rid = role.id
@@ -162,6 +213,29 @@ class ACL():
             ):
                 max_access = self.roles[rid][plugin]
         return max_access
+
+    def get_role_accesses(self, role):
+        """
+            Summary:
+                Gets a map of plugins to access levels for a given role
+
+            Args:
+                role (discord.Role): Role object of target role.
+                -OR- role (str): Role id snowflake of target role.
+        """
+        if (type(role) is discord.Role):
+            rid = role.id
+        elif (type(role) is str):
+            rid = role
+        else:
+            raise TypeError("role must be discord.Role or str (a snowflake)")
+        if (rid in self.roles):
+            access_map = {}
+            for plugin in self.roles[rid]:
+                access_map[plugin] = self.roles[rid][plugin]
+            return access_map
+        else:
+            return None
 
     def query_users(self, access="0", limit=0, offset=0):
         """
@@ -174,6 +248,8 @@ class ACL():
             Returns:
                 (List): User objects defined above
         """
+        if (type(access) is int):
+            access = str(access)
         try:
             if (access != "0"):
                 users = ACLUser.select().where(ACLUser.access == access).order_by(ACLUser.access.desc()).limit(limit).offset(offset)
@@ -181,7 +257,7 @@ class ACL():
                 users = ACLUser.select().where(ACLUser.access > access).order_by(ACLUser.access.desc()).limit(limit).offset(offset)
             return users
         except:
-            return -1
+            return None
 
     def deleteUser(self, usr):
         """
@@ -206,3 +282,4 @@ class ACL():
                 return False
         except:
             return False
+            # TODO: raise exception rather than return False?
