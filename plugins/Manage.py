@@ -143,7 +143,7 @@ class Manage(Plugin):
                     msg.author.id, plugin)
             )
 
-    @command("^list commands$", access=-1, name='list commands',
+    @command("^list commands --all$", access=-1, name='list commands',
              doc_brief="`list commands`: lists all commands that you "
              "have access to.")
     async def list_all_commands(self, msg, arguments):
