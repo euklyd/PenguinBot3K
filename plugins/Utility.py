@@ -187,6 +187,7 @@ class Utility(Plugin):
             status = user.status
             game = user.game
             role = user.top_role
+            n_roles = " [{}]".format(len(user.roles))
             em.set_footer(text="Joined on {}".format(user.joined_at))
         else:
             em = discord.Embed()
@@ -194,6 +195,7 @@ class Utility(Plugin):
             color = "None"
             status = "None"
             role = "None"
+            n_roles = ""
             game = "None"
             em.set_footer(text="Created on {} (not a member of this "
                                "server)".format(user.created_at))
@@ -205,7 +207,7 @@ class Utility(Plugin):
         em.add_field(name="ID",       value="`{}`".format(user.id))
         em.add_field(name="Color",    value=color)  # inline is True by default
         em.add_field(name="Status",   value=status)
-        em.add_field(name="Top Role", value=role)
+        em.add_field(name=("Top Role" + n_roles), value=role)
         em.add_field(name="Game",     value=game)
         em.set_thumbnail(url=user.avatar_url)
 
