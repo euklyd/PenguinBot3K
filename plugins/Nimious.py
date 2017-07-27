@@ -39,10 +39,10 @@ class Nimious(Plugin):
     @command("^(?:[Nn]imious|<@!?163167281042423810>)$", access=100,
              name='Nimious')
     async def nimious(self, msg, arguments):
-        ww_link = self.core.emoji.emoji_str(msg.server, ['ww_link_ugh'])
-        bow = self.core.emoji.emoji_str(msg.server, ['bow'])
-        bomb = self.core.emoji.emoji_str(msg.server, ['bomb'])
-        danklink = self.core.emoji.emoji_str(msg.server, ['dank_link'])
+        ww_link = self.core.emoji.any_emoji(['ww_link_ugh'])
+        bow = self.core.emoji.any_emoji(['bow'])
+        bomb = self.core.emoji.any_emoji(['bomb'])
+        danklink = self.core.emoji.any_emoji(['dank_link'])
         dank_meme = (
             "Shut the fuck up {ww} Nimious {ww}. You're 💤 fraudulent. "
             "You can't do anything besides {bomb} spam {bow}. That's why you "
