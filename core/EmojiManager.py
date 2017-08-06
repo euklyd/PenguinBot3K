@@ -72,9 +72,6 @@ class EmojiManager():
         """
         for emoji_name in emoji_names:
             for server in self.core.servers:
-                self.logger.info("searching for :{}: in server {}".format(
-                    emoji_name, server.name
-                ))
                 for emoji in server.emojis:
                     self.logger.debug("{} ?= {}".format(
                         repr(emoji.name), repr(emoji_name)
@@ -83,6 +80,16 @@ class EmojiManager():
                         self.logger.debug(str(emoji))
                         return emoji
         self.logger.info("no emoji found")
+        return None
+
+    def exact_emoji(self, emoji_name, emoji_id):
+        for server in self.core.servers:
+            for emoji in server.emojis:
+                self.logger.debug("{} ?= {}".format(
+                    repr(emoji.name), repr(emoji_name)
+                ))
+                if (emoji.name == emoji_name and emoji.id == emoji_id):
+                    return emoji
         return None
 
     def emoji_str(self, server, emoji_names):

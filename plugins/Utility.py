@@ -165,7 +165,7 @@ class Utility(Plugin):
             nitro = "maybe? maybe not? 👀"
         em.add_field(name="Nickname", value=nick)
         em.add_field(name="Nitro", value=nitro)
-        em.add_field(name="URL", value="(Click the title!)", inline=False)
+        em.add_field(name="URL", value="([long link, click here!]({}))".format(user.avatar_url), inline=False)
         await self.send_message(msg.channel, embed=em)
 
     @command("^info <@!?([0-9]*)>$", access=-1, name='info',
@@ -212,6 +212,39 @@ class Utility(Plugin):
         em.set_thumbnail(url=user.avatar_url)
 
         await self.send_message(msg.channel, embed=em)
+
+    @command("^(?:info|emoji) <:(.*):(\d*)>$", access=-1, name="emoji info",
+             doc_brief="`emoji`: Gets info about the specified emoji in the "
+             "current server.")
+    async def emoji_info(self, msg, arguments):
+        emoji = self.core.emoji.exact_emoji(arguments[0], arguments[1])
+        if emoji is None:
+            reply = (
+                "No matching emoji recognized on any of my servers for "
+                "<:{}:{}>".format(arguments[0], arguments[1])
+            )
+            em = None
+        else:
+            reply = None
+            em = discord.Embed(
+                color=msg.server.get_member(self.core.user.id).color)
+            em.set_footer(text="Created on {}".format(emoji.created_at))
+            em.set_author(
+                name="<:{}:{}>".format(emoji.name, emoji.id),
+                icon_url=msg.server.icon_url
+            )
+            em.add_field(name="Server", value=msg.server.name)
+            em.add_field(name="ID",     value="`{}`".format(emoji.id))
+            em.add_field(name="URL",    value="[{}]({})".format(
+                emoji.name, emoji.url)
+            )
+            if len(emoji.roles) > 0:
+                em.add_field(name="Role restricted?", value=True)
+            else:
+                em.add_field(name="Role restricted?", value=False)
+            em.set_thumbnail(url=emoji.url)
+
+        await self.send_message(msg.channel, reply, embed=em)
 
     @command("^server(:? info)?$", access=100, name='info',
              doc_brief="`sever info`: Gets assorted info about the "
