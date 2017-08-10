@@ -126,7 +126,7 @@ class Macro(Plugin):
     @command("^(?:waddle|ddd|THE KING)$", access=50, name='waddle',
              doc_brief="`waddle`: The dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
-        gordo = self.core.emoji.emoji_str(msg.server, ['gordo'])
+        gordo = self.core.emoji.any_emoji(['gordo'])
         dddpasta = ("🐧 **King Dedede** 🐧 is definitely **top tier**. "
                     "The king's got it all: disjoint ⚔, power 💪, recovery ✈, "
                     "and damaging throw combos 💥. He is the hardest character "
@@ -148,9 +148,8 @@ class Macro(Plugin):
              name='plumber', doc_brief="`plumber`: The dankest of "
              "🚽 Plumber 🚽 memes")
     async def plumber(self, msg, arguments):
-        mario = self.core.emoji.emoji_str(msg.server, ['mario'])
-        m2 = self.core.emoji.emoji_str(
-            msg.server,
+        mario = self.core.emoji.any_emoji(['mario'])
+        m2 = self.core.emoji.any_emoji(
             ['sunglasses_mewtwo', 'shades_mewtwo', 'mewtwo_shades'])
         mariopasta = ("{mario} Mario {mario} "
                       "is definitely **not top tier**. The plumber's got "
@@ -172,7 +171,7 @@ class Macro(Plugin):
     @command("^(?:md|MD|doc|doctor|💊)$", access=100, name='doctor',
              doc_brief="`doctor`: The dankest of 💊 Doctor 💊 memes")
     async def doctor(self, msg, arguments):
-        mario = self.core.emoji.emoji_str(msg.server, ['mario'])
+        mario = self.core.emoji.any_emoji(['mario'])
         docpasta = ("💊Dr Mario💊 is definitely top tier. "
                     "The doctor's got it all: good pokes 🐻, KO power ⬆👷😂👌, "
                     "amazing oos ⬆✊, and damaging combos 👷👷👷. His presence "
@@ -193,9 +192,7 @@ class Macro(Plugin):
     @command("^(?:birb|falco)$", access=100, name='birb',
              doc_brief="`birb`: The dankest of birb memes")
     async def birb(self, msg, arguments):
-        hoohah = self.core.emoji.emoji_str(
-            msg.server, ['hoo_hah', 'HooHah', 'hoohah']
-        )
+        hoohah = self.core.emoji.any_emoji(['hoo_hah', 'HooHah', 'hoohah'])
         birbpasta = (
             "Falco's 🐦 only better than 5 🖐 characters (8 with miis ✊ ⚔ 🔫 ) "
             "❔ 😐   😮 Clearly they haven't seen 👀 me 🤳 beat random people 👤 "
@@ -265,8 +262,7 @@ class Macro(Plugin):
              doc_brief="`ph1r3`: The dankest of 🔥 ph1r3 🔥 memes",
              doc_detail="` roy`: The one true 🔥 ph1r3 🔥 meme")
     async def ph1r3(self, msg, arguments):
-        marf = self.core.emoji.emoji_str(msg.server,
-                                         ['ppmd_marth', 'MarthSip'])
+        marf = self.core.emoji.any_emoji(['ppmd_marth', 'MarthSip'])
         roypasta = [
             "🔥 Roy 🔥 is definitely low tier.  The boy got nothing:  "
             "No Speed 🏃 , Shitty KO Power 💥 , 0% off throws, "
@@ -298,6 +294,10 @@ class Macro(Plugin):
         ]
         if (arguments[0] == " "):
             pasta = roypasta[0]
+        elif (msg.author.id in ["190933659887337472"]):
+            pasta = roypasta[0]
+            pasta += random.choice(
+                ["", "\n(A great big steaming, wet, smelly 💩 shit 💩)"])
         else:
             pasta = random.choice(roypasta)
         await self.send_message(msg.channel, pasta)
@@ -511,14 +511,12 @@ class Macro(Plugin):
              '<:5_0:252694352315285504>\n'
              'That- that\'s how it\'s gonna be."')
     async def chillinrap(self, msg, arguments):
-        mb = self.core.emoji.emoji_str(msg.server, ['my_b'])
-        leff = self.core.emoji.emoji_str(msg.server, ['5_0'])
-        shine = self.core.emoji.emoji_str(msg.server, ['shine'])
-        leffox = self.core.emoji.emoji_str(
-            msg.server, ['leffen_fox', 'fox_facepalm']
-        )
-        nlt = self.core.emoji.emoji_str(msg.server, ['notlikethis'])
-        salt = self.core.emoji.emoji_str(msg.server, ['pjsalt'])
+        mb = self.core.emoji.any_emoji(['my_b'])
+        leff = self.core.emoji.any_emoji(['5_0'])
+        shine = self.core.emoji.any_emoji(['shine'])
+        leffox = self.core.emoji.any_emoji(['leffen_fox', 'fox_facepalm'])
+        nlt = self.core.emoji.any_emoji(['notlikethis'])
+        salt = self.core.emoji.any_emoji(['pjsalt'])
         verse = []
         verse.append("{my_b} I'm not lawful, make "
                      "{leff5_0} this pussy stop talking 🙊\n"
@@ -603,8 +601,8 @@ class Macro(Plugin):
     @command("^(?:nipples|knuckles)$", access=100, name='nipples',
              doc_brief="`knuckles`: oh. my mistake")
     async def nipples(self, msg, arguments):
-        nipples = self.core.emoji.emoji_str(
-            msg.server, ['knuckles', 'nipples_the_enchilada']
+        nipples = self.core.emoji.any_emoji(
+            ['knuckles', 'nipples_the_enchilada']
         )
         nipplespasta = ("here i come, rougher than {nip}, the best of them, "
                         "tougher than {nip}\n"
@@ -653,7 +651,7 @@ class Macro(Plugin):
                         keys="`, `".join(punch['dict']),
                         trigger=self.core.default_trigger)
                 )
-        ganon = self.core.emoji.emoji_str(msg.server, ['return_of_ganon'])
+        ganon = self.core.emoji.any_emoji(['return_of_ganon'])
         if (ganon != "`:return_of_ganon:`"):
             await self.send_message(msg.channel, ganon)
 
