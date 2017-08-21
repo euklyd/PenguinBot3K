@@ -480,7 +480,7 @@ class Macro(Plugin):
         )
         oh_nos['diddy'] = (
             "You have been visited by the 🐒 **Mankey of FREE COMBOS** 🐒\n"
-            "🍌 Bananas 🍌 and ⬇downthrows⬇ will come to you, "
+            "🍌 Bananas 🍌 and ⬆upthrows⬆ will come to you, "
             "but ONLY if you post \n"
             "**ヽ༼ຈل͜ຈ༽ﾉ HOO HAH ヽ༼ຈل͜ຈ༽ﾉ**\n"
             "in 10 chats!\n"
