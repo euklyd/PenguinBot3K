@@ -221,7 +221,7 @@ class Utility(Plugin):
         if emoji is None:
             reply = (
                 "No matching emoji recognized on any of my servers for "
-                "<:{}:{}>".format(arguments[0], arguments[1])
+                "`<:{}:{}>`".format(arguments[0], arguments[1])
             )
             em = None
         else:
@@ -231,9 +231,9 @@ class Utility(Plugin):
             em.set_footer(text="Created on {}".format(emoji.created_at))
             em.set_author(
                 name="<:{}:{}>".format(emoji.name, emoji.id),
-                icon_url=msg.server.icon_url
+                icon_url=emoji.server.icon_url
             )
-            em.add_field(name="Server", value=msg.server.name)
+            em.add_field(name="Server", value=emoji.server.name)
             em.add_field(name="ID",     value="`{}`".format(emoji.id))
             em.add_field(name="URL",    value="[{}]({})".format(
                 emoji.name, emoji.url)
