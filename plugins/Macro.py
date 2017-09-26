@@ -206,6 +206,7 @@ class Macro(Plugin):
              doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
     async def penguin(self, msg, arguments):
         penguin_url = "https://i.imgur.com/MGNa91r.gif"
+        penguin_url = "https://cdn.discordapp.com/attachments/342186707028017152/360499286863249421/skype_penguin_transparent.gif"
         user = msg.server.get_member(self.core.user.id)
         em = discord.Embed(color=user.color)
         em.set_thumbnail(url=penguin_url)
@@ -416,12 +417,12 @@ class Macro(Plugin):
             "Hero Sword general, the legendary Ardan {ardan} ! Ardan {ardan}, "
             "Ardaaaan {ardan}. No living creature {ddd} is a match for this "
             "machine {leff5_0}. Watch six tons of general hunt for his prey "
-            "<:grillmaster:321854179586998272>.  There's no consolation "
+            "{arvis}.  There's no consolation "
             "prize 🥈 , cause this bad boy's programmed to show no mercy "
             "{savage_blow}.\n"
             "So, what are you waiting for ❓ ❓ ❓ ?  Preorder now to bring "
-            "Doga {doga} and Ardan {ardan} into your living room :🏚 , "
-            "but put away the fine china :🍽 ! "
+            "Doga {doga} and Ardan {ardan} into your living room 🏚 , "
+            "but put away the fine china 🍽 ! "
             "You can only find these generals in Fire Emblem Warriors, "
             "so call your local Amazon 🌴 now!".format(
                 thwomp=thwomp,
@@ -440,7 +441,8 @@ class Macro(Plugin):
                 ardan=ardan,
                 ddd=bitf_ddd,
                 leff5_0=leff5_0,
-                savage_blow=savage_blow
+                savage_blow=savage_blow,
+                arvis=arvis
             )
         )
         await self.send_message(msg.channel, thwomppasta)
@@ -467,7 +469,7 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, daddy)
 
-    @command("^(?:oh no|uair) ?([A-Za-z]+)?$", access=-1, name='oh no',
+    @command("^(?:oh no|up?air) ?([A-Za-z]+)?$", access=-1, name='oh no',
              doc_brief="`oh no`: Pastes a random 'oh no' pasta")
     async def oh_no(self, msg, arguments):
         oh_nos = {}
