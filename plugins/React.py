@@ -20,6 +20,7 @@ from core.Decorators import *
 import asyncio
 import discord
 import logging
+import random
 
 
 class React(Plugin):
@@ -33,21 +34,23 @@ class React(Plugin):
         #     self.logger.warning("no such emoji: {}".format(lemonbot))
         # else:
             # await self.add_reaction(msg, lemonbot)
-        lemonbot = self.core.emoji.emoji(msg.server, ["lemonbot", "lemon_bot"])
+        lemonbot = self.core.emoji.any_emoji(["lemonbot", "lemon_bot"])
         await self.add_reaction(msg, lemonbot)
+        if (random.randint(0, 17) == 0):
+            await self.add_reaction(msg, self.core.emoji.any_emoji(["refabot"]))
 
     @filter("^<:expand:[0-9]{16,20}>$", name='expand dong',
             server="190782508105728000")
     async def expand_dong(self, msg, arguments):
-        expand = self.core.emoji.emoji(msg.server, ["expand"])
-        dong = self.core.emoji.emoji(msg.server, ["dong"])
+        expand = self.core.emoji.any_emoji(["expand"])
+        dong = self.core.emoji.any_emoji(["dong"])
         await self.add_reaction(msg, expand)
         await self.add_reaction(msg, dong)
 
-    @filter("^<:(?:fe1_)?(cain|abel):[0-9]{16,20}>$", name='christmas cavaliers',
+    @filter("^<:(?:fe1_)?([Cc]ain|[Aa]bel):[0-9]{16,20}>$", name='christmas cavaliers',
             server="190782508105728000")
     async def fe1_cavs(self, msg, arguments):
-        if (arguments[0] == 'cain'):
+        if (arguments[0].lower() == 'cain'):
             cav = self.core.emoji.any_emoji(["fe1_abel", "abel"])
         else:
             cav = self.core.emoji.any_emoji(["fe1_cain", "cain"])
