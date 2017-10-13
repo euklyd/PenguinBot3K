@@ -247,7 +247,7 @@ class Utility(Plugin):
         await self.send_message(msg.channel, reply, embed=em)
 
     @command("^server(:? info)?$", access=100, name='info',
-             doc_brief="`sever info`: Gets assorted info about the "
+             doc_brief="`server info`: Gets assorted info about the "
              "current server.")
     async def get_server_info(self, msg, arguments):
         user = msg.server.get_member(self.core.user.id)
