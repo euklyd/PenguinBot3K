@@ -108,6 +108,7 @@ class Moderation(Plugin):
             search_perms = int(arguments[0], 0)
         roles = msg.server.roles
         roles.sort(key=lambda role: role.position, reverse=True)
+        matching_roles = []
         role_block = "**List of roles on {}:**".format(msg.server.name)
         for role in roles:
             if (role.permissions.value & search_perms != 0):
@@ -119,6 +120,7 @@ class Moderation(Plugin):
                     mention=role.mention,
                     permissions=hex(role.permissions.value)
                 )
+                matching_roles.append(role)
             if (len(role_block) >= 1700):
                 self.logger.info(role_block)
                 try:
@@ -126,14 +128,19 @@ class Moderation(Plugin):
                 except discord.HTTPException:
                     self.logger("well fuck: discord.HTTPException")
                 role_block = "**List of roles on {}:**".format(msg.server.name)
-        self.logger.info(role_block)
+        self.logger.info(matching_roles)
+        if (len(matching_roles) == 0):
+            await self.send_whisper(
+                msg.author,
+                "No roles found matching `{}`".format(arguments[0])
+            )
+            return
         try:
-            if (role_block.count('\n') > 1):
+            if (role_block.count('\n') > 0):
                 await self.send_whisper(msg.author, role_block)
         except discord.HTTPException:
             self.logger("well fuck: discord.HTTPException")
         except:
-            # await self.core.start_private_message(msg.author)
             await self.send_whisper(msg.author, "sup")
             await self.send_message(msg.channel, role_block)
 
