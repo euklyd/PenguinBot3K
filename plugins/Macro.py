@@ -705,6 +705,76 @@ class Macro(Plugin):
                 reply = "ERR: Something went wrong."
         await self.send_message(msg.channel, reply)
 
+    @command("^scizzy$", access=-1, name='scizzy',
+             doc_brief="`scizzy`: random scizor quote")
+    async def scizzy(self, msg, arguments):
+        with open(macro_path.format("scizzy.json"), 'r') as quotefile:
+            quotes = json.load(quotefile)
+        await self.send_message(
+            msg.channel,
+            random.choice(quotes)
+        )
+
+    @command("^submitscizzy (.*)", access=-1, name='scizzy',
+             doc_brief="`submitscizzy`: submit a scizor quote for `scizzy`")
+    async def submitscizzy(self, msg, arguments):
+        quote = arguments[0]
+        quotes = []
+        try:
+            with open(macro_path.format("unchecked_scizzy.json"), 'r') as f:
+                quotes = json.load(f)
+        except FileNotFoundError:
+            quotes = []
+        quotes.append({'quote': quote, 'user': msg.author.name})
+        with open(macro_path.format("unchecked_scizzy.json"), 'w') as f:
+            json.dump(quotes, f, indent=2)
+        await self.send_message(
+            msg.channel,
+            "Thanks for the submission {}".format(
+                self.core.emoji.any_emoji(["ScizzyOK"])
+            )
+        )
+
+    @command("^validatescizzy$", access=1000, name='validatescizzy',
+             doc_brief="`validatescizzy`: validate scizzy quotes")
+    async def validatescizzy(self, msg, arguments):
+        unchecked_quotes = []
+        quotes = []
+        try:
+            with open(macro_path.format("scizzy.json"), 'r') as quotefile:
+                quotes = json.load(quotefile)
+        except FileNotFoundError:
+            quotes = []
+        try:
+            with open(macro_path.format("unchecked_scizzy.json"), 'r') as f:
+                unchecked_quotes = json.load(f)
+        except FileNotFoundError:
+            await self.send_message(
+                msg.channel, "No scizzy quotes to be validated!"
+            )
+            return
+        for q in unchecked_quotes:
+            await self.send_message(
+                msg.channel,
+                "**Submission:**\n\t{}\nFrom: {}".format(q['quote'], q['user'])
+            )
+            reply = await self.core.wait_for_message(author=msg.author,
+                                                     channel=msg.channel)
+            if (reply.content.lower() == "y"):
+                quote = q['quote']
+                quotes.append(quote)
+                await self.send_message(msg.channel, "Submission accepted.")
+            elif (reply.content.startswith("edit: ")):
+                quote = reply.content.split("edit: ")[1]
+                quotes.append(quote)
+                await self.send_message(msg.channel, "Submission modified.")
+            else:
+                await self.send_message(msg.channel, "Submission rejected.")
+        with open(macro_path.format("scizzy.json"), 'w') as quotefile:
+            json.dump(quotes, quotefile, indent=2)
+        with open(macro_path.format("unchecked_scizzy.json"), 'w') as f:
+            json.dump([], f, indent=2)
+
     @command("^(?:animes|mangos|animes_and_mangos)(?:\.gif)?$", access=-1,
              name='animes and mangos.gif',
              doc_brief='`animes_and_mangos.gif`: ~silly kids~')
