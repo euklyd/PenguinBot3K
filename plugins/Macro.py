@@ -718,7 +718,8 @@ class Macro(Plugin):
     @command("^submitscizzy (.*)", access=-1, name='scizzy',
              doc_brief="`submitscizzy`: submit a scizor quote for `scizzy`")
     async def submitscizzy(self, msg, arguments):
-        quote = arguments[0]
+        # quote = arguments[0]
+        quote = msg.content.split("submitscizzy ")[1]
         quotes = []
         try:
             with open(macro_path.format("unchecked_scizzy.json"), 'r') as f:
@@ -774,6 +775,10 @@ class Macro(Plugin):
             json.dump(quotes, quotefile, indent=2)
         with open(macro_path.format("unchecked_scizzy.json"), 'w') as f:
             json.dump([], f, indent=2)
+        await self.send_message(
+            msg.channel,
+            "Scizzies saved {}".format(self.core.emoji.any_emoji(["ScizzyOK"]))
+        )
 
     @command("^(?:animes|mangos|animes_and_mangos)(?:\.gif)?$", access=-1,
              name='animes and mangos.gif',
