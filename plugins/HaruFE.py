@@ -178,6 +178,7 @@ class HaruFE(Plugin):
             self.logger.info("quit from timeout 1")
             return
         harubot = harubot.author
+        await asyncio.sleep(0.5)
         await self.send_message(msg.channel, "gold")
         resp = await self.core.wait_for_message(
             timeout=3600,
@@ -188,6 +189,7 @@ class HaruFE(Plugin):
         if (resp is None):
             self.logger.info("quit from timeout 2")
             return
+        await asyncio.sleep(0.5)
         await self.send_message(msg.channel, str(gold))
         resp = await self.core.wait_for_message(
             timeout=3600,
@@ -202,6 +204,7 @@ class HaruFE(Plugin):
         with open(path.format("alms.json"), 'w+') as goldfile:
             self.logger.info("updated balances")
             json.dump(self.balances, goldfile, indent=2)
+        await asyncio.sleep(0.5)
         await self.send_message(
             msg.channel,
             "My gratitude for standing with us against the corrupt church, "
