@@ -71,10 +71,10 @@ class HaruFE(Plugin):
     @filter("^~[Gg][Ii][Vv][Ee] <@!?[\d]*>$", name='reform', server="190782508105728000")
     async def reformation(self, msg, arguments):
         if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
-            self.logger.info("quit from bad cid")
+            self.logger.warning("quit from bad cid")
             return
         if (msg.mentions[0].id != self.core.user.id):
-            self.logger.info("quit from bad mention")
+            self.logger.warning("quit from bad mention")
             return
         harubot = await self.core.wait_for_message(
             timeout=3600,
@@ -83,7 +83,7 @@ class HaruFE(Plugin):
                     "an `item`, `silver mark`s, `gold mark`s, or `nothing`?"
         )
         if (harubot is None):
-            self.logger.info("quit from timeout 1")
+            self.logger.warning("quit from timeout 1")
             return
         harubot = harubot.author
         resp = await self.core.wait_for_message(
@@ -92,10 +92,10 @@ class HaruFE(Plugin):
             channel=msg.channel,
         )
         if (resp is None):
-            self.logger.info("quit from timeout 2")
+            self.logger.warning("quit from timeout 2")
             return
         elif (resp.content.lower() != "gold"):
-            self.logger.info("quit from non-gold")
+            self.logger.warning("quit from non-gold")
             return
         resp = await self.core.wait_for_message(
             timeout=3600,
@@ -104,7 +104,7 @@ class HaruFE(Plugin):
             check=lambda m: "How much gold would you like to give Martin Luther?" in m.content
         )
         if (resp is None):
-            self.logger.info("quit from timeout 3")
+            self.logger.warning("quit from timeout 3")
             return
         await self.send_message(
             msg.channel,
@@ -116,7 +116,7 @@ class HaruFE(Plugin):
             channel=msg.channel,
         )
         if (resp is None):
-            self.logger.info("quit from timeout 4")
+            self.logger.warning("quit from timeout 4")
             return
         gold = resp.content
         self.logger.info("Got {} gold".format(gold))
@@ -127,7 +127,7 @@ class HaruFE(Plugin):
             content="You give Martin Luther {} gold.".format(gold)
         )
         if (resp is None):
-            self.logger.info("quit from timeout 5")
+            self.logger.warning("quit from timeout 5")
             return
         if (msg.author.id in self.balances):
             self.balances[msg.author.id] += int(gold)
@@ -148,7 +148,7 @@ class HaruFE(Plugin):
              doc_brief="`withdraw <gold>`: withdraw <gold> from your deposit.")
     async def withdraw(self, msg, arguments):
         if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
-            self.logger.info("quit from bad cid")
+            self.logger.warning("quit from bad cid")
             return
         gold = int(arguments[0])
         if (msg.author.id not in self.balances):
@@ -175,7 +175,7 @@ class HaruFE(Plugin):
                     "an `item`, `silver mark`s, `gold mark`s, or `nothing`?"
         )
         if (harubot is None):
-            self.logger.info("quit from timeout 1")
+            self.logger.warning("quit from timeout 1")
             return
         harubot = harubot.author
         await asyncio.sleep(0.5)
@@ -187,7 +187,7 @@ class HaruFE(Plugin):
             check=lambda m: "How much gold would you like to give" in m.content
         )
         if (resp is None):
-            self.logger.info("quit from timeout 2")
+            self.logger.warning("quit from timeout 2")
             return
         await asyncio.sleep(0.5)
         await self.send_message(msg.channel, str(gold))
@@ -198,7 +198,7 @@ class HaruFE(Plugin):
             check=lambda m: "{} gold.".format(gold) in m.content
         )
         if (resp is None):
-            self.logger.info("quit from timeout 3")
+            self.logger.warning("quit from timeout 3")
             return
         self.balances[msg.author.id] -= gold
         with open(path.format("alms.json"), 'w+') as goldfile:
