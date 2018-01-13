@@ -70,7 +70,7 @@ class HaruFE(Plugin):
 
     @filter("^~[Gg][Ii][Vv][Ee] <@!?[\d]*>$", name='reform', server="190782508105728000")
     async def reformation(self, msg, arguments):
-        if (msg.channel.id != '396884433887559700'):
+        if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
             self.logger.info("quit from bad cid")
             return
         if (msg.mentions[0].id != self.core.user.id):
@@ -147,7 +147,7 @@ class HaruFE(Plugin):
              access=-1, name='withdraw',
              doc_brief="`withdraw <gold>`: withdraw <gold> from your deposit.")
     async def withdraw(self, msg, arguments):
-        if (msg.channel.id != '396884433887559700'):
+        if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
             self.logger.info("quit from bad cid")
             return
         gold = int(arguments[0])
