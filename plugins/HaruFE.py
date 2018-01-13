@@ -69,7 +69,7 @@ class HaruFE(Plugin):
         await self.send_message(msg.channel_mentions[0], "Done preaching.")
 
     @filter("^~[Gg][Ii][Vv][Ee] <@!?[\d]*>$", name='reform',
-            server=['190782508105728000', '190782508105728000'])
+            server=['190782508105728000', '244381473610792961'])
     async def reformation(self, msg, arguments):
         if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
             self.logger.warning("quit from bad cid")
