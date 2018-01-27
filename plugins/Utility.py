@@ -332,6 +332,20 @@ class Utility(Plugin):
         os.remove(dest)
         await self.delete_message(msg)
 
+    @command("^bigmoji <a:(\w*):(\d+)>$", access=-1, name='bigmoji')
+    async def abigmoji(self, msg, arguments):
+        em_url = self.core.emoji.gif_url(arguments[1])
+        # import io
+        # req = requests.get(em_url)
+        # await self.send_file(msg.channel, io.BytesIO(req.content))
+        dest = "/tmp/emoji_{}.gif".format(arguments[1])
+        with open(dest, 'wb') as imgfile:
+            req = requests.get(em_url)
+            imgfile.write(req.content)
+        await self.send_file(msg.channel, dest)
+        os.remove(dest)
+        await self.delete_message(msg)
+
     def santashuffle(self, orig):
         rand_list = orig[:]
         random.shuffle(rand_list)

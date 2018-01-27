@@ -132,3 +132,10 @@ class EmojiManager():
         if type(em_id) is discord.Emoji:
             return em_id.url
         return None
+
+    def gif_url(self, em_id):
+        if type(em_id) is str:
+            return "https://cdn.discordapp.com/emojis/{}.gif".format(em_id)
+        if type(em_id) is discord.Emoji:
+            return em_id.url
+        return None
