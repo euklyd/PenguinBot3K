@@ -19,8 +19,10 @@ from core.Plugin import Plugin
 from core.Decorators import *
 import discord
 import logging
+import os
 import random
 import re
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -75,20 +77,33 @@ class Utility(Plugin):
                 roll=roll)
         )
 
-    @command("^(?:er|eroll) (?P<dice>\d{1,3}d\d{1,3}(?:[+-]\d{1,3}d\d{1,3}){0,8})(?:(?P<mod>[+-]\d{1,3}))?(?: # (?P<comment>.*))?",
+    @command("^(?:er|eroll) (?P<dice>[+-]\d{1,3}d\d{1,3}(?:[+-]\d{1,3}d\d{1,3}){0,8})(?:(?P<mod>[+-]\d{1,3}))?(?: # ?(?P<comment>.*))?",
              access=-1, name='eroll',
              doc_brief="`er <dice expression>`: extended roll")
     async def eroll(self, msg, arguments):
         self.logger.info(arguments)
         # dice = re.split('+|-', arguments['dice'])
-        dice = re.split('\+|\-', arguments[0])
-        self.logger.info('dice: {}'.format(dice))
-        dice2 = []
+        splits = re.split('(\+|\-)', arguments[0])
+        self.logger.info('splits: {}'.format(splits))
+        splits = [e for e in splits if e != '']
+        if splits[0] != '+' and splits[0] != '-':
+            dice = splits[::2]
+            signs = ['+'] + splits[1::2]
+        else:
+            dice = splits[1::2]
+            signs = splits[::2]
+        self.logger.info('dice:  {}'.format(dice))
+        self.logger.info('signs: {}'.format(signs))
+        adds = []
+        for a in signs:
+            if a == '+':
+                adds.append(1)
+            else:
+                adds.append(-1)
         results = []
         for d in dice:
             die = d.split('d')
             die[0], die[1] = int(die[0]), int(die[1])
-            dice2.append(die)
             res = []
             for i in range(0, die[0]):
                 roll = random.randint(1, die[1])
@@ -97,18 +112,20 @@ class Utility(Plugin):
         self.logger.info('results: {}'.format(results))
         result = 0
         rmsg = ""
-        for r in results:
+        for a, r in zip(adds, results):
             dmsg = ""
             for d in r:
-                result += d
+                result += a*d
                 if dmsg == "":
                     dmsg = str(d)
                 else:
                     dmsg += " + {}".format(d)
-            if (rmsg == ""):
-                rmsg = "({})".format(dmsg)
-            else:
+            if (a == -1):
+                rmsg += " - ({})".format(dmsg)
+            elif (rmsg != ""):
                 rmsg += " + ({})".format(dmsg)
+            else:
+                rmsg = "({})".format(dmsg)
         if (arguments[1] is not None):
             if (arguments[1][0] == '+'):
                 mod = int(arguments[1].strip('+-'))
@@ -299,3 +316,39 @@ class Utility(Plugin):
         )
 
         await self.send_message(msg.channel, embed=em)
+
+    @command("^bigmoji <:(\w*):(\d+)>$", access=-1, name='bigmoji',
+             doc_brief="`bigmoji <emoji>`: Biggifies <emoji>.")
+    async def bigmoji(self, msg, arguments):
+        em_url = self.core.emoji.url(arguments[1])
+        # import io
+        # req = requests.get(em_url)
+        # await self.send_file(msg.channel, io.BytesIO(req.content))
+        dest = "/tmp/emoji_{}.png".format(arguments[1])
+        with open(dest, 'wb') as imgfile:
+            req = requests.get(em_url)
+            imgfile.write(req.content)
+        await self.send_file(msg.channel, dest)
+        os.remove(dest)
+        await self.delete_message(msg)
+
+    def santashuffle(self, orig):
+        rand_list = orig[:]
+        random.shuffle(rand_list)
+        offset = [rand_list[-1]] + rand_list[:-1]
+        return rand_list, offset
+
+    @command("^secretsanta(?: <@!?[0-9]*>)+$", access=100, name='secretsanta',
+             doc_brief="`secretsanta @user1 @user2 ...`: Creates a secret "
+             "santa chain with each user in the list, and DMs each the name "
+             "of their recipient.")
+    async def secretsanta(self, msg, arguments):
+        santas, offset = self.santashuffle(msg.mentions)
+        for santa, recipient in zip(santas, offset):
+            await self.send_whisper(
+                santa,
+                "Your secret santa is {}#{}".format(
+                    recipient.name, recipient.discriminator
+                )
+            )
+        await self.send_message(msg.channel, "Santas sent!")

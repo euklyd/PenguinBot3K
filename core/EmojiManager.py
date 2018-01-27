@@ -125,3 +125,10 @@ class EmojiManager():
                     return str(emoji)
         self.logger.info("no emoji found")
         return "`:{}:`".format(emoji_names[0])
+
+    def url(self, em_id):
+        if type(em_id) is str:
+            return "https://cdn.discordapp.com/emojis/{}.png".format(em_id)
+        if type(em_id) is discord.Emoji:
+            return em_id.url
+        return None
