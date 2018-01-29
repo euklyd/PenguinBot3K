@@ -76,7 +76,7 @@ class HaruFE(Plugin):
     @filter("^~[Gg][Ii][Vv][Ee] <@!?[\d]*>$", name='reform',
             server=['190782508105728000', '244381473610792961'])
     async def reformation(self, msg, arguments):
-        if (msg.channel.id not in [self.harufe_channels]):
+        if (msg.channel.id not in self.harufe_channels):
             self.logger.warning("quit from bad cid")
             return
         if (msg.mentions[0].id != self.core.user.id):
@@ -153,7 +153,7 @@ class HaruFE(Plugin):
              access=-1, name='withdraw',
              doc_brief="`withdraw <gold>`: withdraw <gold> from your deposit.")
     async def withdraw(self, msg, arguments):
-        if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
+        if (msg.channel.id not in self.harufe_channels):
             self.logger.warning("quit from bad cid")
             return
         gold = int(arguments[0])
@@ -223,10 +223,22 @@ class HaruFE(Plugin):
              "for HaruFE, or not.")
     async def haruchannel(self, msg, arguments):
         if arguments[0].lower() == 'add':
+            if msg.channel.id in self.harufe_channels:
+                await self.send_message(
+                    msg.channel,
+                    "{} is already a HaruFE channel.".format(msg.channel.id)
+                )
+                return
             self.harufe_channels.append(msg.channel.id)
         elif arguments[0].lower() == 'rm':
+            if msg.channel.id not in self.harufe_channels:
+                await self.send_message(
+                    msg.channel,
+                    "{} isn't a HaruFE channel.".format(msg.channel.id)
+                )
+                return
             self.harufe_channels.remove(msg.channel.id)
-        elif arguments[0].lower() == 'list':
+        elif arguments[0].lower() == 'list' or arguments[0] == '':
             reply = "**HaruFE Channels:**\n"
             for ch_id in self.harufe_channels:
                 reply += "<#{}>\n".format(ch_id)
