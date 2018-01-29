@@ -32,6 +32,11 @@ class HaruFE(Plugin):
     async def activate(self):
         self.balances = {}
         try:
+            with open(path.format("haru_channels.json"), 'r') as chfile:
+                self.harufe_channels = json.load(chfile)
+        except FileNotFoundError:
+            self.harufe_channels = []
+        try:
             with open(path.format("alms.json"), 'r') as goldfile:
                 self.balances = json.load(goldfile)
         except FileNotFoundError:
@@ -71,7 +76,7 @@ class HaruFE(Plugin):
     @filter("^~[Gg][Ii][Vv][Ee] <@!?[\d]*>$", name='reform',
             server=['190782508105728000', '244381473610792961'])
     async def reformation(self, msg, arguments):
-        if (msg.channel.id not in ['396884433887559700', '397911002143784960']):
+        if (msg.channel.id not in [self.harufe_channels]):
             self.logger.warning("quit from bad cid")
             return
         if (msg.mentions[0].id != self.core.user.id):
@@ -211,3 +216,25 @@ class HaruFE(Plugin):
             "My gratitude for standing with us against the corrupt church, "
             "child."
         )
+
+    @command("^haruch (add|rm|list)",
+             access=500, name='haruch',
+             doc_brief="`haruch <add|rm>`: designate a channel as a place "
+             "for HaruFE, or not.")
+    async def haruchannel(self, msg, arguments):
+        if arguments[0].lower() == 'add':
+            self.harufe_channels.append(msg.channel.id)
+        elif arguments[0].lower() == 'rm':
+            self.harufe_channels.remove(msg.channel.id)
+        elif arguments[0].lower() == 'list':
+            reply = "**HaruFE Channels:**\n"
+            for ch_id in self.harufe_channels:
+                reply += "<#{}>\n".format(ch_id)
+            await self.send_message(msg.channel, reply)
+            return
+        else:
+            return
+        with open(path.format("haru_channels.json"), 'w+') as chfile:
+            self.logger.info("updated harufe channels")
+            json.dump(self.harufe_channels, chfile, indent=2)
+        await self.send_message(msg.channel, "Updated channel list.")
