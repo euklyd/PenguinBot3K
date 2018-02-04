@@ -231,41 +231,39 @@ class Utility(Plugin):
         await self.send_message(msg.channel, embed=em)
 
     @command("^(?:info|emoji) <(a?):(.*):(\d*)>$", access=-1, name="emoji info",
-             doc_brief="`emoji`: Gets info about the specified emoji in the "
-             "current server.")
+             doc_brief="`emoji`: Gets info about the specified emoji")
     async def emoji_info(self, msg, arguments):
+        em_name = arguments[1]
         em_id = arguments[2]
-        emoji = self.core.emoji.exact_emoji(arguments[1], em_id)
+        emoji = self.core.emoji.exact_emoji(em_name, em_id)
         url = self.core.emoji.gif_url(em_id) if arguments[0] == 'a' else self.core.emoji.url(em_id)
-        if emoji is None:
-            reply = (
-                "No matching emoji recognized on any of my servers for "
-                "`<{}:{}:{}>`; the url is {}.".format(
-                    arguments[-0], arguments[1], em_id, url
-                )
-            )
-            em = None
-        else:
-            reply = None
-            em = discord.Embed(
-                color=msg.server.get_member(self.core.user.id).color)
-            em.set_footer(text="Created on {}".format(emoji.created_at))
+
+        em = discord.Embed(
+            color=msg.server.get_member(self.core.user.id).color
+        )
+        em.add_field(name="ID",  value="`{}`".format(em_id))
+        em.add_field(name="URL", value="[{}]({})".format(em_name, url))
+
+        if emoji is not None:
             em.set_author(
                 name="<{}:{}:{}>".format(arguments[0], emoji.name, emoji.id),
                 icon_url=emoji.server.icon_url
             )
+            em.set_footer(text="Created on {}".format(emoji.created_at))
             em.add_field(name="Server", value=emoji.server.name)
-            em.add_field(name="ID",     value="`{}`".format(emoji.id))
-            em.add_field(name="URL",    value="[{}]({})".format(
-                emoji.name, url)
-            )
             if len(emoji.roles) > 0:
                 em.add_field(name="Role restricted?", value=True)
             else:
                 em.add_field(name="Role restricted?", value=False)
             em.set_thumbnail(url=url)
+        else:
+            em.set_author(
+                name="<{}:{}:{}>".format(arguments[0], em_name, em_id),
+                icon_url="https://i.imgur.com/5UKaW9f.jpg"
+            )
+            em.add_field(name="Server", value="???")
 
-        await self.send_message(msg.channel, reply, embed=em)
+        await self.send_message(msg.channel, embed=em)
 
     @command("^(?:bigmoji )?<(a?):(\w*):(\d+)>$", access=-1, name='bigmoji',
              doc_brief="`bigmoji <emoji>`: Biggifies <emoji>.")
