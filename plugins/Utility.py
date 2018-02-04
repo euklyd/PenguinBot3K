@@ -230,15 +230,19 @@ class Utility(Plugin):
 
         await self.send_message(msg.channel, embed=em)
 
-    @command("^(?:info|emoji) <:(.*):(\d*)>$", access=-1, name="emoji info",
+    @command("^(?:info|emoji) <(a?):(.*):(\d*)>$", access=-1, name="emoji info",
              doc_brief="`emoji`: Gets info about the specified emoji in the "
              "current server.")
     async def emoji_info(self, msg, arguments):
-        emoji = self.core.emoji.exact_emoji(arguments[0], arguments[1])
+        em_id = arguments[2]
+        emoji = self.core.emoji.exact_emoji(arguments[1], em_id)
+        url = self.core.emoji.gif_url(em_id) if arguments[0] == 'a' else self.core.emoji.url(em_id)
         if emoji is None:
             reply = (
                 "No matching emoji recognized on any of my servers for "
-                "`<:{}:{}>`".format(arguments[0], arguments[1])
+                "`<{}:{}:{}>`; the url is {}.".format(
+                    arguments[-0], arguments[1], em_id, url
+                )
             )
             em = None
         else:
@@ -247,21 +251,41 @@ class Utility(Plugin):
                 color=msg.server.get_member(self.core.user.id).color)
             em.set_footer(text="Created on {}".format(emoji.created_at))
             em.set_author(
-                name="<:{}:{}>".format(emoji.name, emoji.id),
+                name="<{}:{}:{}>".format(arguments[0], emoji.name, emoji.id),
                 icon_url=emoji.server.icon_url
             )
             em.add_field(name="Server", value=emoji.server.name)
             em.add_field(name="ID",     value="`{}`".format(emoji.id))
             em.add_field(name="URL",    value="[{}]({})".format(
-                emoji.name, emoji.url)
+                emoji.name, url)
             )
             if len(emoji.roles) > 0:
                 em.add_field(name="Role restricted?", value=True)
             else:
                 em.add_field(name="Role restricted?", value=False)
-            em.set_thumbnail(url=emoji.url)
+            em.set_thumbnail(url=url)
 
         await self.send_message(msg.channel, reply, embed=em)
+
+    @command("^(?:bigmoji )?<(a?):(\w*):(\d+)>$", access=-1, name='bigmoji',
+             doc_brief="`bigmoji <emoji>`: Biggifies <emoji>.")
+    async def bigmoji(self, msg, arguments):
+        em_url = self.core.emoji.url(arguments[2])
+        ext = 'png'
+        if arguments[0] == 'a':
+            ext = 'gif'
+        dest = "/tmp/{arg[1]}_{arg[2]}-{usr}.{ext}".format(
+            arg=arguments, usr=msg.author.nick, ext=ext
+        )
+        with open(dest, 'wb') as imgfile:
+            req = requests.get(em_url)
+            imgfile.write(req.content)
+        await self.send_file(
+            msg.channel,
+            dest,
+        )
+        os.remove(dest)
+        await self.delete_message(msg)
 
     @command("^server(:? info)?$", access=100, name='info',
              doc_brief="`server info`: Gets assorted info about the "
@@ -316,35 +340,6 @@ class Utility(Plugin):
         )
 
         await self.send_message(msg.channel, embed=em)
-
-    @command("^bigmoji <:(\w*):(\d+)>$", access=-1, name='bigmoji',
-             doc_brief="`bigmoji <emoji>`: Biggifies <emoji>.")
-    async def bigmoji(self, msg, arguments):
-        em_url = self.core.emoji.url(arguments[1])
-        # import io
-        # req = requests.get(em_url)
-        # await self.send_file(msg.channel, io.BytesIO(req.content))
-        dest = "/tmp/emoji_{}.png".format(arguments[1])
-        with open(dest, 'wb') as imgfile:
-            req = requests.get(em_url)
-            imgfile.write(req.content)
-        await self.send_file(msg.channel, dest)
-        os.remove(dest)
-        await self.delete_message(msg)
-
-    @command("^bigmoji <a:(\w*):(\d+)>$", access=-1, name='bigmoji')
-    async def abigmoji(self, msg, arguments):
-        em_url = self.core.emoji.gif_url(arguments[1])
-        # import io
-        # req = requests.get(em_url)
-        # await self.send_file(msg.channel, io.BytesIO(req.content))
-        dest = "/tmp/emoji_{}.gif".format(arguments[1])
-        with open(dest, 'wb') as imgfile:
-            req = requests.get(em_url)
-            imgfile.write(req.content)
-        await self.send_file(msg.channel, dest)
-        os.remove(dest)
-        await self.delete_message(msg)
 
     def santashuffle(self, orig):
         rand_list = orig[:]
