@@ -241,8 +241,7 @@ class Utility(Plugin):
         em = discord.Embed(
             color=msg.server.get_member(self.core.user.id).color
         )
-        em.add_field(name="ID",  value="`{}`".format(em_id))
-        em.add_field(name="URL", value="[{}]({})".format(em_name, url))
+        em.set_thumbnail(url=url)
 
         if emoji is not None:
             em.set_author(
@@ -251,17 +250,21 @@ class Utility(Plugin):
             )
             em.set_footer(text="Created on {}".format(emoji.created_at))
             em.add_field(name="Server", value=emoji.server.name)
+            em.add_field(name="ID",     value="`{}`".format(em_id))
+            em.add_field(name="URL",    value="[{}]({})".format(em_name, url))
             if len(emoji.roles) > 0:
                 em.add_field(name="Role restricted?", value=True)
             else:
                 em.add_field(name="Role restricted?", value=False)
-            em.set_thumbnail(url=url)
         else:
             em.set_author(
                 name="<{}:{}:{}>".format(arguments[0], em_name, em_id),
                 icon_url="https://i.imgur.com/5UKaW9f.jpg"
             )
+            em.set_footer(text="No shared server; info is limited")
             em.add_field(name="Server", value="???")
+            em.add_field(name="ID",     value="`{}`".format(em_id))
+            em.add_field(name="URL",    value="[{}]({})".format(em_name, url))
 
         await self.send_message(msg.channel, embed=em)
 
