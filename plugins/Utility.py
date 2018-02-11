@@ -18,8 +18,10 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 import discord
+import io
 import logging
 import os
+from PIL import Image
 import random
 import re
 import requests
@@ -362,3 +364,86 @@ class Utility(Plugin):
                 )
             )
         await self.send_message(msg.channel, "Santas sent!")
+
+    def decode_steg_url(self, url):
+        resp = requests.get(url)
+        img = Image.open(io.BytesIO(resp.content))
+        pixelMap = img.load()
+        pos = 0
+        msgLen = ""
+        msg = ""
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                if pos < 8:
+                    msgLen += chr(pixelMap[i, j][3] + ord(' '))
+                    pos += 1
+                elif pos < int(msgLen)+8:
+                    msg += chr(pixelMap[i, j][3] + ord(' '))
+                    pos += 1
+        return msg
+
+    def encode_steg_url(self, url, secret):
+        resp = requests.get(url)
+        im = Image.open(io.BytesIO(resp.content))
+        # secret = "popguin was here, toemonkey is a loser"
+        sizeSecret = "{:0>8}{}".format(len(secret), secret)
+        pixelMap = im.load()
+
+        img = Image.new(im.mode, im.size)
+        pixelsNew = img.load()
+        pos = 0
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                if pos < len(sizeSecret):
+                    pixelMap[i, j] = (
+                        pixelMap[i, j][0],
+                        pixelMap[i, j][1],
+                        pixelMap[i, j][2],
+                        ord(sizeSecret[pos]) - ord(' ')
+                    )
+                    pos += 1
+                pixelsNew[i, j] = pixelMap[i, j]
+        # img.show()
+        ofile = "/tmp/steg_{}.png".format(secret)
+        img.save(ofile)
+        print('encoded "{}" into {}'.format(secret, ofile))
+
+    @command("^decode <:(\w*):(\d+)>$", access=-1, name='decode',
+             doc_brief="`decode :emoji:`: Reads the message hidden in "
+             "`:emoji:`, if it exists.")
+    async def decode(self, msg, arguments):
+        plaintext = self.decode_steg_url(self.core.emoji.url(arguments[1]))
+        await self.send_message(
+            msg.channel,
+            "<:{}:{}> `{}`".format(arguments[0], arguments[1], plaintext)
+        )
+
+    @command("^encode <:(\w*):(\d+)> ([\w ,.!?;:]+)$", access=1000,
+             name='encode',
+             doc_brief="`encode :emoji: secret message here`: Hides `secret "
+             "message here` inside `:emoji:`.")
+    async def encode(self, msg, arguments):
+        secret = arguments[2]
+        old_emoji = self.core.emoji.exact_emoji(arguments[0], arguments[1])
+        ofile = "/tmp/steg_{}.png".format(secret)
+        self.encode_steg_url(self.core.emoji.url(arguments[1]), secret)
+        with open(ofile, 'rb') as emBytes:
+            em = await self.core.create_custom_emoji(
+                msg.server,
+                name=arguments[0],
+                image=emBytes.read()
+            )
+        if old_emoji.server != msg.server:
+            await self.send_file(
+                msg.server,
+                ofile
+                content="{} is not on this server; have an upload instead"
+            )
+            os.remove(ofile)
+            return
+        os.remove(ofile)
+        await self.core.delete_custom_emoji(old_emoji)
+        await self.send_message(
+            msg.channel,
+            "Encoded `{}` into {}; old version is:\n{}".format(secret, em, self.core.emoji.url(arguments[1]))
+        )
