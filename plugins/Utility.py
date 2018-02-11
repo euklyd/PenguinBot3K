@@ -436,8 +436,8 @@ class Utility(Plugin):
         if old_emoji.server != msg.server:
             await self.send_file(
                 msg.server,
-                ofile
-                content="{} is not on this server; have an upload instead"
+                ofile,
+                content="{} is not on this server; have an upload instead".format(old_emoji)
             )
             os.remove(ofile)
             return
