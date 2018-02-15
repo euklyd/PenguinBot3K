@@ -25,6 +25,7 @@ import re
 import string
 
 ACCESS = {
+    'query': 200,
     'pushPop': 300,
     'ban': 900,
     'anonymous': 900,
@@ -97,6 +98,33 @@ class Moderation(Plugin):
         if (invalid_keys != []):
             reply += "\nInvalid keys: `{}`".format(invalid_keys)
         await self.send_message(msg.channel, reply)
+
+    @command("^(?:perms|permissions) <@!?([\d]+)>$", access=ACCESS['query'],
+             name='user perms',
+             doc_brief="`perms <@user>`: shows the permissions hex code of "
+             "the mentioned user.")
+    async def user_perms(self, msg, arguments):
+        user = msg.mentions[0]
+        reply = (
+            "Server permissions for **{}**: `{}`\nPermissions in {}: `{}`"
+        ).format(
+            user, hex(user.server_permissions.value), msg.channel.mention,
+            hex(user.permissions_in(msg.channel).value)
+        )
+        await self.send_message(msg.channel, reply)
+
+    @command("^stfu <@!?[\d]+>$", access=ACCESS['ban'],
+             name='no @everyone',
+             doc_brief="`stfu <@user>`: lists which of <users>'s roles can "
+             "mention `@everyone`.")
+    async def stfu(self, msg, arguments):
+        user = msg.mentions[0]
+        reply = "Roles {} has with `@everyone` permission:\n".format(user)
+        for role in user.roles:
+            if role.permissions.mention_everyone:
+                reply += role.name + "\n"
+        await self.send_message(msg.channel, reply)
+
 
     @command("^list roles ?(0x[0-9]*)?$", access=500, name='list roles',
              doc_brief="`list roles`: Lists all roles on the current "
