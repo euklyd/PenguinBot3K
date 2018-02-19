@@ -276,6 +276,7 @@ class Utility(Plugin):
         em_url = self.core.emoji.url(arguments[2])
         ext = 'png'
         if arguments[0] == 'a':
+            em_url = self.core.emoji.gif_url(arguments[2])
             ext = 'gif'
         dest = "/tmp/{arg[1]}_{arg[2]}-{usr}.{ext}".format(
             arg=arguments, usr=msg.author.nick, ext=ext
