@@ -126,6 +126,10 @@ class HaruFE(Plugin):
             return
         gold = resp.content
         self.logger.info("Got {} gold".format(gold))
+        
+        # FIXME: catch things like "You don't have that much gold.
+        # Run this command again when you feel like donating gold you have."
+        # and "Negative gold doesn't work", etc.
         await self.core.wait_for_message(
             timeout=3600,
             author=harubot,
