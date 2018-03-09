@@ -126,7 +126,7 @@ class Moderation(Plugin):
         await self.send_message(msg.channel, reply)
 
 
-    @command("^list roles ?(0x[0-9]*)?$", access=500, name='list roles',
+    @command("^list roles ?(0x[0-9a-f]*)?$", access=500, name='list roles',
              doc_brief="`list roles`: Lists all roles on the current "
              "server in an IM.")
     async def list_all_roles(self, msg, arguments):
