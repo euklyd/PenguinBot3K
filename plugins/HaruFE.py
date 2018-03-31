@@ -74,7 +74,7 @@ class HaruFE(Plugin):
         await self.send_message(msg.channel_mentions[0], "Done preaching.")
 
     @filter("^~[Gg][Ii][Vv][Ee] <@!?[\d]*>$", name='reform',
-            server=['190782508105728000', '244381473610792961'])
+            server=['190782508105728000', '244381473610792961', '328399532368855041'])
     async def reformation(self, msg, arguments):
         if (msg.channel.id not in self.harufe_channels):
             self.logger.warning("quit from bad cid")
@@ -126,7 +126,7 @@ class HaruFE(Plugin):
             return
         gold = resp.content
         self.logger.info("Got {} gold".format(gold))
-        
+
         # FIXME: catch things like "You don't have that much gold.
         # Run this command again when you feel like donating gold you have."
         # and "Negative gold doesn't work", etc.
