@@ -19,6 +19,7 @@ from core.Plugin import Plugin
 from core.Decorators import *
 import discord
 import io
+import json
 import logging
 import os
 from PIL import Image
@@ -27,6 +28,8 @@ import re
 import requests
 
 logger = logging.getLogger(__name__)
+
+resource_path = "resources/{}"
 
 
 class Utility(Plugin):
@@ -448,3 +451,46 @@ class Utility(Plugin):
             msg.channel,
             "Encoded `{}` into {}; old version is:\n{}".format(secret, em, self.core.emoji.url(arguments[1]))
         )
+
+    @command("tagteam (\w+) (<@!?\d+> ?)+", name='fedraft',
+             doc_brief="`fedraft <game> <@player1> <@player2> ...`: "
+             "split up the chapters of the FE game of your choice between the "
+             "mentioned players.")
+    async def tagteam(self, msg, arguments):
+        game = arguments[0].upper()
+        games = {}
+        with open(resource_path.format("tagteam-chapters.json"), 'r') as listfile:
+            games = json.load(listfile)
+        if game not in games:
+            keys = list(games.keys())
+            keys.sort()
+            reply = (
+                "{} not in the list of games; the games you can select are:"
+                "\n{}"
+            ).format(game, ', '.join(keys))
+            await self.send_message(msg.channel, reply)
+            return
+        chapters = games[game]
+        if len(chapters) == 0:
+            await self.send_message(
+                msg.channel,
+                "{} hasn't been implemented yet, try another game".format(game)
+            )
+            return
+        picks = {}
+        team = msg.mentions
+        random.shuffle(team)
+        for player in team:
+            picks[player] = []
+        random.shuffle(chapters)
+        i = 0
+        for chapter in chapters:
+            picks[team[i]].append(chapter)
+            i = (i+1) % len(team)
+        reply = "Randomized Chapter List:\n\n"
+        for player in team:
+            reply += "**{}**\n".format(player)
+            for chapter in picks[player]:
+                reply += "- {}\n".format(chapter)
+            reply += "\n"
+        await self.send_message(msg.channel, reply)
