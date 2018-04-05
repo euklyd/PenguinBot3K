@@ -453,7 +453,7 @@ class Utility(Plugin):
             "Encoded `{}` into {}; old version is:\n{}".format(secret, em, self.core.emoji.url(arguments[1]))
         )
 
-    @command("^tagteam( list)?( games)?$", name='fedraft')
+    @command("^tagteam( list)?( games)?$", name='tagteam')
     async def tagteam_gamelist(self, msg, arguments):
         games = {}
         with open(resource_path.format("tagteam-chapters.json"), 'r') as listfile:
@@ -469,10 +469,10 @@ class Utility(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
-    @command("^tagteam (\w+) (<@!?\d+> ?)+", name='fedraft',
-             doc_brief="`fedraft <game> <@player1> <@player2> ...`: "
-             "split up the chapters of the FE game of your choice between the "
-             "mentioned players.")
+    @command("^tagteam (\w+) (<@!?\d+> ?)+", name='tagteam',
+             doc_brief="`tagteam <game> <@player1> <@player2> ...`: "
+             "randomly split up the chapters of the FE game of your choice "
+             "between the mentioned players.")
     async def tagteam(self, msg, arguments):
         game = arguments[0].upper()
         games = {}
