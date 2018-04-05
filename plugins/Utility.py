@@ -26,6 +26,7 @@ from PIL import Image
 import random
 import re
 import requests
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -452,7 +453,23 @@ class Utility(Plugin):
             "Encoded `{}` into {}; old version is:\n{}".format(secret, em, self.core.emoji.url(arguments[1]))
         )
 
-    @command("tagteam (\w+) (<@!?\d+> ?)+", name='fedraft',
+    @command("^tagteam( list)?( games)?$", name='fedraft')
+    async def tagteam_gamelist(self, msg, arguments):
+        games = {}
+        with open(resource_path.format("tagteam-chapters.json"), 'r') as listfile:
+            games = json.load(listfile)
+        names = list(games.keys())
+        done = [name for name in names if len(games[name]) > 0]
+        todo = [name for name in names if name not in done]
+        done.sort(key=fe_split)
+        todo.sort(key=fe_split)
+        reply = "**Games implemented:** {}\n**To-do:** {}".format(
+            ', '.join(done),
+            ', '.join(todo)
+        )
+        await self.send_message(msg.channel, reply)
+
+    @command("^tagteam (\w+) (<@!?\d+> ?)+", name='fedraft',
              doc_brief="`fedraft <game> <@player1> <@player2> ...`: "
              "split up the chapters of the FE game of your choice between the "
              "mentioned players.")
@@ -489,8 +506,31 @@ class Utility(Plugin):
             i = (i+1) % len(team)
         reply = "Randomized Chapter List:\n\n"
         for player in team:
-            reply += "**{}**\n".format(player)
+            reply += "**{} ({})**\n".format(player, len(picks[player]))
+            picks[player].sort(key=ch_split)
             for chapter in picks[player]:
                 reply += "- {}\n".format(chapter)
             reply += "\n"
         await self.send_message(msg.channel, reply)
+
+
+def fe_split(fe):
+    if not fe.startswith('FE'):
+        return 100 + ord(fe[0])
+    letters = tuple(string.ascii_letters)
+    fe = fe.split('FE')[1]
+    while(fe.endswith(letters)):
+        fe = fe[:-1]
+    return int(fe)
+
+
+def ch_split(ch):
+    if not ch.startswith('Chapter'):
+        return [100, ch]
+    ch = ch.split('Chapter ')[1]
+    ch = ch.split(':')[0]
+    ch = ch.split('/')[0]
+    m = re.compile('(\d+)([a-zA-Z]*)')
+    ch = list(m.match(ch).groups())
+    ch[0] = int(ch[0])
+    return ch
