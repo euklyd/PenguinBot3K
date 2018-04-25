@@ -99,7 +99,9 @@ class UserRecords(Plugin):
         reply = "**__FE Heroes Friend Codes:__**\n\n"
         fehlist = []
         for uid in self.feh:
-            fehlist.append((self.feh[uid]['uname'].lower(), self.feh[uid]))
+            if self.feh[uid]['server'] == msg.server.id:
+                # only list IDs for users in the same server
+                fehlist.append((self.feh[uid]['uname'].lower(), self.feh[uid]))
         fehlist.sort()
         fehlist = [entry for (key, entry) in fehlist]
         for entry in fehlist:
