@@ -63,18 +63,24 @@ class UserRecords(Plugin):
         id = arguments[0]
         memo = arguments[1]
 
+        servers = [msg.server.id]
+        old = None
+        if msg.author.id in self.feh:
+            old = self.feh[msg.author.id]
+            if msg.server.id in old['servers']:
+                servers = [server for server in old['servers']]
+            else:
+                servers += [server for server in old['servers']]
+
         entry = {
             'uid': msg.author.id,
             'uname': msg.author.name,
             'fehid': id,
-            'server': msg.server.id
+            'servers': servers
         }
         if memo is not None:
             entry['memo'] = memo
 
-        old = None
-        if msg.author.id in self.feh:
-            old = self.feh[msg.author.id]
         self.feh[msg.author.id] = entry
 
         with open(path.format("feh.json"), 'w+') as fehfile:
@@ -99,7 +105,7 @@ class UserRecords(Plugin):
         reply = "**__FE Heroes Friend Codes:__**\n\n"
         fehlist = []
         for uid in self.feh:
-            if self.feh[uid]['server'] == msg.server.id:
+            if msg.server.id in self.feh[uid]['servers']:
                 # only list IDs for users in the same server
                 fehlist.append((self.feh[uid]['uname'].lower(), self.feh[uid]))
         fehlist.sort()
