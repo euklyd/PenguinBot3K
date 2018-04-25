@@ -91,12 +91,12 @@ class UserRecords(Plugin):
                 "Added\n    {}\nto the FE Heroes record, replacing\n    {}".format(fehstr(entry), fehstr(old))
             )
 
-    @command("^feheroes(?: list)$",
+    @command("^feheroes(?: list)?$",
              access=-1, name='feheroes',
              doc_brief="`feheroes list`: List stored FE Heroes IDs for this "
              "server.")
     async def feh_list(self, msg, arguments):
-        reply = "**FE Heroes Friend Codes**:\n\n"
+        reply = "**__FE Heroes Friend Codes:__**\n\n"
         fehlist = []
         for uid in self.feh:
             fehlist.append((self.feh[uid]['uname'].lower(), self.feh[uid]))
