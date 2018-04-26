@@ -115,6 +115,6 @@ class UserRecords(Plugin):
         reply += (
             "\nTo or modify your own FE Heroes Friend Code, you can use "
             "`{t}feheroes add <code>`. Optionally, you can add the name of "
-            "your avatar as well with `{t}feheroes add <friend code> <name>`."
+            "your avatar as well with `{t}feheroes add <code> <name>`."
         ).format(t=self.core.default_trigger)
         await self.send_message(msg.channel, reply)
