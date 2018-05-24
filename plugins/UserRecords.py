@@ -55,7 +55,7 @@ class UserRecords(Plugin):
             os.makedirs(os.path.dirname(path), exist_ok=True)
             self.feh = {}
 
-    @command("^feheroes add (\d+)(?: (.+))?$",
+    @command("^(?:fe)?heroes add (\d+)(?: (.+))?$",
              access=-1, name='feheroes',
              doc_brief="`feheroes add <id> [<name>]`: Record or modify your "
              "FE Heroes ID, and, optionally, the name of your avatar.")
@@ -97,7 +97,7 @@ class UserRecords(Plugin):
                 "Added\n    {}\nto the FE Heroes record, replacing\n    {}".format(fehstr(entry), fehstr(old))
             )
 
-    @command("^feheroes(?: list)?$",
+    @command("^(?:fe)?heroes(?: list)?$",
              access=-1, name='feheroes',
              doc_brief="`feheroes list`: List stored FE Heroes IDs for this "
              "server.")
@@ -113,7 +113,7 @@ class UserRecords(Plugin):
         for entry in fehlist:
             reply += fehstr(entry) + "\n"
         reply += (
-            "\nTo or modify your own FE Heroes Friend Code, you can use "
+            "\nTo add or modify your own FE Heroes Friend Code, you can use "
             "`{t}feheroes add <code>`. Optionally, you can add the name of "
             "your avatar as well with `{t}feheroes add <code> <name>`."
         ).format(t=self.core.default_trigger)
