@@ -107,7 +107,8 @@ class UserRecords(Plugin):
         for uid in self.feh:
             if msg.server.id in self.feh[uid]['servers']:
                 # only list IDs for users in the same server
-                fehlist.append((self.feh[uid]['uname'].lower(), self.feh[uid]))
+                fehlist.append((self.feh[uid]['uname'].lower() + uid, self.feh[uid]))
+        print(fehlist)
         fehlist.sort()
         fehlist = [entry for (key, entry) in fehlist]
         for entry in fehlist:
