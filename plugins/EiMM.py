@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 def get_avatar_image(user):
     response = requests.get(user.avatar_url)
-    return Image.open(BytesIO(response.content)).convert('RGB')
+    return Image.open(BytesIO(response.content)).convert('RGBA')
 
 def create_dm_icon(icon1, icon2):
     # Saves a 128x128, bytes-like representation of a combination of
