@@ -6,7 +6,7 @@ tabulate==0.7.5
 discord.py>=0.15.0
 imgurpython
 mutagen
+PIL
 pypng
 pyqrcode
 youtube-dl
-//might be youtube_dl
