@@ -39,14 +39,14 @@ def create_dm_icon(icon1, icon2):
     # icon1 and icon2 to /tmp.
     dest = '/tmp/dmicon.png'
     size = (128, 128)
-    
+
     i1 = icon1.resize(size)
     i2 = icon2.resize(size)
     i1 = i1.crop((0,0,64,128))
     i2.paste(i1, (0,0))
     i3 = BytesIO()
     # i2.save(i3, 'PNG')
-    i2.save(dest, 'PNG')
+    i2.save(dest)
     # return i3.getvalue()
     return dest
 
