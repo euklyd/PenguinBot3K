@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 def get_avatar_image(user):
     response = requests.get(user.avatar_url)
-    return Image.open(BytesIO(response.content))
+    return Image.open(BytesIO(response.content)).convert('RGB')
 
 def create_dm_icon(icon1, icon2):
     # Saves a 128x128, bytes-like representation of a combination of
@@ -45,10 +45,10 @@ def create_dm_icon(icon1, icon2):
     i1 = i1.crop((0,0,64,128))
     i2.paste(i1, (0,0))
     i3 = BytesIO()
-    # i2.save(i3, 'PNG')
+    i2.save(i3, 'PNG')
     i2.save(dest)
-    # return i3.getvalue()
-    return dest
+    return i3.getvalue()
+    # return dest
 
 
 class EiMM(Plugin):
