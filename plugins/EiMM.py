@@ -23,6 +23,7 @@ import discord
 import json
 import logging
 import random
+import requests
 from io import BytesIO
 from PIL import Image
 
