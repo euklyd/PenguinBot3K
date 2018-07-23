@@ -54,6 +54,7 @@ class EiMM(Plugin):
     @command("^[Dd][Mm]icon (\d+) (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
     async def DMicon1(self, msg, arguments):
+        arguments = list(arguments)
         arguments.append(msg.author.id)
         self.DMicon2(msg, arguments)
 
