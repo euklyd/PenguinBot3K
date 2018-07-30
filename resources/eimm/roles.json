@@ -1,0 +1,54 @@
+{
+  "modifier": {
+    "BPV-breaking": 5,
+    "Non-consec": 5,
+    "Ninja": 4,
+    "Macho": 5,
+    "Compulsive": 3
+  },
+  "normal": {
+    "Doctor": 5,
+    "Fullblocker": 5,
+    "Abilityblocker": 3,
+    "Shotblocker": 3,
+    "Jailer": 4,
+    "Hijacker": 4,
+    "Shot-hijacker": 5,
+    "Ability-hijacker": 5,
+    "Deflector": 3,
+    "Bus Driver": 3,
+    "Doubleshooter": 4,
+    "Vanillaizer": 3,
+    "Loverizer": 4,
+    "Roleswapper": 4,
+    "Alias-swapper": 3,
+    "Double-life": 4,
+    "Vigilante": 4,
+    "Arsonist": 4,
+    "Rolecop": 5,
+    "Aliascop": 4,
+    "Watcher": 5,
+    "Tracker": 5,
+    "Follower": 4,
+    "Voyeur": 4,
+    "BPV-breaker": 5,
+    "Tailor": 3
+  },
+  "additions": {
+    "Thunderdomer": 3,
+    "Commuter": 3,
+    "Dayvig": 3,
+    "Hider": 3
+  },
+  "bastard": {
+    "Ganon Cannon": 1,
+    "Faust": 1,
+    "Self-driver": 2,
+    "Resurrector": 1,
+    "Game Host": 1,
+    "Hidden": 2,
+    "Communist": 1,
+    "Rule Maker": 1,
+    "NOC Enabler": 2,
+  }
+}

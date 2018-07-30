@@ -29,6 +29,8 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+path = "resources/eimm/{}"
+
 
 def get_avatar_image(user):
     response = requests.get(user.avatar_url)
@@ -69,3 +71,33 @@ class EiMM(Plugin):
         u2 = await self.get_user_info(arguments[1])
         icon = create_dm_icon(get_avatar_image(u1), get_avatar_image(u2))
         await self.send_file(msg.channel, '/tmp/dmicon.png')
+
+    @command("^shoot <@!?(\d+)>$", access=-1, name='shoot',
+             doc_brief="`shoot @user`: Murders the fuck out of <user>.")
+    async def shoot(self, msg, arguments):
+        modifier = None
+        base = None
+        addition = None
+        with open(path.format('roles.json'), 'r') as roles:
+            if random.randint() % 2 == 0:
+                modifier = random.choices(
+                    list(roles['modifier'].keys()),
+                    weights=list(roles['modifier'].values())
+                )
+            base = random.choices(
+                list(roles['normal'].keys()) + list(roles['bastard'].keys()),
+                weights=list(roles['normal'].values()) + list(roles['bastard'].values())
+            )
+            if random.randint() % 2 == 0:
+                addition = random.choices(
+                    list(roles['addition'].keys()),
+                    weights=list(roles['addition'].values())
+                )
+        role = ""
+        if modifier is not None:
+            role += modifier + " "
+        role += base
+        if addition is not None:
+            role += " + {}x {}".format(random.randint()%3+1, addition)
+        flip_msg = "**{user}** has died! They were **{alignment} {role}**!"
+        await self.send_message(msg.channel, flip_msg)
