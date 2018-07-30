@@ -50,5 +50,15 @@
     "Communist": 1,
     "Rule Maker": 1,
     "NOC Enabler": 2
+  },
+  "overrides": {
+    "329017138226397184": {
+      "role": "Princess",
+      "freq": 1
+    },
+    "164385933548847106": {
+      "role": "Cutest",
+      "freq": 0.5
+    }
   }
 }

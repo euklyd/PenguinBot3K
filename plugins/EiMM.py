@@ -75,6 +75,7 @@ class EiMM(Plugin):
     @command("^shoot <@!?(\d+)>$", access=-1, name='shoot',
              doc_brief="`shoot @user`: Murders the fuck out of <user>.")
     async def shoot(self, msg, arguments):
+        target = msg.mentions[0]
         modifier = None
         base = None
         addition = None
@@ -100,10 +101,13 @@ class EiMM(Plugin):
         role += base
         if addition is not None:
             role += " + {}x {}".format(random.randint(1, 3), addition)
-        if msg.mentions[0].nick is None:
-            user = msg.mentions[0].name
+        if target.nick is None:
+            user = target.name
         else:
-            user = msg.mentions[0].nick
+            user = target.nick
+        if target.id in roles['overrides']:
+            if random.random() < roles['overrides'][target.id]['freq']:
+                role = roles['overrides'][target.id]['role']
         flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
             user=user,
             alignment="Mafia",
