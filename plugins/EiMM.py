@@ -100,10 +100,10 @@ class EiMM(Plugin):
         role += base
         if addition is not None:
             role += " + {}x {}".format(random.randint(1, 3), addition)
-        if msg.author.nick is None:
-            user = msg.author.name
+        if msg.mentions[0].nick is None:
+            user = msg.mentions[0].name
         else:
-            user = msg.author.nick
+            user = msg.mentions[0].nick
         flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
             user=user,
             alignment="Mafia",
