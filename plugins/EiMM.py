@@ -100,5 +100,9 @@ class EiMM(Plugin):
         role += base
         if addition is not None:
             role += " + {}x {}".format(random.randint(1, 3), addition)
-        flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(msg.author.nick, "Mafia", role)
+        flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
+            user=msg.author.nick,
+            alignment="Mafia",
+            role=role
+        )
         await self.send_message(msg.channel, flip_msg)
