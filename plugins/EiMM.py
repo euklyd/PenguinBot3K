@@ -84,16 +84,16 @@ class EiMM(Plugin):
             modifier = random.choices(
                 list(roles['modifier'].keys()),
                 weights=list(roles['modifier'].values())
-            )
+            )[0]
         base = random.choices(
             list(roles['normal'].keys()) + list(roles['bastard'].keys()),
             weights=list(roles['normal'].values()) + list(roles['bastard'].values())
-        )
+        )[0]
         if random.randint(0, 1) == 0:
             addition = random.choices(
                 list(roles['addition'].keys()),
                 weights=list(roles['addition'].values())
-            )
+            )[0]
         role = ""
         if modifier is not None:
             role += modifier + " "
