@@ -79,7 +79,7 @@ class EiMM(Plugin):
         base = None
         addition = None
         with open(path.format('roles.json'), 'r') as roles:
-            if random.randint() % 2 == 0:
+            if random.randint(0, 1) == 0:
                 modifier = random.choices(
                     list(roles['modifier'].keys()),
                     weights=list(roles['modifier'].values())
@@ -98,6 +98,6 @@ class EiMM(Plugin):
             role += modifier + " "
         role += base
         if addition is not None:
-            role += " + {}x {}".format(random.randint()%3+1, addition)
+            role += " + {}x {}".format(random.randint(1, 3), addition)
         flip_msg = "**{user}** has died! They were **{alignment} {role}**!"
         await self.send_message(msg.channel, flip_msg)
