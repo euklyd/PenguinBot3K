@@ -72,6 +72,12 @@ class EiMM(Plugin):
         icon = create_dm_icon(get_avatar_image(u1), get_avatar_image(u2))
         await self.send_file(msg.channel, '/tmp/dmicon.png')
 
+    @command("^shoot (\d+)$", access=-1, name='shoot',)
+    async def shoot_id(self, msg, arguments):
+        user = await self.get_user_info(arguments[0])
+        msg.mentions = [user]
+        await self.shoot(msg, arguments)
+
     @command("^shoot <@!?(\d+)>$", access=-1, name='shoot',
              doc_brief="`shoot @user`: Murders the fuck out of <user>.")
     async def shoot(self, msg, arguments):
