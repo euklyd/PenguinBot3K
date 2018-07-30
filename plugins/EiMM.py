@@ -74,7 +74,7 @@ class EiMM(Plugin):
 
     @command("^shoot (\d+)$", access=-1, name='shoot')
     async def shoot_id(self, msg, arguments):
-        user = await self.get_user_info(arguments[0])
+        user = msg.server.get_member(arguments[0])
         msg.mentions = [user]
         await self.shoot(msg, arguments)
 
