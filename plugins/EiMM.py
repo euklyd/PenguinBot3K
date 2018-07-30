@@ -91,8 +91,8 @@ class EiMM(Plugin):
         )[0]
         if random.randint(0, 1) == 0:
             addition = random.choices(
-                list(roles['addition'].keys()),
-                weights=list(roles['addition'].values())
+                list(roles['additions'].keys()),
+                weights=list(roles['additions'].values())
             )[0]
         role = ""
         if modifier is not None:
