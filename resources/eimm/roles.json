@@ -4,7 +4,8 @@
     "Non-consec": 5,
     "Ninja": 4,
     "Macho": 5,
-    "Compulsive": 3
+    "Compulsive": 3,
+    "Miller": 1
   },
   "normal": {
     "Doctor": 5,
@@ -32,13 +33,20 @@
     "Follower": 4,
     "Voyeur": 4,
     "BPV-breaker": 5,
-    "Tailor": 3
+    "Tailor": 3,
+    "Godfather": 2,
+    "Shot delayer": 3,
+    "Ability delayer": 3,
+    "Safeguard": 5,
+    "Omniguard": 3
   },
   "additions": {
     "Thunderdomer": 3,
     "Commuter": 3,
     "Dayvig": 3,
-    "Hider": 3
+    "Hider": 3,
+    "PGO": 3,
+    "Interceptor": 3
   },
   "bastard": {
     "Ganon Cannon": 1,
@@ -49,7 +57,8 @@
     "Hidden": 2,
     "Communist": 1,
     "Rule Maker": 1,
-    "NOC Enabler": 2
+    "NOC Enabler": 2,
+    "Mayor": 1
   },
   "overrides": {
     "329017138226397184": {
