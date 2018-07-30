@@ -88,7 +88,7 @@ class EiMM(Plugin):
                 list(roles['normal'].keys()) + list(roles['bastard'].keys()),
                 weights=list(roles['normal'].values()) + list(roles['bastard'].values())
             )
-            if random.randint() % 2 == 0:
+            if random.randint(0, 1) == 0:
                 addition = random.choices(
                     list(roles['addition'].keys()),
                     weights=list(roles['addition'].values())
