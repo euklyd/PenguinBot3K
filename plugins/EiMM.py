@@ -102,6 +102,7 @@ class EiMM(Plugin):
                 weights=list(roles['additions'].values())
             )[0]
         role = ""
+        alignment = "Mafia"
         if modifier is not None:
             role += modifier + " "
         role += base
@@ -114,9 +115,18 @@ class EiMM(Plugin):
         if target.id in roles['overrides']:
             if random.random() < roles['overrides'][target.id]['freq']:
                 role = roles['overrides'][target.id]['role']
+                if 'alignment' in roles['overrides'][target.id]:
+                    alignment = roles['overrides'][target.id]['alignment']
         flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
             user=user,
-            alignment="Mafia",
+            alignment=alignment,
             role=role
         )
         await self.send_message(msg.channel, flip_msg)
+
+    @command("^vote <@!?(\d+)>$", access=-1, name='vote')
+    async def vote(self, msg, arguments):
+        await self.send_message(
+            msg.channel,
+            "Sorry nerd, but there's no voting in Everyone is Mafia Mafia."
+        )
