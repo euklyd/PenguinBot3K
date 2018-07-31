@@ -76,7 +76,7 @@ class Moderation(Plugin):
         response = requests.get(msg.embeds[0]['thumbnail']['url'])
         if response.status_code == 200:
             img = response.raw.read()
-            with open(dest) as f:
+            with open(dest, 'wb') as f:
                 f.write(img)
             await self.send_file(channel, dest)
         else:
