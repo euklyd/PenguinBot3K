@@ -22,6 +22,7 @@ import discord
 import json
 import random
 import re
+import requests
 import string
 
 ACCESS = {
