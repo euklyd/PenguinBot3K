@@ -75,9 +75,9 @@ class Moderation(Plugin):
         channel = self.core.get_channel(arguments[0])
         response = requests.get(msg.embeds[0]['thumbnail']['url'])
         if response.status_code == 200:
-            img = response.raw.read()
             with open(dest, 'wb') as f:
-                f.write(img)
+                for chunk in response:
+                    f.write(chunk)
             await self.send_file(channel, dest)
         else:
             await self.send_message(msg.channel, "Couldn't download image.")
