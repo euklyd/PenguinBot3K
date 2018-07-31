@@ -68,6 +68,21 @@
     "164385933548847106": {
       "role": "Cutest",
       "freq": 0.5
+    },
+    "100165629373337600": {
+      "role": "Godfather",
+      "alignment": "Town",
+      "freq": 0.2
+    },
+    "112400745118040064": {
+      "role": "Miller Governor",
+      "alignment": "Mafia",
+      "freq": 0.4
+    },
+    "377044000747552778": {
+      "role": "Hated",
+      "alignment": "Town",
+      "freq": 0.5
     }
   }
 }
