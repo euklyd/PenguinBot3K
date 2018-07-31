@@ -68,6 +68,19 @@ class Moderation(Plugin):
         user = await self.core.get_user_info(arguments[0])
         await self.send_message(user, arguments[1])
 
+    @command("^imgpost <#([0-9]*)>$", access=ACCESS['debug'], name='imgpost')
+    async def imgpost(self, msg, arguments):
+        dest = '/tmp/imgpost.png'
+        channel = self.core.get_channel(arguments[0])
+        response = requests.get(msg.embeds[0]['thumbnail']['url'])
+        if response.status_code == 200:
+            img = response.raw.read()
+            with open(dest) as f:
+                f.write(img)
+            await self.send_file(channel, dest)
+        else:
+            await self.send_message(msg.channel, "Couldn't download image.")
+
     @command("^(?:permissions|perms) hex ?(.*)?$", access=-1, name='perms hex',
              doc_brief="`permissions hex <PERM1> <PERM2> ...`: Generate a hex "
              "representation of the permissions associated with the inputs.")
@@ -117,7 +130,7 @@ class Moderation(Plugin):
              name='no @everyone',
              doc_brief="`stfu <@user>`: lists which of <users>'s roles can "
              "mention `@everyone`.")
-    async def stfu(self, msg, arguments):
+    async def stfu_user(self, msg, arguments):
         user = msg.mentions[0]
         reply = "Roles {} has with `@everyone` permission:\n".format(user)
         for role in user.roles:
@@ -125,8 +138,17 @@ class Moderation(Plugin):
                 reply += role.name + "\n"
         await self.send_message(msg.channel, reply)
 
+    @command("^stfu$", access=ACCESS['ban'],
+             name='no @everyone',
+             doc_brief="`stfu`: lists which roles can mention `@everyone`.")
+    async def stfu(self, msg, arguments):
+        reply = "Roles with `@everyone` permission:\n"
+        for role in msg.server.roles:
+            if role.permissions.mention_everyone:
+                reply += role.name + "\n"
+        await self.send_message(msg.channel, reply)
 
-    @command("^list roles ?(0x[0-9a-f]*)?$", access=500, name='list roles',
+    @command("^list roles ?(0x[0-9A-Fa-f]*)?$", access=500, name='list roles',
              doc_brief="`list roles`: Lists all roles on the current "
              "server in an IM.")
     async def list_all_roles(self, msg, arguments):
@@ -188,8 +210,8 @@ class Moderation(Plugin):
         # user.id = arguments[0]
         # user.server = msg.server
         self.logger.info("banbanban")
-        self.logger.info(type(msg.author))
-        self.logger.info(msg.author)
+        # self.logger.info(type(msg.author))
+        # self.logger.info(msg.author)
         if (int(self.core.ACL.getAccess(msg.author)) <= int(self.core.ACL.getAccess(user))):
             self.logger.info("{}, {}".format(
                 int(self.core.ACL.getAccess(msg.author)),
@@ -228,6 +250,7 @@ class Moderation(Plugin):
                 reply
             )
             await self.ban_user(user, msg.server, delete_message_days=0)
+            self.logger.info("successfully banned {}".format(user.nick))
 
     @command("^nuke <@!?([0-9]+)> ([1-7])$", access=ACCESS["ban"], name='nuke',
              doc_brief="`nuke @<user> <days>`: bans `<user>` from the current "
