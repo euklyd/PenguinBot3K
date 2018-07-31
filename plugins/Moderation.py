@@ -68,7 +68,7 @@ class Moderation(Plugin):
         user = await self.core.get_user_info(arguments[0])
         await self.send_message(user, arguments[1])
 
-    @command("^imgpost <#([0-9]*)>$", access=ACCESS['debug'], name='imgpost')
+    @command("^imgpost <#([0-9]*)>", access=ACCESS['debug'], name='imgpost')
     async def imgpost(self, msg, arguments):
         dest = '/tmp/imgpost.png'
         channel = self.core.get_channel(arguments[0])
