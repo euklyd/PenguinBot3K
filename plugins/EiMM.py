@@ -110,7 +110,7 @@ class EiMM(Plugin):
         role += base
         if addition is not None:
             role += " + {}x {}".format(random.randint(1, 3), addition)
-        if target.nick is None:
+        if type(target) is not discord.Member or target.nick is None:
             user = target.name
         else:
             user = target.nick
