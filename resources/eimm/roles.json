@@ -62,7 +62,10 @@
   },
   "overrides": {
     "329017138226397184": {
-      "role": "Princess",
+      "role": {
+          "Princess": 3,
+          "Treestump Doctor Princess": 1
+        },
       "freq": 1
     },
     "164385933548847106": {

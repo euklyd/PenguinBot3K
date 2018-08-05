@@ -119,6 +119,11 @@ class EiMM(Plugin):
                 role = roles['overrides'][target.id]['role']
                 if 'alignment' in roles['overrides'][target.id]:
                     alignment = roles['overrides'][target.id]['alignment']
+                if type(role) is dict:
+                    role = random.choices(
+                        list(role.keys()),
+                        weights=list(role.values())
+                    )[0]
         flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
             user=user,
             alignment=alignment,
