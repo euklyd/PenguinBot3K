@@ -142,7 +142,7 @@ class EiMM(Plugin):
             "Sorry nerd, but there's no voting in Everyone is Mafia Mafia."
         )
 
-    @command("^[Tt]oo bad,? <@!?(\d+)>, [Ii] never miss(?:\*\*)?$", access=-1,
+    @command("^[Tt]oo bad,? <@!?(\d+)> ?,? [Ii] never miss(?:\*\*)?$", access=-1,
              name='dayvig')
     async def dayvig(self, msg, arguments):
         if msg.author.id not in self.dayvigs:
