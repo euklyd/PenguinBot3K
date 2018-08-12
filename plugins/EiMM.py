@@ -55,7 +55,9 @@ def create_dm_icon(icon1, icon2):
 
 class EiMM(Plugin):
     async def activate(self):
-        pass
+        self.dayvigs = []
+        with open(path.format('dayvig.json'), 'r') as dayvig:
+            self.dayvigs = json.load(dayvig)
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -80,7 +82,7 @@ class EiMM(Plugin):
         msg.mentions = [user]
         await self.shoot(msg, arguments)
 
-    @command("^shoot <@!?(\d+)>$", access=-1, name='shoot',
+    @command("^shoot <@!?(\d+)>(?:\*\*)?$", access=-1, name='shoot',
              doc_brief="`shoot @user`: Murders the fuck out of <user>.")
     async def shoot(self, msg, arguments):
         target = msg.mentions[0]
@@ -124,6 +126,8 @@ class EiMM(Plugin):
                         list(role.keys()),
                         weights=list(role.values())
                     )[0]
+                else:
+                    print("not a dict")
         flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
             user=user,
             alignment=alignment,
@@ -131,9 +135,25 @@ class EiMM(Plugin):
         )
         await self.send_message(msg.channel, flip_msg)
 
-    @command("^vote <@!?(\d+)>$", access=-1, name='vote')
+    @command("^vote <@!?(\d+)>(?:\*\*)?$", access=-1, name='vote')
     async def vote(self, msg, arguments):
         await self.send_message(
             msg.channel,
             "Sorry nerd, but there's no voting in Everyone is Mafia Mafia."
         )
+
+    @command("^[Tt]oo bad,? <@!?(\d+)>, [Ii] never miss(?:\*\*)?$", access=-1,
+             name='dayvig')
+    async def dayvig(self, msg, arguments):
+        if msg.author.id not in self.dayvigs:
+            await self.send_message(
+                msg.channel,
+                "Sorry {}, why don't you reread your Role PM?".format(
+                    msg.author.name
+            ))
+            return
+        await self.send_message(msg.channel, "**PHASE PAUSE**")
+        await asyncio.sleep(1)
+        await self.shoot(msg, arguments)
+        await asyncio.sleep(0.5)
+        await self.send_message(msg.channel, "**PHASE UNPAUSE**")
