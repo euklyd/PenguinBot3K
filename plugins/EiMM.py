@@ -58,6 +58,8 @@ class EiMM(Plugin):
         self.dayvigs = []
         with open(path.format('dayvig.json'), 'r') as dayvig:
             self.dayvigs = json.load(dayvig)
+        with open(path.format('ganon.json'),  'r') as ganon:
+            self.ganons = json.load(dayvig)
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -153,7 +155,47 @@ class EiMM(Plugin):
             ))
             return
         await self.send_message(msg.channel, "**PHASE PAUSE**")
-        await asyncio.sleep(1)
+        await asyncio.sleep(1.5)
         await self.shoot(msg, arguments)
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
+        await self.send_message(msg.channel, "**PHASE UNPAUSE**")
+
+    @command("^GANON CANNON <@!?\d+>$", access=-1, name='ganon cannon')
+    async def ganon_cannon(self, msg, arguments):
+        if msg.author.id not in self.ganons:
+            await self.send_message(
+                msg.channel,
+                "Sorry {}, why don't you reread your Role PM?".format(
+                    msg.author.name
+            ))
+            return
+        ganon = self.core.emoji.any_emoji(['return_of_ganon'])
+        replies = [
+            (
+                "Do you sleep still? Wait! Do not be so hasty, boy... I can "
+                "see this peoples dreams... Memes... Memes... Memes... "
+                "Memes... Memes as far as the eye can see. They are dank "
+                "memes... None can skimm across them... They yield no meaning "
+                "to catch... What did the host of the game say?... That the "
+                "gods sealed memes away? And they left behind people who "
+                "would one day awaken this place?"
+            ),
+            (
+                "How ridiculous... So many pathetic creatures, scattered "
+                "across a handful of factions, drifting on this thread like "
+                "fallen leaves on a forgotten pool... What they can possibly "
+                "hope to achieve? Don't you see? All of you... Your gods "
+                "destroyed you! And now, I will too!"
+            ),
+            (
+                f"**{ganon} There shall be no heroes today {ganon}**"
+            )
+        ]
+        for reply in replies:
+            await self.send_message(msg.channel, reply)
+            await asyncio.sleep(0.5)
+        await self.send_message(msg.channel, "**PHASE PAUSE**")
+        await asyncio.sleep(1.5)
+        await self.shoot(msg, arguments)
+        await asyncio.sleep(1)
         await self.send_message(msg.channel, "**PHASE UNPAUSE**")
