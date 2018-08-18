@@ -59,7 +59,7 @@ class EiMM(Plugin):
         with open(path.format('dayvig.json'), 'r') as dayvig:
             self.dayvigs = json.load(dayvig)
         with open(path.format('ganon.json'),  'r') as ganon:
-            self.ganons = json.load(dayvig)
+            self.ganons = json.load(ganon)
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
