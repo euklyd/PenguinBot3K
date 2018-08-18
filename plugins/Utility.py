@@ -336,8 +336,12 @@ class Utility(Plugin):
             server.role_hierarchy[0].id)
         )
         em.add_field(name="Owner",     value=server.owner.mention)
+        if (server.default_channel is None):
+            default_ch = None
+        else:
+            default_ch = server.default_channel.id
         em.add_field(name="Default channel", value="<#{}>".format(
-            server.default_channel.id)
+            default_ch)
         )
         # em.add_field(name="Default voice",     value=???)
         em.add_field(name="Verification",    value=server.verification_level)
