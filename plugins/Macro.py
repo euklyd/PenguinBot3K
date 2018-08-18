@@ -50,8 +50,6 @@ class Macro(Plugin):
         "\U0001F680-\U0001F6FF"
     )
 
-    egrep "["$'\u2600'"-"$'\u26FF'"]" nohup.out
-
     @command("^emojify ([{}]|(?:<:[A-Za-z0-9_]*:\d*>)) (.*)".format(emojis),
              access=-1, name='emojify',
              doc_brief="`emojify <emoji> <sentence>`: replace all spaces in "
