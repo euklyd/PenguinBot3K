@@ -285,7 +285,7 @@ class HaruFE(Plugin):
             json.dump(self.harufe_channels, chfile, indent=2)
         await self.send_message(msg.channel, "Updated channel list.")
 
-    @command("^ingotratio (\d+) ?(\d+)?$", name='ingotratio',
+    @command("^ingotratio (\d+) ?(\d+)?$", name='ingotratio', access=-1,
              doc_brief="`ingotratio <gold> (<gold per silver>)`: Converts an "
              "amount of gold to an optimal ratio of gold and silver for pure "
              "ingot gacha. Gold : silver exchange rate defaults to 600:1.")
@@ -302,8 +302,9 @@ class HaruFE(Plugin):
         n_ingots = gold // total_cost_per_ingot
         gold_out = n_ingots * gold_per_ingot + gold % total_cost_per_ingot
         sil_out = 5 * n_ingots
-        reply = "Gold: `{}`, Silver marks: `{}`, for `{}` Pure Ingots.".format(
-            gold_out, sil_out, n_ingots
+        reply = (
+            "Gold: `{}`, silver marks: `{}`, for `{}` Pure Ingots @ {} gold "
+            "per silver mark.".format(gold_out, sil_out, n_ingots, gold_per_sil)
         )
         await self.send_message(
             msg.channel,
