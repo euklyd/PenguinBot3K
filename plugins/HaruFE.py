@@ -291,15 +291,19 @@ class HaruFE(Plugin):
              "ingot gacha. Gold : silver exchange rate defaults to 600:1.")
     async def ingotratio(self, msg, arguments):
         gold = int(arguments[0])
-        gold_per_silver = 600
+        gold_per_sil = 600
         if arguments[1] is not None:
-            gold_per_silver = int(arguments[1])
-        gold_per_ingot = 4000 + 800 + 5 * (gold_per_silver)
-        n_ingots = gold // gold_per_ingot
-        gold_out = n_ingots * gold_per_ingot + gold % gold_per_ingot
-        silver_out = n_ingots
+            gold_per_sil = int(arguments[1])
+
+        gold_per_ingot = 4000 + 800
+        sil_per_ingot = 5
+        total_cost_per_ingot = gold_per_ingot + sil_per_ingot * gold_per_sil
+
+        n_ingots = gold // total_cost_per_ingot
+        gold_out = n_ingots * gold_per_ingot + gold % total_cost_per_ingot
+        sil_out = 5 * n_ingots
         reply = "Gold: `{}`, Silver marks: `{}`, for `{}` Pure Ingots.".format(
-            gold_out, silver_out, n_ingots
+            gold_out, sil_out, n_ingots
         )
         await self.send_message(
             msg.channel,
