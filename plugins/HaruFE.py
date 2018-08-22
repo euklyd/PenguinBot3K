@@ -290,10 +290,10 @@ class HaruFE(Plugin):
              "amount of gold to an optimal ratio of gold and silver for pure "
              "ingot gacha. Gold : silver exchange rate defaults to 600:1.")
     async def ingotratio(self, msg, arguments):
-        gold = arguments[0]
+        gold = int(arguments[0])
         gold_per_silver = 600
         if arguments[1] is not None:
-            gold_per_silver = arguments[1]
+            gold_per_silver = int(arguments[1])
         gold_per_ingot = 4000 + 800 + 5 * (gold_per_silver)
         n_ingots = gold // gold_per_ingot
         gold_out = n_ingots * gold_per_ingot + gold % gold_per_ingot
