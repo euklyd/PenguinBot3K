@@ -19,15 +19,21 @@ from core.Decorators import *
 
 import asyncio
 import discord
+import json
 import logging
 import random
+
+path = "resources/filter/{}"
+
+with open(path.format('reactservers.json')) as rsfile:
+    reactservers = json.load(rsfile)
 
 
 class React(Plugin):
     async def activate(self):
         pass
 
-    @filter("^what$", name='what', server="190782508105728000")
+    @filter("^what$", name='what', server=reactservers)
     async def what(self, msg, arguments):
         # lemonbot = self.core.emoji.emoji_str(["lemonbot", "lemon_bot"])
         # if (lemonbot[0] == '`'):
@@ -48,7 +54,7 @@ class React(Plugin):
         await self.add_reaction(msg, dong)
 
     @filter("^<:(?:fe1_)?([Cc]ain|[Aa]bel):[0-9]{16,20}>$", name='christmas cavaliers',
-            server="190782508105728000")
+            server=reactservers)
     async def fe1_cavs(self, msg, arguments):
         if (arguments[0].lower() == 'cain'):
             cav = self.core.emoji.any_emoji(["fe1_abel", "abel"])
@@ -63,6 +69,16 @@ class React(Plugin):
             "nipples_the_enchilada", "nipples"
         ])
         await self.add_reaction(msg, nipples)
+
+    # @filter("^<:[Cc]had:[0-9]{16,20}>$", name='chad x virgin',
+    #         server="190782508105728000")
+    # async def chad_x_virgin(self, msg, arguments):
+    #     if (random.randint(0, 8) == 0):
+    #         virgin = self.core.emoji.any_emoji([
+    #             "virgin"
+    #         ])
+    #         await self.add_reaction(msg, '❤')
+    #         await self.add_reaction(msg, virgin)
 
     @filter("^.*$", name='catface', server="320996033268154378")
     async def catface(self, msg, arguments):
