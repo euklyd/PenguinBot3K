@@ -455,7 +455,7 @@ class Utility(Plugin):
             "Encoded `{}` into {}; old version is:\n{}".format(secret, em, self.core.emoji.url(arguments[1]))
         )
 
-    @command("^(?:smallcaps|sm) (.*)$", access=-1, name='smallcaps',
+    @command("^(?:smallcaps|sc) (.*)$", access=-1, name='smallcaps',
              doc_brief="`smallcaps <msg>` Converts <msg> into sᴍᴀʟʟ ᴄᴀᴘs")
     async def smallcaps(self, msg, arguments):
         alphabet = {
