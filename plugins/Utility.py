@@ -455,6 +455,42 @@ class Utility(Plugin):
             "Encoded `{}` into {}; old version is:\n{}".format(secret, em, self.core.emoji.url(arguments[1]))
         )
 
+    @command("^(?:smallcaps|sm) (.*)$", access=-1, name='smallcaps',
+             doc_brief="`smallcaps <msg>` Converts <msg> into sᴍᴀʟʟ ᴄᴀᴘs")
+    async def smallcaps(self, msg, arguments):
+        alphabet = {
+            'a': 'ᴀ',
+            'b': 'ʙ',
+            'c': 'ᴄ',
+            'd': 'ᴅ',
+            'e': 'ᴇ',
+            'f': 'ғ',
+            'g': 'ɢ',
+            'h': 'ʜ',
+            'i': 'ɪ',
+            'j': 'ᴊ',
+            'k': 'ᴋ',
+            'l': 'ʟ',
+            'm': 'ᴍ',
+            'n': 'ɴ',
+            'o': 'ᴏ',
+            'p': 'ᴘ',
+            'q': 'ǫ',
+            'r': 'ʀ',
+            's': 's',
+            't': 'ᴛ',
+            'u': 'ᴜ',
+            'v': 'ᴠ',
+            'w': 'ᴡ',
+            'x': 'x',
+            'y': 'ʏ',
+            'z': 'ᴢ'
+        }
+        reply = ''
+        for c in arguments[0]:
+            reply += alphabet.get(c, c)
+        await self.send_message(msg.channel, reply)
+
     @command("^tagteam( list)?( games)?$", name='tagteam')
     async def tagteam_gamelist(self, msg, arguments):
         games = {}
