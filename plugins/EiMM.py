@@ -60,6 +60,8 @@ class EiMM(Plugin):
             self.dayvigs = json.load(dayvig)
         with open(path.format('ganon.json'),  'r') as ganon:
             self.ganons = json.load(ganon)
+        with open(path.format('conquerors.json'),  'r') as conquerors:
+            self.conquerors = json.load(conquerors)
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -210,7 +212,7 @@ class EiMM(Plugin):
             await self.send_message(msg.channel,
                                     "Didn't you mean to step on someone else?")
             return
-        else if msg.author.id not in conquerors:
+        else if msg.author.id not in self.conquerors:
             await self.send_message(
                 msg.channel,
                 "Sorry, but you're not wearing the right heels for this."
