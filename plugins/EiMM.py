@@ -205,8 +205,8 @@ class EiMM(Plugin):
     @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step')
     async def step_on(self, msg, arguments):
         victim = None
-        if msg.mentions[0].id == '100165629373337600' and
-                msg.author.id == '280945905241423873':
+        if (msg.mentions[0].id == '100165629373337600' and
+                msg.author.id == '280945905241423873'):
             role = '<a:ameowmelt:393813014157197324>'
         elif msg.mentions[0].id != '237811431712489473':
             await self.send_message(msg.channel,
