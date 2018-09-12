@@ -199,3 +199,33 @@ class EiMM(Plugin):
         await self.shoot(msg, arguments)
         await asyncio.sleep(1)
         await self.send_message(msg.channel, "**PHASE UNPAUSE**")
+
+    @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step')
+    async def step_on(self, msg, arguments):
+        victim = None
+        if msg.mentions[0].id == '100165629373337600' and
+                msg.author.id == '280945905241423873':
+            role = '<a:ameowmelt:393813014157197324>'
+        elif msg.mentions[0].id != '237811431712489473':
+            await self.send_message(msg.channel,
+                                    "Didn't you mean to step on someone else?")
+            return
+        else if msg.author.id not in conquerors:
+            await self.send_message(
+                msg.channel,
+                "Sorry, but you're not wearing the right heels for this."
+            )
+            return
+        else:
+            role = 'Pancake'
+        victim = msg.mentions[0]
+        if type(victim) is not discord.Member or target.nick is None:
+            victim_name = victim.name
+        else:
+            victim_name = victim.nick
+        flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
+            user=victim_name,
+            alignment='Mafia',
+            role=role
+        )
+        await self.send_message(msg.channel, flip_msg)
