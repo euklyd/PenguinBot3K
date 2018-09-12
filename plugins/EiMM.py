@@ -231,5 +231,5 @@ class EiMM(Plugin):
             role=role
         )
         em = discord.Embed(color=victim.color)
-        em.set_thumbnail(url='https://i.imgur.com/jTs7pRq.gif')
+        em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         await self.send_message(msg.channel, flip_msg, embed=em)
