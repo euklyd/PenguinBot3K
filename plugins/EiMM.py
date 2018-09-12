@@ -221,7 +221,7 @@ class EiMM(Plugin):
         else:
             role = 'Pancake'
         victim = msg.mentions[0]
-        if type(victim) is not discord.Member or target.nick is None:
+        if type(victim) is not discord.Member or victim.nick is None:
             victim_name = victim.name
         else:
             victim_name = victim.nick
