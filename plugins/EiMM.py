@@ -206,8 +206,8 @@ class EiMM(Plugin):
     async def step_on(self, msg, arguments):
         victim = None
         if (msg.mentions[0].id == '100165629373337600' and
-                msg.author.id == '280945905241423873'):
-            role = '<a:ameowmelt:393813014157197324>'
+                msg.author.id == '100165629373337600'):
+            role = self.core.emoji.any_emoji(['ameowmelt'])
         elif msg.mentions[0].id != '237811431712489473':
             await self.send_message(msg.channel,
                                     "Didn't you mean to step on someone else?")
