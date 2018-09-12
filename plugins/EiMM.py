@@ -230,4 +230,6 @@ class EiMM(Plugin):
             alignment='Mafia',
             role=role
         )
-        await self.send_message(msg.channel, flip_msg)
+        em = discord.Embed(color=victim.color)
+        em.set_thumbnail(url='https://i.imgur.com/jTs7pRq.gif')
+        await self.send_message(msg.channel, flip_msg, embed=em)
