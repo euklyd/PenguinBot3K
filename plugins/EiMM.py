@@ -212,7 +212,7 @@ class EiMM(Plugin):
             await self.send_message(msg.channel,
                                     "Didn't you mean to step on someone else?")
             return
-        else if msg.author.id not in self.conquerors:
+        elif msg.author.id not in self.conquerors:
             await self.send_message(
                 msg.channel,
                 "Sorry, but you're not wearing the right heels for this."
