@@ -551,7 +551,7 @@ class Utility(Plugin):
             reply += "\n"
         await self.send_message(msg.channel, reply)
 
-    @command("^embed <#(\d+)> ```(?:json\n)(.*)```", name='embed', access=700,
+    @command("^embed <#(\d+)> ```(?:json\n)?(.*)```", name='embed', access=700,
              doc_brief="`embed #channel ```<json>````: Given an embed JSON "
              "from https://leovoel.github.io/embed-visualizer/, embed it in "
              "#channel as a Discord Embed.")
