@@ -551,6 +551,21 @@ class Utility(Plugin):
             reply += "\n"
         await self.send_message(msg.channel, reply)
 
+    @command("^embed <#(\d+)> ```(?:json\n)(.*)```", name='embed', access=700,
+             doc_brief="`embed #channel ```<json>````: Given an embed JSON "
+             "from https://leovoel.github.io/embed-visualizer/, embed it in "
+             "#channel as a Discord Embed.")
+    async def embed(self, msg, arguments):
+        try:
+            data = json.loads(arguments[1])
+            if 'timestamp' in data:
+                data.pop('timestamp')
+            em = discord.Embed.from_data(data)
+        except Exception as e:
+            await self.send_message(msg.channel, "Error: {}".format(e))
+            return
+        await self.send_message(msg.channel_mentions[0], embed=em)
+
 
 def fe_split(fe):
     if not fe.startswith('FE'):
