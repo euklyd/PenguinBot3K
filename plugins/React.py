@@ -95,6 +95,6 @@ class React(Plugin):
             server="190782508105728000")
     async def in_america(self, msg, arguments):
         if (random.randint(0, 17) == 0):
-            await self.add_reaction(msg, 🇨🇦)
+            await self.add_reaction(msg, '🇨🇦')
         else:
-            await self.add_reaction(msg, 🇺🇸)
+            await self.add_reaction(msg, '🇺🇸')
