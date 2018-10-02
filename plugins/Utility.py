@@ -551,7 +551,7 @@ class Utility(Plugin):
             reply += "\n"
         await self.send_message(msg.channel, reply)
 
-    @command("^embed <#(\d+)> ```(?:json\n)?(.*)```", name='embed', access=700,
+    @command("^embed <#(\d+)> ```(?:json\n)?(.*)``` ?(.*)?", name='embed', access=700,
              doc_brief="`embed #channel ```<json>````: Given an embed JSON "
              "from https://leovoel.github.io/embed-visualizer/, embed it in "
              "#channel as a Discord Embed.")
@@ -560,7 +560,15 @@ class Utility(Plugin):
             data = json.loads(arguments[1])
             if 'timestamp' in data:
                 data.pop('timestamp')
+            if 'image' in data and arguments[2] is not None:
+                data.pop('image')
             em = discord.Embed.from_data(data)
+            em.set_footer(
+                text=msg.author.nickname,
+                icon_url=msg.author.avatar_url
+            )
+            if arguments[2] is not None:
+                em.set_image(arguments[2])
         except Exception as e:
             await self.send_message(msg.channel, "Error: {}".format(e))
             return
