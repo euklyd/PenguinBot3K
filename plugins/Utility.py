@@ -556,6 +556,7 @@ class Utility(Plugin):
              "from https://leovoel.github.io/embed-visualizer/, embed it in "
              "#channel as a Discord Embed.")
     async def embed(self, msg, arguments):
+        print(arguments)
         try:
             data = json.loads(arguments[1])
             if 'timestamp' in data:
