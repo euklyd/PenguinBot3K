@@ -556,19 +556,18 @@ class Utility(Plugin):
              "from https://leovoel.github.io/embed-visualizer/, embed it in "
              "#channel as a Discord Embed.")
     async def embed(self, msg, arguments):
-        print(arguments)
         try:
             data = json.loads(arguments[1])
             if 'timestamp' in data:
                 data.pop('timestamp')
-            if 'image' in data and arguments[2] is not None:
+            if 'image' in data and arguments[2] != '':
                 data.pop('image')
             em = discord.Embed.from_data(data)
             em.set_footer(
                 text=msg.author.nick,
                 icon_url=msg.author.avatar_url
             )
-            if arguments[2] is not None:
+            if arguments[2] != '':
                 em.set_image(arguments[2])
         except Exception as e:
             await self.send_message(msg.channel, "Error: {}".format(e))
