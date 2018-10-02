@@ -568,7 +568,7 @@ class Utility(Plugin):
                 icon_url=msg.author.avatar_url
             )
             if arguments[2] != '':
-                em.set_image(arguments[2])
+                em.set_image(url=arguments[2])
         except Exception as e:
             await self.send_message(msg.channel, "Error: {}".format(e))
             return
