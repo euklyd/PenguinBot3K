@@ -564,7 +564,7 @@ class Utility(Plugin):
                 data.pop('image')
             em = discord.Embed.from_data(data)
             em.set_footer(
-                text=msg.author.nickname,
+                text=msg.author.nick,
                 icon_url=msg.author.avatar_url
             )
             if arguments[2] is not None:
