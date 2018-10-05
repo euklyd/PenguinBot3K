@@ -24,8 +24,14 @@ import json
 import logging
 import random
 import requests
+
+from datetime import datetime
+from googleapiclient import discovery
+from httplib2 import Http
 from io import BytesIO
 from PIL import Image
+from oauth2client import file, client, tools
+
 
 logger = logging.getLogger(__name__)
 
@@ -205,22 +211,21 @@ class EiMM(Plugin):
     @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step')
     async def step_on(self, msg, arguments):
         victim = None
-        if (msg.mentions[0].id == '100165629373337600' and
-                msg.author.id == '280945905241423873'):
-            role = '<a:ameowmelt:489247508137246731>'
-        elif msg.mentions[0].id != '237811431712489473':
+        if msg.mentions[0].id not in self.conquerors:
             await self.send_message(msg.channel,
                                     "Didn't you mean to step on someone else?")
             return
-        elif msg.author.id not in self.conquerors:
+        if msg.author.id not in self.conquerors[msg.mentions[0].id]['heels']:
             await self.send_message(
                 msg.channel,
                 "Sorry, but you're not wearing the right heels for this."
             )
             return
+        victim = msg.mentions[0]
+        if 'role' in self.conquerors[msg.mentions[0].id]:
+            role = self.conquerors[msg.mentions[0].id]['role']
         else:
             role = 'Pancake'
-        victim = msg.mentions[0]
         if type(victim) is not discord.Member or victim.nick is None:
             victim_name = victim.name
         else:
@@ -233,3 +238,51 @@ class EiMM(Plugin):
         em = discord.Embed(color=victim.color)
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         await self.send_message(msg.channel, flip_msg, embed=em)
+
+    # @command("^submit (.*)$", access=-1, name='submit',
+    #          doc_brief="`submit <question here>`: Submits a question for EiMM "
+    #          "interviews")
+    # async def submit_question(self, msg, arguments):
+    #     SCOPES = [
+    #         'https://www.googleapis.com/auth/analytics.readonly',
+    #         'https://www.googleapis.com/auth/drive',
+    #         'https://www.googleapis.com/auth/spreadsheets'
+    #     ]
+    #
+    #     store = file.Storage('token.json')
+    #     creds = store.get()
+    #     if not creds or creds.invalid:
+    #         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+    #         creds = tools.run_flow(flow, store)
+    #     service = discovery.build('sheets', 'v4', http=creds.authorize(Http()))
+    #
+    #     # with open(path.format('interview_meta.json'), 'r') as meta:
+    #     #     interview_meta = json.load(meta)
+    #     interview_meta = {
+    #         'uid':            '100165629373337600',
+    #         'name':           'euklyd',
+    #         'spreadsheet_id': '1kZP1k1DNv0E9D4cIq13bFgoJWqQsJJguE46He-QqwKE',
+    #         'sheet_id':       '0'
+    #     }
+    #     interviewee_uid   = interview_meta['uid']
+    #     interviewee_uname = interview_meta['name']
+    #     spreadsheet_id    = interview_meta['spreadsheet_id']
+    #     sheet_id          = interview_meta['sheet_id']
+    #
+    #     data = [
+    #         datetime.now().isoformat(),
+    #         interviewee_uid,
+    #         interviewee_uname,
+    #         msg.author.id,
+    #         msg.author.name,
+    #         arguments[0]
+    #     ]
+    #
+    #     range_            = 'A1:F100000'
+    #     value_input_option= 'USER_ENTERED'
+    #     body = {'values': data}
+    #
+    #     result = service.spreadsheets().values().update(
+    #         spreadsheetId=spreadsheet_id, range=range_,
+    #         valueInputOption=value_input_option, body=body
+    #     ).execute()
