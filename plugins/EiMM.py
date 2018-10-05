@@ -26,11 +26,11 @@ import random
 import requests
 
 from datetime import datetime
-from googleapiclient import discovery
-from httplib2 import Http
+# from googleapiclient import discovery
+# from httplib2 import Http
 from io import BytesIO
 from PIL import Image
-from oauth2client import file, client, tools
+# from oauth2client import file, client, tools
 
 
 logger = logging.getLogger(__name__)
