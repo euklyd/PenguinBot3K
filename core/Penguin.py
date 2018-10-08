@@ -186,8 +186,8 @@ class PenguinBot(discord.Client):
                     content=msg.content
                 )
             )
-        await self.command.check(msg)
         await self.filter.check(msg)
+        await self.command.check(msg)
 
         # embed debugging stuff:
         # if (msg.author.id == "136107769680887808"):

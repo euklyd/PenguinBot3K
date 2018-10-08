@@ -40,7 +40,6 @@ class React(Plugin):
         #     self.logger.warning("no such emoji: {}".format(lemonbot))
         # else:
             # await self.add_reaction(msg, lemonbot)
-        self.logger.info(msg.content)
         lemonbot = self.core.emoji.any_emoji(["lemonbot", "lemon_bot"])
         await self.add_reaction(msg, lemonbot)
         if (random.randint(0, 17) == 0):
