@@ -23,6 +23,8 @@ import json
 import logging
 import random
 
+from datetime import datetime
+
 logger = logging.getLogger(__name__)
 
 image_path = "resources/images/{}"
@@ -826,3 +828,33 @@ class Macro(Plugin):
         await self.send_message(msg.channel, e_char)
         await self.send_message(msg.channel, d_char)
         # await self.send_message(msg.channel, superweed) # too many characters
+
+    @command("what ?(\d+)?", access=-1, name='what',
+             doc_brief="`what`: posts a random mega man sprite quote")
+    async def mmquote(self, msg, arguments):
+        with open(macro_path.format("megaman_quotes.json"), 'r') as whatfile:
+            quotes = json.load(whatfile)
+        if arguments[0] is not None:
+            quote_num = int(arguments[0])
+        else:
+            quote_num = random.randint(0, len(quotes['quotes']) - 1)
+        quote = quotes['quotes'][quote_num]
+        icon_url = quotes['icons'][quote['name']]
+        em = discord.Embed(
+            title="Megaman Sprite Game quotes",
+            color=msg.server.get_member(self.core.user.id).color,
+            url="http://megamanspritecomic.tumblr.com/",
+            description=quote['quote'],
+            timestamp=datetime.now()
+        )
+        em.set_thumbnail(url=icon_url)
+        em.set_author(
+            name="MEGAMAN",
+            url="https://discordapp.com",
+            icon_url=icon_url
+        )
+        em.set_footer(
+            text="Quote #{}".format(quote_num),
+            icon_url="https://66.media.tumblr.com/avatar_0d7144cecd81_128.pnj"
+        )
+        await self.send_message(msg.channel, embed=em)
