@@ -849,14 +849,14 @@ class Macro(Plugin):
         em = discord.Embed(
             title="Megaman Sprite Game quotes",
             color=msg.server.get_member(self.core.user.id).color,
-            url="http://megamanspritecomic.tumblr.com/",
+            url="http://megamanspritecomic.tumblr.com/post/65735240451/megaman-sprite-game-released-on-october-31st",
             description=quote['quote'],
             timestamp=datetime.utcfromtimestamp(1351682400)
         )
         em.set_thumbnail(url=icon_url)
         em.set_author(
             name=quote['name'],
-            url="https://discordapp.com",
+            url="http://megamanspritecomic.tumblr.com/",
             icon_url=icon_url
         )
         em.set_footer(
