@@ -843,7 +843,8 @@ class Macro(Plugin):
                 'quote': "what kind of stupid dumb idiot user requests a quote that doesn't exist",
                 'name': 'mega man'
             }
-        quote = quotes['quotes'][quote_num]
+        else:
+            quote = quotes['quotes'][quote_num]
         icon_url = quotes['icons'][quote['name']]
         em = discord.Embed(
             title="Megaman Sprite Game quotes",
