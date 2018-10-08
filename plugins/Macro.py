@@ -838,6 +838,11 @@ class Macro(Plugin):
             quote_num = int(arguments[0])
         else:
             quote_num = random.randint(0, len(quotes['quotes']) - 1)
+        if quote_num > len(quotes['quotes']) or quote_num < 0:
+            quote = {
+                'quote': "what kind of stupid dumb idiot user requests a quote that doesn't exist",
+                'name': 'mega man'
+            }
         quote = quotes['quotes'][quote_num]
         icon_url = quotes['icons'][quote['name']]
         em = discord.Embed(
