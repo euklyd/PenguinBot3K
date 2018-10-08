@@ -845,7 +845,7 @@ class Macro(Plugin):
             color=msg.server.get_member(self.core.user.id).color,
             url="http://megamanspritecomic.tumblr.com/",
             description=quote['quote'],
-            timestamp=msg.timestamp
+            timestamp=datetime.utcfromtimestamp(1383363660)
         )
         em.set_thumbnail(url=icon_url)
         em.set_author(
