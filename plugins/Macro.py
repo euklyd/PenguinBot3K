@@ -849,7 +849,7 @@ class Macro(Plugin):
         )
         em.set_thumbnail(url=icon_url)
         em.set_author(
-            name="MEGAMAN",
+            name=quote['name'],
             url="https://discordapp.com",
             icon_url=icon_url
         )
