@@ -106,6 +106,7 @@
     "pharaoh man": "https://i.imgur.com/4oB9dx2.png",
     "policeman": "https://i.imgur.com/cGcWOGx.png",
     "quick man": "https://i.imgur.com/tKhHUy5.png",
+    "raven": "https://i.imgur.com/O5vhCm9.png",
     "regretful eskimo": "https://i.imgur.com/WIHIncm.png",
     "roll": "https://i.imgur.com/9azHpIN.png",
     "slash man": "https://i.imgur.com/NFRAOGw.png",
@@ -117,6 +118,11 @@
     "zero": "https://i.imgur.com/FMaCdca.png"
   },
   "custom": {
+    "batter": {
+      "name": "batter",
+      "quote": "THE UNITED STATES HAS BEEN KIDNAPPED BY THE ALT-RIGHT. ARE YOU A BAD ENOUGH DUDE TO RESCUE THE CONSTITUTION?",
+      "icon": "mega man"
+    },
     "claire": {
       "name": "claire",
       "quote": "\"i'll be whatever you want me to be, claire!\"—sully\nhow about deceased",
@@ -131,6 +137,11 @@
       "name": "iris",
       "quote": "weather looks good in california i'm so jealous",
       "icon": "iris"
+    },
+    "raven": {
+      "name": "raven",
+      "quote": "i regret sleeping because i woke up with so many regrets",
+      "icon": "raven"
     },
     "refa": {
       "name": "refa",
