@@ -834,13 +834,14 @@ class Macro(Plugin):
     async def mmquote(self, msg, arguments):
         with open(macro_path.format("megaman_quotes.json"), 'r') as whatfile:
             quotes = json.load(whatfile)
+        # default state being random is good
+        quote_num = random.randint(0, len(quotes['quotes']) - 1)
         if arguments[0] is not None:
             try:
+                # this might go poorly if you force a call here
                 quote_num = int(arguments[0])
             except ValueError:
-                quote_num = 0
-        else:
-            quote_num = random.randint(0, len(quotes['quotes']) - 1)
+                pass
         if quote_num > len(quotes['quotes']) or quote_num < 0:
             quote = {
                 'quote': "what kind of stupid dumb idiot user requests a quote that doesn't exist",
@@ -873,6 +874,6 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
 
-    @command("what ?([A-Za-z]+)?$", access=-1, name='what custom')
+    @command("what ?([A-Za-z ]+)?$", access=-1, name='what custom')
     async def mmquote_custom(self, msg, arguments):
         await self.mmquote(msg, arguments)
