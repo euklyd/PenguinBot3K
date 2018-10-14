@@ -852,7 +852,7 @@ class Macro(Plugin):
         print(arguments[0])
         if arguments[0] in quotes['custom']:
             # spooky override ~owo~
-            quote = quotes['custom'][arguments[0]]['quote']
+            quote = quotes['custom'][arguments[0]]
             icon_url = quotes['icons'][quotes['custom'][arguments[0]]['icon']]
         em = discord.Embed(
             title="Megaman Sprite Game quotes",
