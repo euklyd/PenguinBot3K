@@ -94,9 +94,11 @@
     "boy": "https://i.imgur.com/5yaSSbE.png",
     "bubble man": "https://i.imgur.com/mOBpXGy.png",
     "dad": "https://i.imgur.com/BKxDJmI.png",
+    "dogmobile": "https://i.imgur.com/pA1ECod.png",
     "generic": "https://i.imgur.com/3JJ1DSq.png",
     "ghost": "https://i.imgur.com/HDEO2JT.png",
     "hot magma": "https://i.imgur.com/3fX7ApN.png",
+    "iris": "https://i.imgur.com/SCrewyT.png",
     "mayor of the town": "https://i.imgur.com/fJCkEaI.png",
     "mega man": "https://i.imgur.com/BFwbN1M.png",
     "mr. white": "https://i.imgur.com/piJ6zbr.png",
@@ -114,9 +116,29 @@
     "zero": "https://i.imgur.com/FMaCdca.png"
   },
   "custom": {
+    "claire": {
+      "name": "claire",
+      "quote": "\"i'll be whatever you want me to be, claire!\"—sully\nhow about deceased",
+      "icon": "yellow devil"
+    },
+    "damian": {
+      "name": "damian",
+      "quote": "i don't like people",
+      "icon": "dogmobile"
+    },
+    "iris": {
+      "name": "iris",
+      "quote": "weather looks good in california i'm so jealous",
+      "icon": "iris"
+    },
     "refa": {
       "name": "refa",
       "quote": "i don't want to carry some useless shit\ni want to be the useless shit that gets carried",
+      "icon": "zero"
+    },
+    "short": {
+      "name": "kim",
+      "quote": "how to help iris tho\nshe's like\nunloveable",
       "icon": "zero"
     }
   }
