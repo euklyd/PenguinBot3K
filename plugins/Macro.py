@@ -849,7 +849,6 @@ class Macro(Plugin):
         else:
             quote = quotes['quotes'][quote_num]
         icon_url = quotes['icons'][quote['name']]
-        print(arguments[0])
         if arguments[0] in quotes['custom']:
             # spooky override ~owo~
             quote = quotes['custom'][arguments[0]]
