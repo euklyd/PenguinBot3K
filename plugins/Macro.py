@@ -853,6 +853,7 @@ class Macro(Plugin):
             # spooky override ~owo~
             quote = quotes['custom'][arguments[0]]
             icon_url = quotes['icons'][quotes['custom'][arguments[0]]['icon']]
+            quote_num = arguments[0]
         em = discord.Embed(
             title="Megaman Sprite Game quotes",
             color=msg.server.get_member(self.core.user.id).color,
