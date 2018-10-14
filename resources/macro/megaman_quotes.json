@@ -112,5 +112,12 @@
     "woman": "https://i.imgur.com/cdVoTNz.png",
     "yellow devil": "https://i.imgur.com/081eEVh.png",
     "zero": "https://i.imgur.com/FMaCdca.png"
+  },
+  "custom": {
+    "refa": {
+      "name": "refa",
+      "quote": "\"i don't want to carry some useless shit\ni want to be the useless shit that gets carried\"",
+      "icon": "zero"
+    }
   }
 }

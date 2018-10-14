@@ -835,7 +835,10 @@ class Macro(Plugin):
         with open(macro_path.format("megaman_quotes.json"), 'r') as whatfile:
             quotes = json.load(whatfile)
         if arguments[0] is not None:
-            quote_num = int(arguments[0])
+            try:
+                quote_num = int(arguments[0])
+            except ValueError:
+                quote_num = 0
         else:
             quote_num = random.randint(0, len(quotes['quotes']) - 1)
         if quote_num > len(quotes['quotes']) or quote_num < 0:
@@ -846,6 +849,10 @@ class Macro(Plugin):
         else:
             quote = quotes['quotes'][quote_num]
         icon_url = quotes['icons'][quote['name']]
+        if arguments[0] in quotes['custom']:
+            # spooky override ~owo~
+            quote = quotes['custom'][arguments[0]]['quote']
+            icon_url = quotes['icons'][quotes['custom'][arguments[0]]['icon']]
         em = discord.Embed(
             title="Megaman Sprite Game quotes",
             color=msg.server.get_member(self.core.user.id).color,
@@ -864,3 +871,7 @@ class Macro(Plugin):
             icon_url="https://66.media.tumblr.com/avatar_0d7144cecd81_128.pnj"
         )
         await self.send_message(msg.channel, embed=em)
+
+    @command("what ?([A-Za-z]+)?", access=-1, name='what custom')
+    async def mmquote_custom(self, msg, arguments):
+        await self.mmquote(msg, arguments)
