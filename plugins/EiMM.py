@@ -69,8 +69,8 @@ class InterviewMeta():
     salt             = None
 
     def load_from_dict(meta, core):
-        self.server           = self.core.get_server(meta['server_id'])
-        self.question_channel = self.core.get_channel(meta['q_channel'])
+        self.server           = core.get_server(meta['server_id'])
+        self.question_channel = core.get_channel(meta['q_channel'])
         # self.answer_channel   = self.core.get_channel(meta['a_channel'])
         self.interviewee      = self.server.get_member(meta['inteviewee'])
         self.questions        = meta['questions']
