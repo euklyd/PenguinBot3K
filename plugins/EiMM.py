@@ -361,13 +361,14 @@ class EiMM(Plugin):
             description=question['question'],
             timestamp=msg.timestamp
         )
-        em.set_thumbnail(url=self.interview.interviewee.avatar_url)
+        em.set_thumbnail(url=msg.author.avatar_url)
         em.set_author(
             name=msg.author.nick,
             icon_url=msg.author.avatar_url
         )
         em.set_footer(
             text="Question #{}".format(len(self.interview.questions)),
+            icon_url=self.interview.interviewee.avatar_url
         )
 
         await self.send_message(self.interview.question_channel, embed=em)
