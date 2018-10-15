@@ -345,7 +345,7 @@ class EiMM(Plugin):
                                     "Interviews haven't been set up yet.")
             return
         question = {
-            'question':    arguments[0],
+            'question':    msg.content[4:],  # i hope this works
             'author_id':   msg.author.id,
             'author_name': msg.author.name,
             'timestamp':   msg.timestamp.timestamp()
