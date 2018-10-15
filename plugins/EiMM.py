@@ -357,7 +357,7 @@ class EiMM(Plugin):
         self.interview.dump()
 
         em = discord.Embed(
-            title="{interviewee} interview",
+            title="{} interview".format(self.interview.interviewee.nick),
             color=self.interview.interviewee.color,
             description=arguments[0],
             timestamp=msg.timestamp
