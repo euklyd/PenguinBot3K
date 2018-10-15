@@ -67,7 +67,7 @@ class InterviewMeta():
     question_channel = None
     # answer_channel   = None
     interviewee      = None
-    questions        = {}
+    questions        = []
     salt             = None
 
     def load_from_dict(meta, core):
@@ -88,7 +88,7 @@ class InterviewMeta():
             self.salt = random.randint(1, 99999999)
         self.question_channel = question_channel
         self.interviewee      = interviewee
-        self.questions        = {}
+        self.questions        = []
 
     def to_dict(self):
         meta = {
@@ -352,10 +352,7 @@ class EiMM(Plugin):
             'author_name': msg.author.name,
             'timestamp':   msg.timestamp.timestamp()
         }
-        if msg.author.id in self.interview.questions:
-            self.interview.questions[msg.author.id].append(question)
-        else:
-            self.interview.questions[msg.author.id] = [question]
+        self.interview.questions.append(question)
         self.interview.dump()
 
         em = discord.Embed(
@@ -370,7 +367,7 @@ class EiMM(Plugin):
             icon_url=msg.author.avatar_url
         )
         em.set_footer(
-            text="Question #{}".format(len(self.interview.questions[msg.author.id])),
+            text="Question #{}".format(len(self.interview.questions)),
         )
 
         await self.send_message(self.interview.question_channel, embed=em)
