@@ -305,7 +305,7 @@ class EiMM(Plugin):
                 json.dump(old_interview, archive_file)
 
         self.interview.load_fresh(msg.channel, msg.mentions[0])
-        if achn=self.interview.answer_channel is not None:
+        if self.interview.answer_channel is not None:
             achn = self.interview.answer_channel.mention
         else:
             achn = None
