@@ -109,7 +109,7 @@ class PluginManager():
 
         try:
             plugin_module = importlib.import_module(module_name, package='plugins')
-            self.logger.info(plugin_module)
+            # self.logger.info(plugin_module)
 
         except ImportError as e:
             self.logger.error(e)
@@ -137,7 +137,7 @@ class PluginManager():
             await plugin.activate()
 
         # Register plugin commands and events
-        self.logger.info(plugin)
+        # self.logger.info(plugin)
         for name, callback in inspect.getmembers(plugin, inspect.ismethod):
             if hasattr(callback, "connector"):
                 if not self.core.connection.name == getattr(callback, "connector"):
