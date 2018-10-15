@@ -63,7 +63,7 @@ def create_dm_icon(icon1, icon2):
 class InterviewMeta():
     server           = None
     question_channel = None
-    answer_channel   = None
+    # answer_channel   = None
     interviewee      = None
     questions        = {}
     salt             = None
@@ -71,7 +71,7 @@ class InterviewMeta():
     def load_from_dict(meta):
         self.server           = self.core.get_server(meta['server_id'])
         self.question_channel = self.core.get_channel(meta['q_channel'])
-        self.answer_channel   = self.core.get_channel(meta['a_channel'])
+        # self.answer_channel   = self.core.get_channel(meta['a_channel'])
         self.interviewee      = self.server.get_member(meta['inteviewee'])
         self.questions        = meta['questions']
         self.salt             = meta['salt']
@@ -89,7 +89,7 @@ class InterviewMeta():
         meta = {
             'server_id': self.server.id,
             'q_channel': self.question_channel.id,
-            'a_channel': self.answer_channel.id,
+            # 'a_channel': self.answer_channel.id,
             'interviewee': self.interviewee.id,
             'questions': self.questions,
             'salt': self.salt
@@ -305,18 +305,19 @@ class EiMM(Plugin):
                 json.dump(old_interview, archive_file)
 
         self.interview.load_fresh(msg.channel, msg.mentions[0])
-        if self.interview.answer_channel is not None:
-            achn = self.interview.answer_channel.mention
-        else:
-            achn = None
+        # if self.interview.answer_channel is not None:
+        #     achn = self.interview.answer_channel.mention
+        # else:
+        #     achn = None
         reply = (
             "**New interview setup:**\n"
             "Interviewee: {user}\n"
             "Question Channel: {qchn}\n"
-            "Answer Channel: {achn}"
+            # "Answer Channel: {achn}"
         ).format(user=str(self.interview.interviewee),
                  qchn=self.interview.question_channel.mention,
-                 achn=achn)
+                 # achn=achn)
+                 )
         await self.send_message(msg.channel, reply)
 
     @command("^ask (.+)", access=-1, name='interview ask',
