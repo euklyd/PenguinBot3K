@@ -305,6 +305,10 @@ class EiMM(Plugin):
                 json.dump(old_interview, archive_file)
 
         self.interview.load_fresh(msg.channel, msg.mentions[0])
+        filepath = PATH.format(INTERVIEW_META.format(
+            self.interview.interviewee.name))
+        with open(filepath, 'w') as archive_file:
+            json.dump(old_interview, archive_file)
         # if self.interview.answer_channel is not None:
         #     achn = self.interview.answer_channel.mention
         # else:
