@@ -68,7 +68,7 @@ class InterviewMeta():
     questions        = {}
     salt             = None
 
-    def load_from_dict(meta):
+    def load_from_dict(meta, core):
         self.server           = self.core.get_server(meta['server_id'])
         self.question_channel = self.core.get_channel(meta['q_channel'])
         # self.answer_channel   = self.core.get_channel(meta['a_channel'])
@@ -114,7 +114,8 @@ class EiMM(Plugin):
         try:
             with open(PATH.format(INTERVIEW_META),  'r') as meta:
                 iv_meta = json.load(meta)
-                self.interview = InterviewMeta.load_from_dict(iv_meta)
+                self.interview = InterviewMeta.load_from_dict(
+                    iv_meta, self.core)
         except FileNotFoundError:
             self.interview = None
 
