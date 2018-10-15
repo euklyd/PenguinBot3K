@@ -78,6 +78,7 @@ class InterviewMeta():
         iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
         iv_meta.questions        = meta['questions']
         iv_meta.salt             = meta['salt']
+        logger.info(iv_meta.to_dict)
 
     def load_fresh(self, question_channel, interviewee):
         if self.server is None:
@@ -359,7 +360,7 @@ class EiMM(Plugin):
         em = discord.Embed(
             title="{} interview".format(self.interview.interviewee.nick),
             color=self.interview.interviewee.color,
-            description=arguments[0],
+            description=question['question'],
             timestamp=msg.timestamp
         )
         em.set_thumbnail(url=self.interview.interviewee.avatar_url)
