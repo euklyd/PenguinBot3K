@@ -20,8 +20,10 @@ from core.Decorators import *
 
 import asyncio
 import discord
+import errno
 import json
 import logging
+import os
 import random
 import requests
 
@@ -115,9 +117,11 @@ class EiMM(Plugin):
         try:
             with open(PATH.format(INTERVIEW_META),  'r') as meta:
                 iv_meta = json.load(meta)
+                self.logger.info("loaded interview meta")
                 self.interview = InterviewMeta.load_from_dict(
                     iv_meta, self.core)
         except FileNotFoundError:
+            self.logger.warning("couldn't find interview meta, loading new")
             self.interview = None
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
@@ -303,6 +307,12 @@ class EiMM(Plugin):
             old_interview.pop('salt')
             filepath = PATH.format('old_interviews/{}.json'.format(
                 self.interview.interviewee.name))
+            if not os.path.exists(os.path.dirname(filepath)):
+                try:
+                    os.makedirs(os.path.dirname(filepath))
+                except OSError as e: # Guard against race condition
+                    if e.errno != errno.EEXIST:
+                        raise
             with open(filepath, 'w') as archive_file:
                 json.dump(old_interview, archive_file)
 
