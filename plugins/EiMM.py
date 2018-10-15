@@ -73,7 +73,7 @@ class InterviewMeta():
         iv_meta.server           = core.get_server(meta['server_id'])
         iv_meta.question_channel = core.get_channel(meta['q_channel'])
         # iv_meta.answer_channel   = iv_meta.core.get_channel(meta['a_channel'])
-        iv_meta.interviewee      = iv_meta.server.get_member(meta['inteviewee'])
+        iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
         iv_meta.questions        = meta['questions']
         iv_meta.salt             = meta['salt']
 
