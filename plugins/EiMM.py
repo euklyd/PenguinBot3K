@@ -305,6 +305,10 @@ class EiMM(Plugin):
                 json.dump(old_interview, archive_file)
 
         self.interview.load_fresh(msg.channel, msg.mentions[0])
+        if achn=self.interview.answer_channel is not None:
+            achn = self.interview.answer_channel.mention
+        else:
+            achn = None
         reply = (
             "**New interview setup:**\n"
             "Interviewee: {user}\n"
@@ -312,7 +316,7 @@ class EiMM(Plugin):
             "Answer Channel: {achn}"
         ).format(user=str(self.interview.interviewee),
                  qchn=self.interview.question_channel.mention,
-                 achn=self.interview.answer_channel.mention)
+                 achn=achn)
         await self.send_message(msg.channel, reply)
 
     @command("^ask (.+)", access=-1, name='interview ask',
