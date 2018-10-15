@@ -295,6 +295,7 @@ class EiMM(Plugin):
         if self.interview is None:
             await self.send_message(msg.channel,
                 "Setting up interviews for the first time.")
+            self.interview = InterviewMeta()
         else:
             old_interview = self.interview.to_dict()
             old_interview.pop('salt')
