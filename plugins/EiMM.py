@@ -69,12 +69,13 @@ class InterviewMeta():
     salt             = None
 
     def load_from_dict(meta, core):
-        self.server           = core.get_server(meta['server_id'])
-        self.question_channel = core.get_channel(meta['q_channel'])
-        # self.answer_channel   = self.core.get_channel(meta['a_channel'])
-        self.interviewee      = self.server.get_member(meta['inteviewee'])
-        self.questions        = meta['questions']
-        self.salt             = meta['salt']
+        iv_meta = InterviewMeta()
+        iv_meta.server           = core.get_server(meta['server_id'])
+        iv_meta.question_channel = core.get_channel(meta['q_channel'])
+        # iv_meta.answer_channel   = iv_meta.core.get_channel(meta['a_channel'])
+        iv_meta.interviewee      = iv_meta.server.get_member(meta['inteviewee'])
+        iv_meta.questions        = meta['questions']
+        iv_meta.salt             = meta['salt']
 
     def load_fresh(self, question_channel, interviewee):
         if self.server is None:
