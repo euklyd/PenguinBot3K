@@ -77,6 +77,10 @@ class InterviewMeta():
         self.salt             = meta['salt']
 
     def load_fresh(self, question_channel, interviewee):
+        if self.server is None:
+            self.server = question_channel.server
+        if self.salt is None:
+            self.salt = random.randint(1, 99999999)
         self.question_channel = question_channel
         self.interviewee      = interviewee
         self.questions        = {}
@@ -112,7 +116,7 @@ class EiMM(Plugin):
                 iv_meta = json.load(meta)
                 self.interview = InterviewMeta.load_from_dict(iv_meta)
         except FileNotFoundError:
-            self.interview = InterviewMeta()
+            self.interview = None
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -288,12 +292,16 @@ class EiMM(Plugin):
              doc_brief="`iv setup <@user>`: Sets up an interview for "
              "<user>, with the secret questions in the current channel.")
     async def setup_question_channel(self, msg, arguments):
-        old_interview = self.interview.to_dict()
-        old_interview.pop('salt')
-        filepath = PATH.format('old_interviews/{}.json'.format(
-            self.interview.interviewee.name))
-        with open(filepath, 'w') as archive_file:
-            json.dump(old_interview, archive_file)
+        if self.interview is None:
+            await self.send_message(msg.channel,
+                "Setting up interviews for the first time.")
+        else:
+            old_interview = self.interview.to_dict()
+            old_interview.pop('salt')
+            filepath = PATH.format('old_interviews/{}.json'.format(
+                self.interview.interviewee.name))
+            with open(filepath, 'w') as archive_file:
+                json.dump(old_interview, archive_file)
 
         self.interview.load_fresh(msg.channel, msg.mentions[0])
         reply = (
@@ -306,10 +314,14 @@ class EiMM(Plugin):
                  achn=self.interview.answer_channel.mention)
         await self.send_message(msg.channel, reply)
 
-    @command("^ask (.+)", access=700, name='interview ask',
+    @command("^ask (.+)", access=-1, name='interview ask',
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
     async def ask_question(self, msg, arguments):
+        if self.interview is None:
+            await self.send_message(msg.channel,
+                                    "Interviews haven't been set up yet.")
+            return
         question = {
             'question':    arguments[0],
             'author_id':   msg.author.id,
