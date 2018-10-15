@@ -354,7 +354,7 @@ class EiMM(Plugin):
         )
         em.set_thumbnail(url=self.interview.interviewee.avatar_url)
         em.set_author(
-            name=quote['name'],
+            name=msg.author.nick,
             icon_url=msg.author.avatar_url
         )
         em.set_footer(
