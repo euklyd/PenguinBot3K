@@ -35,7 +35,8 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
-path = "resources/eimm/{}"
+PATH = "resources/eimm/{}"
+INTERVIEW_META = "interview_meta.json"
 
 
 def get_avatar_image(user):
@@ -59,15 +60,59 @@ def create_dm_icon(icon1, icon2):
     # return dest
 
 
+class InterviewMeta():
+    server           = None
+    question_channel = None
+    answer_channel   = None
+    interviewee      = None
+    questions        = {}
+    salt             = None
+
+    def load_from_dict(meta):
+        self.server           = self.core.get_server(meta['server_id'])
+        self.question_channel = self.core.get_channel(meta['q_channel'])
+        self.answer_channel   = self.core.get_channel(meta['a_channel'])
+        self.interviewee      = self.server.get_member(meta['inteviewee'])
+        self.questions        = meta['questions']
+        self.salt             = meta['salt']
+
+    def load_fresh(self, question_channel, interviewee):
+        self.question_channel = question_channel
+        self.interviewee      = interviewee
+        self.questions        = {}
+
+    def to_dict(self):
+        meta = {
+            'server_id': self.server.id,
+            'q_channel': self.question_channel.id,
+            'a_channel': self.answer_channel.id,
+            'interviewee': self.interviewee.id,
+            'questions': self.questions,
+            'salt': self.salt
+        }
+        return meta
+
+    def dump(self, filepath=PATH.format(INTERVIEW_META)):
+        meta = self.to_dict()
+        with open(filepath) as metafile:
+            json.dump(meta, metafile)
+
+
 class EiMM(Plugin):
     async def activate(self):
         self.dayvigs = []
-        with open(path.format('dayvig.json'), 'r') as dayvig:
+        with open(PATH.format('dayvig.json'), 'r') as dayvig:
             self.dayvigs = json.load(dayvig)
-        with open(path.format('ganon.json'),  'r') as ganon:
+        with open(PATH.format('ganon.json'),  'r') as ganon:
             self.ganons = json.load(ganon)
-        with open(path.format('conquerors.json'),  'r') as conquerors:
+        with open(PATH.format('conquerors.json'),  'r') as conquerors:
             self.conquerors = json.load(conquerors)
+        try:
+            with open(PATH.format(INTERVIEW_META),  'r') as meta:
+                iv_meta = json.load(meta)
+                self.interview = InterviewMeta.load_from_dict(iv_meta)
+        except FileNotFoundError:
+            self.interview = InterviewMeta()
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -99,7 +144,7 @@ class EiMM(Plugin):
         modifier = None
         base = None
         addition = None
-        with open(path.format('roles.json'), 'r') as roledict:
+        with open(PATH.format('roles.json'), 'r') as roledict:
             roles = json.load(roledict)
         if random.randint(0, 1) == 0:
             modifier = random.choices(
@@ -239,6 +284,61 @@ class EiMM(Plugin):
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         await self.send_message(msg.channel, flip_msg, embed=em)
 
+    @command("^iv setup <@!?(\d)>$", access=700, name='interview setup',
+             doc_brief="`iv setup <@user>`: Sets up an interview for "
+             "<user>, with the secret questions in the current channel.")
+    async def setup_question_channel(self, msg, arguments):
+        old_interview = self.interview.to_dict()
+        old_interview.pop('salt')
+        filepath = PATH.format('old_interviews/{}.json'.format(
+            self.interview.interviewee.name))
+        with open(filepath, 'w') as archive_file:
+            json.dump(old_interview, archive_file)
+
+        self.interview.load_fresh(msg.channel, msg.mentions[0])
+        reply = (
+            "**New interview setup:**\n"
+            "Interviewee: {user}\n"
+            "Question Channel: {qchn}\n"
+            "Answer Channel: {achn}"
+        ).format(user=str(self.interview.interviewee),
+                 qchn=self.interview.question_channel.mention,
+                 achn=self.interview.answer_channel.mention)
+        await self.send_message(msg.channel, reply)
+
+    @command("^ask (.+)", access=700, name='interview ask',
+             doc_brief="`ask <question>`: Submits <question> for the current "
+             "interview.")
+    async def ask_question(self, msg, arguments):
+        question = {
+            'question':    arguments[0],
+            'author_id':   msg.author.id,
+            'author_name': msg.author.name,
+            'timestamp':   msg.timestamp.timestamp
+        }
+        if msg.author.id in self.interview.questions:
+            self.interview.questions[msg.author.id].append(question)
+        else:
+            self.interview.questions[msg.author.id] = [question]
+        self.interview.dump()
+
+        em = discord.Embed(
+            title="{interviewee} interview",
+            color=self.interview.interviewee.color,
+            description=arguments[0],
+            timestamp=msg.timestamp
+        )
+        em.set_thumbnail(url=self.interview.interviewee.avatar_url)
+        em.set_author(
+            name=quote['name'],
+            icon_url=msg.author.avatar_url
+        )
+        em.set_footer(
+            text="Question #{}".format(len(self.interview.questions[msg.author.id])),
+        )
+
+        await self.send_message(self.interview.question_channel, embed=em)
+
     # @command("^submit (.*)$", access=-1, name='submit',
     #          doc_brief="`submit <question here>`: Submits a question for EiMM "
     #          "interviews")
@@ -256,7 +356,7 @@ class EiMM(Plugin):
     #         creds = tools.run_flow(flow, store)
     #     service = discovery.build('sheets', 'v4', http=creds.authorize(Http()))
     #
-    #     # with open(path.format('interview_meta.json'), 'r') as meta:
+    #     # with open(PATH.format('interview_meta.json'), 'r') as meta:
     #     #     interview_meta = json.load(meta)
     #     interview_meta = {
     #         'uid':            '100165629373337600',
