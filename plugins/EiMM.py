@@ -284,7 +284,7 @@ class EiMM(Plugin):
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         await self.send_message(msg.channel, flip_msg, embed=em)
 
-    @command("^iv setup <@!?(\d)>$", access=700, name='interview setup',
+    @command("^iv setup <@!?\d+>$", access=700, name='interview setup',
              doc_brief="`iv setup <@user>`: Sets up an interview for "
              "<user>, with the secret questions in the current channel.")
     async def setup_question_channel(self, msg, arguments):
