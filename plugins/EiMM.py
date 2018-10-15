@@ -98,7 +98,7 @@ class InterviewMeta():
 
     def dump(self, filepath=PATH.format(INTERVIEW_META)):
         meta = self.to_dict()
-        with open(filepath) as metafile:
+        with open(filepath, 'w') as metafile:
             json.dump(meta, metafile)
 
 
