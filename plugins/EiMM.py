@@ -338,7 +338,7 @@ class EiMM(Plugin):
             'question':    arguments[0],
             'author_id':   msg.author.id,
             'author_name': msg.author.name,
-            'timestamp':   msg.timestamp.timestamp
+            'timestamp':   msg.timestamp.timestamp()
         }
         if msg.author.id in self.interview.questions:
             self.interview.questions[msg.author.id].append(question)
