@@ -74,7 +74,7 @@ def interview_embed(question, interview, msg):
         title="{} interview".format(interview.interviewee.nick),
         color=interview.interviewee.color,
         description=question['question'],
-        timestamp=datetime.utcfromtimestamp(question['timestamp']))
+        timestamp=datetime.utcfromtimestamp(question['timestamp'])
     )
     em.set_thumbnail(url=asker_url)
     em.set_author(
