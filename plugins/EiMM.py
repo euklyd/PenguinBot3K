@@ -100,7 +100,8 @@ class InterviewMeta():
         iv_meta = InterviewMeta()
         iv_meta.server           = core.get_server(meta['server_id'])
         iv_meta.question_channel = core.get_channel(meta['q_channel'])
-        iv_meta.answer_channel   = core.get_channel(meta['a_channel'])
+        if 'a_channel' in meta:
+            iv_meta.answer_channel   = core.get_channel(meta['a_channel'])
         iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
         iv_meta.questions        = meta['questions']
         iv_meta.salt             = meta['salt']
@@ -415,7 +416,7 @@ class EiMM(Plugin):
                 "The answer channel is not yet set up.")
             return
         em = interview_embed(
-            self.interview.questions[int(arguments[0])],
+            self.interview.questions[int(arguments[0]) - 1],
             self.interview,
             msg
         )
