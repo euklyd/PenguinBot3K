@@ -125,7 +125,7 @@
     },
     "claire": {
       "name": "claire",
-      "quote": "\"i'll be whatever you want me to be, claire!\"—sully\nhow about deceased",
+      "quote": "```\"i'll be whatever you want me to be, claire!\"—sully```how about deceased",
       "icon": "yellow devil"
     },
     "damian": {
@@ -135,8 +135,13 @@
     },
     "funny": {
       "name": "raven",
-      "quote":  "dude i am so funny when i'm drunk",
+      "quote": "dude i am so funny when i'm drunk",
       "icon": "raven"
+    },
+    "kitty": {
+      "name": "kitty",
+      "quote": "```rena, the fairest madenToday at 5:31 PM\ni do feel unusually happy tho,```OH NO\nCURSED TIMELINE",
+      "icon": "roll"
     },
     "penguinbot": {
       "name": "penguinbot4k",
