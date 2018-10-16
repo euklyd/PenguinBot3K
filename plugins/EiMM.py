@@ -62,6 +62,32 @@ def create_dm_icon(icon1, icon2):
     # return dest
 
 
+def interview_embed(question, interview, msg):
+    asker = msg.server.get_member(question['author_id'])
+    if asker is None:
+        asker_nick = question['author_name']
+        asker_url  = question['author_avatar']
+    else:
+        asker_nick = asker.nick
+        asker_url  = asker.avatar_url
+    em = discord.Embed(
+        title="{} interview".format(interview.interviewee.nick),
+        color=interview.interviewee.color,
+        description=question['question'],
+        timestamp=datetime.utcfromtimestamp(question['timestamp']))
+    )
+    em.set_thumbnail(url=asker_url)
+    em.set_author(
+        name=asker_nick,
+        icon_url=asker_url
+    )
+    em.set_footer(
+        text="Question #{}".format(len(interview.questions)),
+        icon_url=interview.interviewee.avatar_url
+    )
+    return em
+
+
 class InterviewMeta():
     server           = None
     question_channel = None
@@ -338,7 +364,24 @@ class EiMM(Plugin):
                  )
         await self.send_message(msg.channel, reply)
 
-    @command("^ask (.+)", access=-1, name='interview ask',
+    @command("^iv setup answers", access=700, name='interview setup answers',
+             doc_brief="`iv setup answers`: Sets the answer channel to the "
+             "current channel.")
+    async def setup_answer_channel(self, msg, arguments):
+        self.interview.answer_channel = msg.channel
+        self.interview.dump()
+        reply = (
+            "**New interview setup:**\n"
+            "Interviewee: {user}\n"
+            "Question Channel: {qchn}\n"
+            "Answer Channel: {achn}"
+        ).format(user=str(self.interview.interviewee),
+                 qchn=self.interview.question_channel.mention,
+                 achn=self.interview.answer_channel.mention)
+                 )
+        await self.send_message(msg.channel, reply)
+
+    @command("^ask[ \n](.+)", access=-1, name='interview ask',
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
     async def ask_question(self, msg, arguments):
@@ -347,31 +390,37 @@ class EiMM(Plugin):
                                     "Interviews haven't been set up yet.")
             return
         question = {
-            'question':    msg.content[4:],  # i hope this works
-            'author_id':   msg.author.id,
-            'author_name': msg.author.name,
-            'timestamp':   msg.timestamp.timestamp()
+            'question':      msg.content[4:],  # i hope this works
+            'author_id':     msg.author.id,
+            'author_name':   msg.author.name,
+            'author_avatar': msg.author.avatar_url,
+            'timestamp':     msg.timestamp.timestamp()
         }
         self.interview.questions.append(question)
         self.interview.dump()
 
-        em = discord.Embed(
-            title="{} interview".format(self.interview.interviewee.nick),
-            color=self.interview.interviewee.color,
-            description=question['question'],
-            timestamp=msg.timestamp
-        )
-        em.set_thumbnail(url=msg.author.avatar_url)
-        em.set_author(
-            name=msg.author.nick,
-            icon_url=msg.author.avatar_url
-        )
-        em.set_footer(
-            text="Question #{}".format(len(self.interview.questions)),
-            icon_url=self.interview.interviewee.avatar_url
-        )
+        em = interview_embed(question, self.interview, msg)
 
         await self.send_message(self.interview.question_channel, embed=em)
+
+    @command("^question (\d+)", access=-1, name='interview retrieve',
+             doc_brief="`question <#>`: Retrieves the specified question and "
+             "posts it in the answer channel.")
+    async def get_question(self, msg, arguments):
+        if msg.author.id != self.interview.interviewee.id:
+            await self.send_message(msg.channel,
+                "You must be the interviewee to use this command.")
+            return
+        if self.interview.answer_channel is None:
+            await self.send_message(msg.channel,
+                "The answer channel is not yet set up.")
+            return
+        em = interview_embed(
+            self.interview.questions[int(arguments[0])],
+            self.interview,
+            msg
+        )
+        await self.send_message(self.interview.answer_channel, embed=em)
 
     # @command("^submit (.*)$", access=-1, name='submit',
     #          doc_brief="`submit <question here>`: Submits a question for EiMM "
