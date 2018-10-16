@@ -378,7 +378,6 @@ class EiMM(Plugin):
         ).format(user=str(self.interview.interviewee),
                  qchn=self.interview.question_channel.mention,
                  achn=self.interview.answer_channel.mention)
-                 )
         await self.send_message(msg.channel, reply)
 
     @command("^ask[ \n](.+)", access=-1, name='interview ask',
