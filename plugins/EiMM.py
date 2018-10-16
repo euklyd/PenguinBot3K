@@ -91,7 +91,7 @@ def interview_embed(question, interview, msg):
 class InterviewMeta():
     server           = None
     question_channel = None
-    # answer_channel   = None
+    answer_channel   = None
     interviewee      = None
     questions        = []
     salt             = None
@@ -100,7 +100,7 @@ class InterviewMeta():
         iv_meta = InterviewMeta()
         iv_meta.server           = core.get_server(meta['server_id'])
         iv_meta.question_channel = core.get_channel(meta['q_channel'])
-        # iv_meta.answer_channel   = iv_meta.core.get_channel(meta['a_channel'])
+        iv_meta.answer_channel   = iv_meta.core.get_channel(meta['a_channel'])
         iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
         iv_meta.questions        = meta['questions']
         iv_meta.salt             = meta['salt']
@@ -120,7 +120,7 @@ class InterviewMeta():
         meta = {
             'server_id': self.server.id,
             'q_channel': self.question_channel.id,
-            # 'a_channel': self.answer_channel.id,
+            'a_channel': self.answer_channel.id,
             'interviewee': self.interviewee.id,
             'questions': self.questions,
             'salt': self.salt
