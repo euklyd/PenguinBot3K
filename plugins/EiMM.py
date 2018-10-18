@@ -109,6 +109,7 @@ class InterviewMeta():
     user_questions   = {}
     salt             = None
     opt_outs         = set()
+    votes            = {}
 
     def load_from_dict(meta, core):
         iv_meta = InterviewMeta()
@@ -121,6 +122,7 @@ class InterviewMeta():
         iv_meta.user_questions   = meta['user_questions']
         iv_meta.salt             = meta['salt']
         iv_meta.opt_outs         = set(meta['opt_outs'])
+        iv_meta.votes            = meta['votes']
         # logger.info(iv_meta.to_dict())
         return iv_meta
 
@@ -150,7 +152,8 @@ class InterviewMeta():
             # 'questions': self.questions,
             'user_questions': self.user_questions,
             'salt':           self.salt,
-            'opt_outs':       list(self.opt_outs)
+            'opt_outs':       list(self.opt_outs),
+            'votes':          self.votes
         }
         return meta
 
@@ -570,50 +573,35 @@ class EiMM(Plugin):
             reply = "**{}**, something went wrong here with your opting."
         await self.send_message(msg.channel, reply.format(msg.author))
 
-    # @command("^submit (.*)$", access=-1, name='submit',
-    #          doc_brief="`submit <question here>`: Submits a question for EiMM "
-    #          "interviews")
-    # async def submit_question(self, msg, arguments):
-    #     SCOPES = [
-    #         'https://www.googleapis.com/auth/analytics.readonly',
-    #         'https://www.googleapis.com/auth/drive',
-    #         'https://www.googleapis.com/auth/spreadsheets'
-    #     ]
-    #
-    #     store = file.Storage('token.json')
-    #     creds = store.get()
-    #     if not creds or creds.invalid:
-    #         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-    #         creds = tools.run_flow(flow, store)
-    #     service = discovery.build('sheets', 'v4', http=creds.authorize(Http()))
-    #
-    #     # with open(PATH.format('interview_meta.json'), 'r') as meta:
-    #     #     interview_meta = json.load(meta)
-    #     interview_meta = {
-    #         'uid':            '100165629373337600',
-    #         'name':           'euklyd',
-    #         'spreadsheet_id': '1kZP1k1DNv0E9D4cIq13bFgoJWqQsJJguE46He-QqwKE',
-    #         'sheet_id':       '0'
-    #     }
-    #     interviewee_uid   = interview_meta['uid']
-    #     interviewee_uname = interview_meta['name']
-    #     spreadsheet_id    = interview_meta['spreadsheet_id']
-    #     sheet_id          = interview_meta['sheet_id']
-    #
-    #     data = [
-    #         datetime.now().isoformat(),
-    #         interviewee_uid,
-    #         interviewee_uname,
-    #         msg.author.id,
-    #         msg.author.name,
-    #         arguments[0]
-    #     ]
-    #
-    #     range_            = 'A1:F100000'
-    #     value_input_option= 'USER_ENTERED'
-    #     body = {'values': data}
-    #
-    #     result = service.spreadsheets().values().update(
-    #         spreadsheetId=spreadsheet_id, range=range_,
-    #         valueInputOption=value_input_option, body=body
-    #     ).execute()
+    @command("^(nom|nominate)(:? <@!?\d+>){1:3}$", access=-1, name='nominate',
+             doc_brief="`nominate <@user1> [<@user2>] [@user3]`: Nominate up "
+             "to three users for interviews. If you've already made "
+             "nominations, they will all be replaced.")
+    async def nominate(self, msg, arguments):
+        votes = list(set([mention.id for mention in msg.mentions]))
+        self.interview.votes[msg.author] = votes
+        await self.add_reaction(msg, '✅')
+
+    @command("^votals$", access=-1, name='votals',
+             doc_brief="`votals`: Calculates current votals for interview "
+             "nominations.")
+    async def votals(self, msg, arguments):
+        votals = {}
+        for votes in self.votes.values():
+            for vote in votes:
+                if vote in votals:
+                    votals[vote] += 1
+                else:
+                    votals[vote] = 1
+        sorted_votals = sorted(votals.items(), key=lambda x: x[1])
+        reply = "**__Votals__**\n"
+        for nom in sorted_votals:
+            reply += "**{}:** {}".format(msg.server.get_member(nom[0]), nom[1])
+
+        if msg.author.id in self.interview.votes:
+            reply += "You are currently voting for: "
+            for vote in self.interview.votes[msg.author.id]:
+                reply += "{}, ".format(msg.server.get_member(vote))
+            reply = reply[:-2]
+
+        await send_message(msg.channel, reply)
