@@ -79,7 +79,7 @@ def interview_embed(question, interview, msg):
         title="{} interview".format(interview.interviewee.nick),
         color=interview.interviewee.color,
         description=question['question'],
-        timestamp=datetime.utcfromtimestamp(question['timestamp'])
+        timestamp=question['timestamp']
     )
     em.set_thumbnail(url=asker_url)
     em.set_author(
@@ -147,7 +147,7 @@ class InterviewMeta():
 
     def increment_question(self, user):
         if user.id in self.user_questions:
-            self.user_questions[user.id] += self.user_questions[user.id]
+            self.user_questions[user.id] += 1
         else:
             self.user_questions[user.id] = 1
 
@@ -417,7 +417,7 @@ class EiMM(Plugin):
             'author_id':     msg.author.id,
             'author_name':   msg.author.name,
             'author_avatar': msg.author.avatar_url,
-            'timestamp':     msg.timestamp.timestamp()
+            'timestamp':     msg.timestamp
         }
         # self.interview.questions.append(question)
         # self.interview.dump()
