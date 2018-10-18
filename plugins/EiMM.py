@@ -469,6 +469,8 @@ class EiMM(Plugin):
         sheet   = client.open('EiMM Interviews').sheet1
 
         for question_text in questions:
+            if question_text == '':
+                continue
             question = {
                 'question':      question_text,
                 'author_id':     msg.author.id,
