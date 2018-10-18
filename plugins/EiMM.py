@@ -490,7 +490,14 @@ class EiMM(Plugin):
             )
             self.interview.dump()
 
-        em = interview_embed(content, self.interview, msg)
+        composite_question = {
+            'question':      content,
+            'author_id':     msg.author.id,
+            'author_name':   msg.author.name,
+            'author_avatar': msg.author.avatar_url,
+            'timestamp':     msg.timestamp
+        }
+        em = interview_embed(composite_question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
