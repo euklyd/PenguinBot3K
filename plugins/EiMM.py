@@ -550,25 +550,25 @@ class EiMM(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
-    @command("^opt (in|out)$", access=-1, name='opt',
+    @command("^opt[ -](in|out)$", access=-1, name='opt',
              doc_brief="`opt [in/out]`: Opt-in or-out of interviews "
              "nominations. Default is opted-in.")
     async def opt(self, msg, arguments):
         if arguments[0] == 'in':
             if msg.author.id not in self.interview.opt_outs:
-                reply = "{}, you're already opted-in to interviews."
+                reply = "**{}**, you're already opted-in to interviews."
             else:
                 self.interview.opt_outs.remove(msg.author.id)
-                reply = "{}, you're now opted-in to interviews."
+                reply = "**{}**, you're now opted-in to interviews."
         elif arguments[0] == 'out':
             if msg.author.id in self.interview.opt_outs:
-                reply = "{}, you're already opted-out of interviews."
+                reply = "**{}**, you're already opted-out of interviews."
             else:
                 self.interview.opt_outs.add(msg.author.id)
-                reply = "{}, you're now opted-out of interviews."
+                reply = "**{}**, you're now opted-out of interviews."
         else:
-            reply = "Something went wrong here with your opting."
-        await self.send_message(msg.channel, reply)
+            reply = "**{}**, something went wrong here with your opting."
+        await self.send_message(msg.channel, reply.format(msg.author))
 
     # @command("^submit (.*)$", access=-1, name='submit',
     #          doc_brief="`submit <question here>`: Submits a question for EiMM "
