@@ -460,7 +460,7 @@ class EiMM(Plugin):
                                     "Interviews haven't been set up yet.")
             return
 
-        content = msg.content[:10]  # strip command name
+        content = msg.content[10:]  # strip command name
         questions = content.split('\n')
 
         creds   = ServiceAccountCredentials.from_json_keyfile_name(
