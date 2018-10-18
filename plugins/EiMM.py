@@ -569,6 +569,10 @@ class EiMM(Plugin):
                 reply = "**{}**, you're already opted-out of interviews."
             else:
                 self.interview.opt_outs.add(msg.author.id)
+                for voter, votes in self.interview.votes.items:
+                    self.interview.votes[voter] = [
+                        vote for vote in votes if vote != msg.author.id
+                    ]
                 reply = "**{}**, you're now opted-out of interviews."
         else:
             reply = "**{}**, something went wrong here with your opting."
@@ -591,6 +595,7 @@ class EiMM(Plugin):
             elif mention.id == '224283755538284544':
                 bots.append(str(mention))
                 votes.append(mention.id)
+                await self.add_reaction(msg, '🔥')
                 await self.send_message(msg.channel, 'harufe!')
             elif mention.bot is True:
                 bots.append(str(mention))
@@ -649,9 +654,12 @@ class EiMM(Plugin):
         reply += '```'
 
         if msg.author.id in self.interview.votes:
-            reply += '*You are currently voting for: '
-            for vote in self.interview.votes[msg.author.id]:
-                reply += '{}, '.format(msg.server.get_member(vote))
-            reply = reply[:-2] + '*'
+            if len(self.interview.votes[msg.author.id]) == 0:
+                reply += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+            else:
+                reply += '*You are currently voting for: '
+                for vote in self.interview.votes[msg.author.id]:
+                    reply += '{}, '.format(msg.server.get_member(vote))
+                reply = reply[:-2] + '*'
 
         await self.send_message(msg.channel, reply)
