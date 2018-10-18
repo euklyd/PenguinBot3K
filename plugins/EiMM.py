@@ -21,6 +21,7 @@ from core.Decorators import *
 import asyncio
 import discord
 import errno
+import gspread
 import json
 import logging
 import os
@@ -28,17 +29,21 @@ import random
 import requests
 
 from datetime import datetime
-# from googleapiclient import discovery
-# from httplib2 import Http
 from io import BytesIO
 from PIL import Image
-# from oauth2client import file, client, tools
+from oauth2client.service_account import ServiceAccountCredentials
 
 
 logger = logging.getLogger(__name__)
 
-PATH = "resources/eimm/{}"
-INTERVIEW_META = "interview_meta.json"
+PATH = 'resources/eimm/{}'
+INTERVIEW_META  = 'interview_meta.json'
+SHEETS_SECRET   = 'resources/eimm/client_secret.json'
+INTERVIEW_SHEET = 'EiMM Interviews'
+SCOPE           = [
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/drive'
+]
 
 
 def get_avatar_image(user):
@@ -82,7 +87,8 @@ def interview_embed(question, interview, msg):
         icon_url=asker_url
     )
     em.set_footer(
-        text="Question #{}".format(len(interview.questions)),
+        # text="Question #{}".format(len(interview.questions)),
+        text="Question #{}".format(interview.user_questions[msg.author.id]),
         icon_url=interview.interviewee.avatar_url
     )
     return em
@@ -93,7 +99,8 @@ class InterviewMeta():
     question_channel = None
     answer_channel   = None
     interviewee      = None
-    questions        = []
+    # questions        = []
+    user_questions   = {}
     salt             = None
 
     def load_from_dict(meta, core):
@@ -103,10 +110,18 @@ class InterviewMeta():
         if 'a_channel' in meta:
             iv_meta.answer_channel   = core.get_channel(meta['a_channel'])
         iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
-        iv_meta.questions        = meta['questions']
+        # iv_meta.questions        = meta['questions']
+        iv_meta.user_questions        = meta['user_questions']
         iv_meta.salt             = meta['salt']
         # logger.info(iv_meta.to_dict())
         return iv_meta
+
+    @property
+    def total_questions(self):
+        total_qs = 0
+        for user_qs in self.user_questions.values():
+            total_qs += user_qs
+        return total_qs
 
     def load_fresh(self, question_channel, interviewee):
         if self.server is None:
@@ -115,7 +130,8 @@ class InterviewMeta():
             self.salt = random.randint(1, 99999999)
         self.question_channel = question_channel
         self.interviewee      = interviewee
-        self.questions        = []
+        # self.questions        = []
+        self.user_questions        = {}
 
     def to_dict(self):
         meta = {
@@ -123,10 +139,17 @@ class InterviewMeta():
             'q_channel': self.question_channel.id,
             'a_channel': self.answer_channel.id,
             'interviewee': self.interviewee.id,
-            'questions': self.questions,
+            # 'questions': self.questions,
+            'user_questions': self.user_questions,
             'salt': self.salt
         }
         return meta
+
+    def increment_question(self, user):
+        if user.id in self.user_questions:
+            self.user_questions[user.id] += self.user_questions[user.id]
+        else:
+            self.user_questions[user.id] = 1
 
     def dump(self, filepath=PATH.format(INTERVIEW_META)):
         meta = self.to_dict()
@@ -396,12 +419,31 @@ class EiMM(Plugin):
             'author_avatar': msg.author.avatar_url,
             'timestamp':     msg.timestamp.timestamp()
         }
-        self.interview.questions.append(question)
-        self.interview.dump()
+        # self.interview.questions.append(question)
+        # self.interview.dump()
+
+        creds   = ServiceAccountCredentials.from_json_keyfile_name(
+            SHEETS_SECRET, SCOPE)
+        client  = gspread.authorize(creds)
+        sheet   = client.open('EiMM Interviews').sheet1
+        # records = sheet.get_all_records()
+
+        self.interview.increment_question(msg.author)
+
+        sheet.append_row(
+            [
+                datetime.utcnow().strftime('%m/%d/%Y %H:%m:%S'),
+                datetime.utcnow().timestamp(),
+                str(msg.author),
+                msg.author.id,
+                self.interview.user_questions[msg.author.id],
+                msg.content[4:]
+            ]
+        )
 
         em = interview_embed(question, self.interview, msg)
-
         await self.send_message(self.interview.question_channel, embed=em)
+        await self.add_reaction(msg, '✅')
 
     @command("^question (\d+)", access=-1, name='interview retrieve',
              doc_brief="`question <#>`: Retrieves the specified question and "
