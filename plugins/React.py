@@ -41,7 +41,7 @@ class React(Plugin):
             await self.add_reaction(msg, self.core.emoji.any_emoji(["refabot"]))
 
     @filter("pregaming", name='pregaming', server=reactservers)
-    async def what(self, msg, arguments):
+    async def pregaming(self, msg, arguments):
         pregaming = self.core.emoji.any_emoji(["pregaming"])
         await self.add_reaction(msg, pregaming)
 
