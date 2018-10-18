@@ -35,21 +35,21 @@ class React(Plugin):
 
     @filter("^what$", name='what', server=reactservers)
     async def what(self, msg, arguments):
-        lemonbot = self.core.emoji.any_emoji(["lemonbot", "lemon_bot"])
+        lemonbot = self.core.emoji.any_emoji(['lemonbot', 'lemon_bot'])
         await self.add_reaction(msg, lemonbot)
         if (random.randint(0, 17) == 0):
-            await self.add_reaction(msg, self.core.emoji.any_emoji(["refabot"]))
+            await self.add_reaction(msg, self.core.emoji.any_emoji(['refabot']))
 
-    @filter("pregaming", name='pregaming', server=reactservers)
+    @filter("pregam(e|ing)", name='pregaming', server=reactservers)
     async def pregaming(self, msg, arguments):
-        pregaming = self.core.emoji.any_emoji(["pregaming"])
+        pregaming = self.core.emoji.any_emoji(['pregaming'])
         await self.add_reaction(msg, pregaming)
 
     @filter("^<:expand:[0-9]{16,20}>$", name='expand dong',
             server="190782508105728000")
     async def expand_dong(self, msg, arguments):
-        expand = self.core.emoji.any_emoji(["expand"])
-        dong = self.core.emoji.any_emoji(["dong"])
+        expand = self.core.emoji.any_emoji(['expand'])
+        dong = self.core.emoji.any_emoji(['dong'])
         await self.add_reaction(msg, expand)
         await self.add_reaction(msg, dong)
 
@@ -57,16 +57,16 @@ class React(Plugin):
             server=reactservers)
     async def fe1_cavs(self, msg, arguments):
         if (arguments[0].lower() == 'cain'):
-            cav = self.core.emoji.any_emoji(["fe1_abel", "abel"])
+            cav = self.core.emoji.any_emoji(['fe1_abel', 'abel'])
         else:
-            cav = self.core.emoji.any_emoji(["fe1_cain", "cain"])
+            cav = self.core.emoji.any_emoji(['fe1_cain', 'cain'])
         await self.add_reaction(msg, cav)
 
     @filter("^<:.*(sonic|sanic).*:[0-9]{16,20}>$", name='sanic 3 & nipples',
-            server="190782508105728000")
+            server='190782508105728000')
     async def sanic3(self, msg, arguments):
         nipples = self.core.emoji.any_emoji([
-            "nipples_the_enchilada", "nipples"
+            'nipples_the_enchilada', 'nipples'
         ])
         await self.add_reaction(msg, nipples)
 
@@ -80,19 +80,19 @@ class React(Plugin):
     #         await self.add_reaction(msg, '❤')
     #         await self.add_reaction(msg, virgin)
 
-    @filter("^.*$", name='catface', server="320996033268154378")
+    @filter("^.*$", name='catface', server='320996033268154378')
     async def catface(self, msg, arguments):
-        if (msg.channel.id == "332721908019625989" and msg.content != ":3"):
+        if (msg.channel.id == '332721908019625989' and msg.content != ":3"):
             await self.delete_message(msg)
             tsktsk = await self.send_message(
                 msg.channel,
-                "*We have rules here, heretic :3*"
+                '*We have rules here, heretic :3*'
             )
             await asyncio.sleep(5)
             await self.delete_message(tsktsk)
 
     @filter("^<:(?:harold|GLORY_TO_THRACIA):[0-9]{16,20}>$", name='in america',
-            server="190782508105728000")
+            server='190782508105728000')
     async def in_america(self, msg, arguments):
         if (random.randint(0, 17) == 0):
             await self.add_reaction(msg, '🇨🇦')
