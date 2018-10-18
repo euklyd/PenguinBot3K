@@ -634,13 +634,17 @@ class EiMM(Plugin):
             await self.add_reaction(msg, bot_tag)
         await self.send_message(msg.channel, reply)
 
-
-    # @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
-    #          name='unvote',
-    #          doc_brief="`votals`: Calculates current votals for interview "
-    #          "nominations.")
-    # async def(self, msg, arguments):
-
+    @command("^(unnom|unvote|im conq and i hate voting)$", access=-1,
+             name='unvote',
+             doc_brief="`unnom`: Calculates current votals for interview "
+             "nominations.")
+    async def(self, msg, arguments):
+        if msg.author.id not in self.interview.votes or len(self.interview.votes[msg.author.id]) == 0:
+            reply = "**{}**, you're not currently nominating anyone."
+        else:
+            self.interview.votes[msg.author.id] = []
+            reply = "**{}**, your nomination(s) have been cleared."
+        await self.send_message(msg.channel, reply.format(msg.author))
 
     @command("^votals$", access=-1, name='votals',
              doc_brief="`votals`: Calculates current votals for interview "
