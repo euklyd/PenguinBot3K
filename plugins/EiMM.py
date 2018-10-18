@@ -611,7 +611,8 @@ class EiMM(Plugin):
         if len(self.interview.votes[msg.author.id]) > 0:
             await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
         if self_vote:
-            await self.add_reaction(msg, self.core.emoji.any_emoji(['redtick']))
+            redtick = self.core.emoji.any_emoji(['redtick'])
+            await self.add_reaction(msg, redtick)
             reply += (
                 "{} **{}**, your anti-town self-vote was ignored.\n"
             ).format(redtick, msg.author, ', '.join(opt_outs))
