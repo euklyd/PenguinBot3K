@@ -108,6 +108,7 @@ class InterviewMeta():
     # questions        = []
     user_questions   = {}
     salt             = None
+    opt_outs         = set()
 
     def load_from_dict(meta, core):
         iv_meta = InterviewMeta()
@@ -117,8 +118,9 @@ class InterviewMeta():
             iv_meta.answer_channel   = core.get_channel(meta['a_channel'])
         iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
         # iv_meta.questions        = meta['questions']
-        iv_meta.user_questions        = meta['user_questions']
+        iv_meta.user_questions   = meta['user_questions']
         iv_meta.salt             = meta['salt']
+        iv_meta.opt_outs         = set(meta['opt_outs'])
         # logger.info(iv_meta.to_dict())
         return iv_meta
 
@@ -137,17 +139,18 @@ class InterviewMeta():
         self.question_channel = question_channel
         self.interviewee      = interviewee
         # self.questions        = []
-        self.user_questions        = {}
+        self.user_questions   = {}
 
     def to_dict(self):
         meta = {
-            'server_id': self.server.id,
-            'q_channel': self.question_channel.id,
-            'a_channel': self.answer_channel.id,
-            'interviewee': self.interviewee.id,
+            'server_id':      self.server.id,
+            'q_channel':      self.question_channel.id,
+            'a_channel':      self.answer_channel.id,
+            'interviewee':    self.interviewee.id,
             # 'questions': self.questions,
             'user_questions': self.user_questions,
-            'salt': self.salt
+            'salt':           self.salt,
+            'opt_outs':       list(self.opt_outs)
         }
         return meta
 
@@ -545,6 +548,26 @@ class EiMM(Plugin):
             self.interview.user_questions[user.id],
             self.interview.total_questions
         )
+        await self.send_message(msg.channel, reply)
+
+    @command("^opt (in|out)$", access=-1, name='opt',
+             doc_brief="`opt [in/out]`: Opt-in or-out of interviews "
+             "nominations. Default is opted-in.")
+    async def opt(self, msg, arguments):
+        if arguments[0] == 'in':
+            if msg.author.id not in self.interview.opt_outs:
+                reply = "{}, you're already opted-in to interviews."
+            else:
+                self.interview.opt_outs.remove(msg.author.id)
+                reply = "{}, you're now opted-in to interviews."
+        elif arguments[0] == 'out':
+            if msg.author.id in self.interview.opt_outs:
+                reply = "{}, you're already opted-out of interviews."
+            else:
+                self.interview.opt_outs.add(msg.author.id)
+                reply = "{}, you're now opted-out of interviews."
+        else:
+            reply = "Something went wrong here with your opting."
         await self.send_message(msg.channel, reply)
 
     # @command("^submit (.*)$", access=-1, name='submit',
