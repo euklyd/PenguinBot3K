@@ -67,18 +67,22 @@ def create_dm_icon(icon1, icon2):
     # return dest
 
 
+def get_nick_or_name(member):
+    if member.nick is None:
+        return member.name
+    return member.nick
+
+
 def interview_embed(question, interview, msg):
     asker = msg.server.get_member(question['author_id'])
     if asker is None:
         asker_nick = question['author_name']
         asker_url  = question['author_avatar']
     else:
-        asker_nick = asker.nick
-        if asker_nick is None:
-            asker_nick = asker.name
+        asker_nick = get_nick_or_name(asker)
         asker_url  = asker.avatar_url
     em = discord.Embed(
-        title="{} interview".format(interview.interviewee.nick),
+        title="{} interview".format(get_nick_or_name(interview.interviewee)),
         color=interview.interviewee.color,
         description=question['question'],
         timestamp=question['timestamp']
