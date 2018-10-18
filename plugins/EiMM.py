@@ -573,7 +573,7 @@ class EiMM(Plugin):
             reply = "**{}**, something went wrong here with your opting."
         await self.send_message(msg.channel, reply.format(msg.author))
 
-    @command("^(nom|nominate)(:? <@!?\d+>){1:3}$", access=-1, name='nominate',
+    @command("^(nom|nominate)(:? <@!?\d+>){1,3}$", access=-1, name='nominate',
              doc_brief="`nominate <@user1> [<@user2>] [@user3]`: Nominate up "
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
