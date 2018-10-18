@@ -599,7 +599,7 @@ class EiMM(Plugin):
         sorted_votals = [list(nom) + [msg.server.get_member(nom[0])] for nom in votals.items()]
         # sorted_votals = sorted(sorted_votals, key=lambda x: x[1], reverse=True)
         # Sort by the number of votes, then alphabetically
-        sorted_votals = sorted(sorted_votals, key=lambda x: (-x[1], lower(x[2])))
+        sorted_votals = sorted(sorted_votals, key=lambda x: (-x[1], x[2].lower()))
         max_len = 0
         for nom in sorted_votals:
             max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
