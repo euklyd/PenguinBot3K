@@ -75,7 +75,7 @@ def interview_embed(question, interview, msg):
     else:
         asker_nick = asker.nick
         if asker_nick is None:
-            asker_nick = asker.username
+            asker_nick = asker.name
         asker_url  = asker.avatar_url
     em = discord.Embed(
         title="{} interview".format(interview.interviewee.nick),
@@ -422,7 +422,6 @@ class EiMM(Plugin):
             'timestamp':     msg.timestamp
         }
         # self.interview.questions.append(question)
-        # self.interview.dump()
 
         creds   = ServiceAccountCredentials.from_json_keyfile_name(
             SHEETS_SECRET, SCOPE)
@@ -442,6 +441,7 @@ class EiMM(Plugin):
                 msg.content[4:]
             ]
         )
+        self.interview.dump()
 
         em = interview_embed(question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
