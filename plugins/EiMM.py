@@ -451,7 +451,7 @@ class EiMM(Plugin):
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
-    @command("^(?:mask|multi-ask)\n(.+)", access=-1, name='interview multi-ask',
+    @command("^(mask|multi-ask)\n(.+)", access=-1, name='interview multi-ask',
              doc_brief="`multi-ask <list of questions on separate lines>: "
              "Submits multiple questions for the current interview.",
              doc_detail="Submits multiple questions for the current interview. "
@@ -466,7 +466,10 @@ class EiMM(Plugin):
                                     "Interviews haven't been set up yet.")
             return
 
-        content = msg.content[10:]  # strip command name
+        if arguments[0] == 'mask':
+            content = msg.content[5:]
+        else:
+            content = msg.content[10:]  # strip command name
         questions = content.split('\n')
 
         creds   = ServiceAccountCredentials.from_json_keyfile_name(
