@@ -74,6 +74,8 @@ def interview_embed(question, interview, msg):
         asker_url  = question['author_avatar']
     else:
         asker_nick = asker.nick
+        if asker_nick is None:
+            asker_nick = asker.username
         asker_url  = asker.avatar_url
     em = discord.Embed(
         title="{} interview".format(interview.interviewee.nick),
