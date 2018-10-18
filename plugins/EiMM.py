@@ -592,6 +592,8 @@ class EiMM(Plugin):
         filtered = list(set(filtered))
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
+        if len(votes) > 0:
+            await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
         if len(filtered) > 0:
             await self.send_message(
                 msg.channel,
@@ -599,8 +601,6 @@ class EiMM(Plugin):
                 "opted-out.".format(msg.author, ', '.join(filtered))
             )
             await self.add_reaction(msg, self.core.emoji.any_emoji(['redtick']))
-        if len(votes) > 0:
-            await self.add_reaction(msg, '✅')
 
     @command("^votals$", access=-1, name='votals',
              doc_brief="`votals`: Calculates current votals for interview "
