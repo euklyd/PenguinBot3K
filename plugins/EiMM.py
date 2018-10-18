@@ -321,7 +321,7 @@ class EiMM(Plugin):
         await asyncio.sleep(1)
         await self.send_message(msg.channel, "**PHASE UNPAUSE**")
 
-    @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step')
+    @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step on')
     async def step_on(self, msg, arguments):
         victim = None
         if msg.mentions[0].id not in self.conquerors:
@@ -352,7 +352,7 @@ class EiMM(Plugin):
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         await self.send_message(msg.channel, flip_msg, embed=em)
 
-    @command("^iv setup <@!?\d+>$", access=700, name='interview setup',
+    @command("^iv setup <@!?\d+>$", access=700, name='iv setup',
              doc_brief="`iv setup <@user>`: Sets up an interview for "
              "<user>, with the secret questions in the current channel.")
     async def setup_question_channel(self, msg, arguments):
@@ -394,7 +394,7 @@ class EiMM(Plugin):
                  )
         await self.send_message(msg.channel, reply)
 
-    @command("^iv setup answers", access=700, name='interview setup answers',
+    @command("^iv setup answers", access=700, name='iv setup answers',
              doc_brief="`iv setup answers`: Sets the answer channel to the "
              "current channel.")
     async def setup_answer_channel(self, msg, arguments):
@@ -410,7 +410,7 @@ class EiMM(Plugin):
                  achn=self.interview.answer_channel.mention)
         await self.send_message(msg.channel, reply)
 
-    @command("^ask[ \n](.+)", access=-1, name='interview ask',
+    @command("^ask[ \n](.+)", access=-1, name='ask',
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
     async def ask(self, msg, arguments):
@@ -451,7 +451,7 @@ class EiMM(Plugin):
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
-    @command("^multi-ask\n(.+)", access=-1, name='interview multi-ask',
+    @command("^(?:mask|multi-ask)\n(.+)", access=-1, name='interview multi-ask',
              doc_brief="`multi-ask <list of questions on separate lines>: "
              "Submits multiple questions for the current interview.",
              doc_detail="Submits multiple questions for the current interview. "
@@ -460,7 +460,7 @@ class EiMM(Plugin):
              "interviewee to answer. *Note that there can't be a question on "
              "the same line as the `multi-ask` command; the first question "
              "must be on the second line.*")
-    async def multi_ask(self, msg, arguments):
+    async def mask(self, msg, arguments):
         if self.interview is None:
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
@@ -527,6 +527,22 @@ class EiMM(Plugin):
             msg
         )
         await self.send_message(self.interview.answer_channel, embed=em)
+
+    @command("^iv stats( <@!?\d>)?$", access=-1, name='iv stats',
+             doc_brief="`iv stats <@user>`: Retrieves the number of questions "
+             "`user` has asked, and the total number of questions.")
+    async def iv_stats(self, msg, arguments):
+        if len(msg.mentions) > 0:
+            user = msg.mentions[0]
+        else:
+            user = msg.author
+        reply = '**{}** has asked **{}** `{}` questions out of `{}` total.'.format(
+            user,
+            self.interview.interviewee,
+            self.interview.user_questions[user.id],
+            self.interview.total_questions
+        )
+        await self.send_message(msg.channel, reply)
 
     # @command("^submit (.*)$", access=-1, name='submit',
     #          doc_brief="`submit <question here>`: Submits a question for EiMM "
