@@ -591,10 +591,10 @@ class EiMM(Plugin):
         bots      = []
         reply = ""
         for mention in msg.mentions:
-            if mention.id in self.interview.opt_outs:
+            if mention.id == msg.author.id:
+                self_vote = True
+            elif mention.id in self.interview.opt_outs:
                 opt_outs.append(str(mention))
-            elif mention.id == msg.author.id:
-                self = True
             elif mention.id == '224283755538284544':
                 bots.append(str(mention))
                 votes.append(mention.id)
