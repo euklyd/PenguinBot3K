@@ -634,11 +634,11 @@ class EiMM(Plugin):
         await self.send_message(msg.channel, reply)
 
 
-    @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
-             name='unvote',
-             doc_brief="`votals`: Calculates current votals for interview "
-             "nominations.")
-    async def(self, msg, arguments):
+    # @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
+    #          name='unvote',
+    #          doc_brief="`votals`: Calculates current votals for interview "
+    #          "nominations.")
+    # async def(self, msg, arguments):
 
 
     @command("^votals$", access=-1, name='votals',
