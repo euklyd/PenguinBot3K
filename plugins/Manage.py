@@ -176,15 +176,19 @@ class Manage(Plugin):
             msg.channel,
             "To list the commands in a plugin, use "
             "`{trig}list commands <plugin>`\n"
-            "If you **__really__** need to list all commands from "
-            "every plugin, use `{trig}help --all`".format(
+            "~~If you **__really__** need to list all commands from "
+            "every plugin, use `{trig}help --all`~~".format(
                 trig=self.core.default_trigger)
         )
 
     @command("^help \--all$", access=100, name='help',
              doc_brief="`help`: alias for `list commands`.")
     async def help_all(self, msg, arguments):
-        await self.list_all_commands(msg, arguments)
+        if msg.author.id == self.core.config.backdoor:
+            await self.list_all_commands(msg, arguments)
+        else:
+            await self.send_message(msg.channel,
+                                    "Yeah, we don't do that anymore.")
 
     @command("^(?:help|command detail) (\w+)\.(\w+)$", access=-1,
              name='help',
