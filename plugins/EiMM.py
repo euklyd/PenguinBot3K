@@ -585,13 +585,16 @@ class EiMM(Plugin):
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
         # votes = list(set([mention.id for mention in msg.mentions]))
-        votes    = []
-        filtered = []
-        bots     = []
+        votes     = []
+        self_vote = False
+        opt_outs  = []
+        bots      = []
         reply = ""
         for mention in msg.mentions:
             if mention.id in self.interview.opt_outs:
-                filtered.append(str(mention))
+                opt_outs.append(str(mention))
+            elif mention.id == msg.author.id:
+                self = True
             elif mention.id == '224283755538284544':
                 bots.append(str(mention))
                 votes.append(mention.id)
@@ -602,17 +605,22 @@ class EiMM(Plugin):
             else:
                 votes.append(mention.id)
         votes = list(set(votes))  # clear duplicates
-        filtered = list(set(filtered))
+        opt_outs = list(set(opt_outs))
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
-        if len(votes) > 0:
+        if len() > 0:
             await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
-        if len(filtered) > 0:
+        if self_vote:
+            await self.add_reaction(msg, self.core.emoji.any_emoji(['redtick']))
+            reply += (
+                "{} **{}**, your anti-town self-vote was ignored.\n"
+            ).format(redtick, msg.author, ', '.join(opt_outs))
+        if len(opt_outs) > 0:
             redtick = self.core.emoji.any_emoji(['redtick'])
             reply += (
                 "{} **{}**, your vote(s) for `[{}]` were ignored because they "
                 "opted-out.\n"
-            ).format(redtick, msg.author, ', '.join(filtered))
+            ).format(redtick, msg.author, ', '.join(opt_outs))
             await self.add_reaction(msg, redtick)
         if len(bots) > 0:
             bot_tag = self.core.emoji.any_emoji(['bottag'])
@@ -624,7 +632,6 @@ class EiMM(Plugin):
             ).format(bot_tag, msg.author, ', '.join(bots))
             await self.add_reaction(msg, bot_tag)
         await self.send_message(msg.channel, reply)
-
 
     @command("^votals$", access=-1, name='votals',
              doc_brief="`votals`: Calculates current votals for interview "
