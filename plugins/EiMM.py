@@ -595,10 +595,12 @@ class EiMM(Plugin):
         if len(filtered) > 0:
             await self.send_message(
                 msg.channel,
-                "**{}**, your votes for `{}` were ignored because they "
+                "**{}**, your vote(s) for `[{}]` were ignored because they "
                 "opted-out.".format(msg.author, ', '.join(filtered))
             )
-        await self.add_reaction(msg, '✅')
+            await self.add_reaction(msg, self.core.emoji.any_emoji(['redtick']))
+        if len(votes) > 0:
+            await self.add_reaction(msg, '✅')
 
     @command("^votals$", access=-1, name='votals',
              doc_brief="`votals`: Calculates current votals for interview "
