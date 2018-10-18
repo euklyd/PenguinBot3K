@@ -451,6 +451,49 @@ class EiMM(Plugin):
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
+    @command("^multi-ask\n(.+)", access=-1, name='interview multi-ask',
+             doc_brief="```multi-ask\n<question 1>\n<question 2>\n...`: "
+             "Submits multiple questions for the current interview.")
+    async def ask_question(self, msg, arguments):
+        if self.interview is None:
+            await self.send_message(msg.channel,
+                                    "Interviews haven't been set up yet.")
+            return
+
+        content = msg.content[:10]  # strip command name
+        questions = content.split('\n')
+
+        creds   = ServiceAccountCredentials.from_json_keyfile_name(
+            SHEETS_SECRET, SCOPE)
+        client  = gspread.authorize(creds)
+        sheet   = client.open('EiMM Interviews').sheet1
+
+        for question_text in questions:
+            question = {
+                'question':      question_text,
+                'author_id':     msg.author.id,
+                'author_name':   msg.author.name,
+                'author_avatar': msg.author.avatar_url,
+                'timestamp':     msg.timestamp
+            }
+            self.interview.increment_question(msg.author)
+
+            sheet.append_row(
+                [
+                    datetime.utcnow().strftime('%m/%d/%Y %H:%m:%S'),
+                    datetime.utcnow().timestamp(),
+                    str(msg.author),
+                    msg.author.id,
+                    self.interview.user_questions[msg.author.id],
+                    question_text
+                ]
+            )
+            self.interview.dump()
+
+        em = interview_embed(content, self.interview, msg)
+        await self.send_message(self.interview.question_channel, embed=em)
+        await self.add_reaction(msg, '✅')
+
     @command("^question (\d+)", access=-1, name='interview retrieve',
              doc_brief="`question <#>`: Retrieves the specified question and "
              "posts it in the answer channel.")
