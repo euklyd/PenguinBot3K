@@ -39,9 +39,9 @@ class Test(Plugin):
 
     @command("^emtest (\d+) (\d+) (\d+)$", name="test")
     async def em_test(self, msg, arguments):
-        desc_len  = arguments[0]
-        n_fields  = arguments[1]
-        field_len = arguments[2]
+        desc_len  = int(arguments[0])
+        n_fields  = int(arguments[1])
+        field_len = int(arguments[2])
 
         desc = ''.join(random.choices(string.ascii_uppercase + string.digits, k=desc_len))
         em = discord.Embed(
