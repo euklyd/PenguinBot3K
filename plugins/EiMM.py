@@ -569,7 +569,7 @@ class EiMM(Plugin):
                 reply = "**{}**, you're already opted-out of interviews."
             else:
                 self.interview.opt_outs.add(msg.author.id)
-                for voter, votes in self.interview.votes.items:
+                for voter, votes in self.interview.votes.items():
                     self.interview.votes[voter] = [
                         vote for vote in votes if vote != msg.author.id
                     ]
