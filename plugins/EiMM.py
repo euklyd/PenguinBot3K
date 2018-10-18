@@ -571,6 +571,7 @@ class EiMM(Plugin):
                 reply = "**{}**, you're now opted-out of interviews."
         else:
             reply = "**{}**, something went wrong here with your opting."
+        self.interview.dump()
         await self.send_message(msg.channel, reply.format(msg.author))
 
     @command("^(nom|nominate)(:? <@!?\d+>){1,3}$", access=-1, name='nominate',
@@ -580,6 +581,7 @@ class EiMM(Plugin):
     async def nominate(self, msg, arguments):
         votes = list(set([mention.id for mention in msg.mentions]))
         self.interview.votes[msg.author.id] = votes
+        self.interview.dump()
         await self.add_reaction(msg, '✅')
 
     @command("^votals$", access=-1, name='votals',
@@ -604,4 +606,4 @@ class EiMM(Plugin):
                 reply += "{}, ".format(msg.server.get_member(vote))
             reply = reply[:-2]
 
-        await send_message(msg.channel, reply)
+        await self.send_message(msg.channel, reply)
