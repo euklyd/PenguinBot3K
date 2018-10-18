@@ -602,7 +602,10 @@ class EiMM(Plugin):
         votal_fmt = '{{:<{}}} {{}}\n'.format(max_len+1)
         reply = '**__Votals__**```\n'
         for nom in sorted_votals:
-            reply += votal_fmt.format(msg.server.get_member(nom[0]) + ':', nom[1])
+            reply += votal_fmt.format(
+                str(msg.server.get_member(nom[0])) + ':',
+                nom[1]
+            )
         reply += '```'
 
         if msg.author.id in self.interview.votes:
