@@ -457,8 +457,9 @@ class EiMM(Plugin):
              doc_detail="Submits multiple questions for the current interview. "
              "Syntax:```\nmulti-ask\n<question 1>\n<question 2>\n...```"
              "This will submit each <question> separately for the current "
-             "interviewee to answer. Note that there can't be a question on "
-             "the same line as the `multi-ask` command.")
+             "interviewee to answer. *Note that there can't be a question on "
+             "the same line as the `multi-ask` command; the first question "
+             "must be on the second line.*")
     async def multi_ask(self, msg, arguments):
         if self.interview is None:
             await self.send_message(msg.channel,
