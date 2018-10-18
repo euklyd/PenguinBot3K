@@ -528,7 +528,7 @@ class EiMM(Plugin):
         )
         await self.send_message(self.interview.answer_channel, embed=em)
 
-    @command("^iv stats( <@!?\d>)?$", access=-1, name='iv stats',
+    @command("^iv stats( <@!?\d+>)?$", access=-1, name='iv stats',
              doc_brief="`iv stats <@user>`: Retrieves the number of questions "
              "`user` has asked, and the total number of questions.")
     async def iv_stats(self, msg, arguments):
