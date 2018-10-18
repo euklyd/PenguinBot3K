@@ -587,14 +587,15 @@ class EiMM(Plugin):
             if mention.id not in self.interview.opt_outs:
                 votes.append(mention.id)
             else:
-                filtered.append(mention)
+                filtered.append(str(mention))
         votes = list(set(votes))  # clear duplicates
+        filtered = list(set(filtered))
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
         if len(filtered) > 0:
             await self.send_message(
                 msg.channel,
-                "{}, your votes for {} were ignored because they "
+                "**{}**, your votes for `{}` were ignored because they "
                 "opted-out.".format(msg.author, filtered)
             )
         await self.add_reaction(msg, '✅')
