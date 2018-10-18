@@ -579,7 +579,7 @@ class EiMM(Plugin):
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
         votes = list(set([mention.id for mention in msg.mentions]))
-        self.interview.votes[msg.author] = votes
+        self.interview.votes[msg.author.id] = votes
         await self.add_reaction(msg, '✅')
 
     @command("^votals$", access=-1, name='votals',
@@ -587,7 +587,7 @@ class EiMM(Plugin):
              "nominations.")
     async def votals(self, msg, arguments):
         votals = {}
-        for votes in self.votes.values():
+        for votes in self.interview.votes.values():
             for vote in votes:
                 if vote in votals:
                     votals[vote] += 1
