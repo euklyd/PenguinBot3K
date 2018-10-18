@@ -35,15 +35,15 @@ class React(Plugin):
 
     @filter("^what$", name='what', server=reactservers)
     async def what(self, msg, arguments):
-        # lemonbot = self.core.emoji.emoji_str(["lemonbot", "lemon_bot"])
-        # if (lemonbot[0] == '`'):
-        #     self.logger.warning("no such emoji: {}".format(lemonbot))
-        # else:
-            # await self.add_reaction(msg, lemonbot)
         lemonbot = self.core.emoji.any_emoji(["lemonbot", "lemon_bot"])
         await self.add_reaction(msg, lemonbot)
         if (random.randint(0, 17) == 0):
             await self.add_reaction(msg, self.core.emoji.any_emoji(["refabot"]))
+
+    @filter("pregaming", name='pregaming', server=reactservers)
+    async def what(self, msg, arguments):
+        pregaming = self.core.emoji.any_emoji(["pregaming"])
+        await self.add_reaction(msg, pregaming)
 
     @filter("^<:expand:[0-9]{16,20}>$", name='expand dong',
             server="190782508105728000")
