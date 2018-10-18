@@ -1,6 +1,7 @@
 colorlog==2.6.0
 discord.py>=0.15.0
 google-api-python-client
+gspread
 imgurpython
 mutagen
 oauth2client
