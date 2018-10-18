@@ -581,13 +581,21 @@ class EiMM(Plugin):
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
         # votes = list(set([mention.id for mention in msg.mentions]))
-        votes = []
+        votes    = []
         filtered = []
+        bots     = []
+        reply = ""
         for mention in msg.mentions:
-            if mention.id not in self.interview.opt_outs:
-                votes.append(mention.id)
-            else:
+            if mention.id in self.interview.opt_outs:
                 filtered.append(str(mention))
+            elif mention.id == '224283755538284544':
+                bots.append(str(mention))
+                votes.append(mention.id)
+                await self.send_message(msg.channel, 'harufe!')
+            elif mention.bot is True:
+                bots.append(str(mention))
+            else:
+                votes.append(mention.id)
         votes = list(set(votes))  # clear duplicates
         filtered = list(set(filtered))
         self.interview.votes[msg.author.id] = votes
@@ -596,12 +604,22 @@ class EiMM(Plugin):
             await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
         if len(filtered) > 0:
             redtick = self.core.emoji.any_emoji(['redtick'])
-            await self.send_message(
-                msg.channel,
+            reply += (
                 "{} **{}**, your vote(s) for `[{}]` were ignored because they "
-                "opted-out.".format(redtick, msg.author, ', '.join(filtered))
-            )
+                "opted-out.\n"
+            ).format(redtick, msg.author, ', '.join(filtered))
             await self.add_reaction(msg, redtick)
+        if len(bots) > 0:
+            bot_tag = self.core.emoji.any_emoji(['bottag'])
+            reply += (
+                "{} **{}**, while we appreciate your support of the **Rᴏʙᴏᴛ "
+                "Rᴇᴠᴏʟᴜᴛɪᴏɴ**, bots such as `[{}]` cannot win interview "
+                "nominations; you would be best served voting for a more "
+                "humanlike compromise, like Makaze or Arcanite.\n"
+            ).format(bot_tag, msg.author, ', '.join(bots))
+            await self.add_reaction(msg, bot_tag)
+        await self.send_message(msg.channel, reply)
+
 
     @command("^votals$", access=-1, name='votals',
              doc_brief="`votals`: Calculates current votals for interview "
