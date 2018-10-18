@@ -609,9 +609,9 @@ class EiMM(Plugin):
         reply += '```'
 
         if msg.author.id in self.interview.votes:
-            reply += 'You are currently voting for: '
+            reply += '*You are currently voting for: '
             for vote in self.interview.votes[msg.author.id]:
                 reply += '{}, '.format(msg.server.get_member(vote))
-            reply = reply[:-2]
+            reply = reply[:-2] + '*'
 
         await self.send_message(msg.channel, reply)
