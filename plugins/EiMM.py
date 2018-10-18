@@ -608,7 +608,7 @@ class EiMM(Plugin):
         opt_outs = list(set(opt_outs))
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
-        if len() > 0:
+        if len(self.interview.votes[msg.author.id]) > 0:
             await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
         if self_vote:
             await self.add_reaction(msg, self.core.emoji.any_emoji(['redtick']))
@@ -632,6 +632,14 @@ class EiMM(Plugin):
             ).format(bot_tag, msg.author, ', '.join(bots))
             await self.add_reaction(msg, bot_tag)
         await self.send_message(msg.channel, reply)
+
+
+    @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
+             name='unvote',
+             doc_brief="`votals`: Calculates current votals for interview "
+             "nominations.")
+    async def(self, msg, arguments):
+
 
     @command("^votals$", access=-1, name='votals',
              doc_brief="`votals`: Calculates current votals for interview "
