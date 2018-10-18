@@ -580,7 +580,11 @@ class EiMM(Plugin):
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
-        votes = list(set([mention.id for mention in msg.mentions]))
+        # votes = list(set([mention.id for mention in msg.mentions]))
+        votes = []
+        for mention_id in list(set([mention.id for mention in msg.mentions])):
+            if mention_id not in self.interview.opt_outs:
+                votes.append(mention_id)
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
         await self.add_reaction(msg, '✅')
@@ -597,7 +601,6 @@ class EiMM(Plugin):
                 else:
                     votals[vote] = 1
         sorted_votals = [list(nom) + [msg.server.get_member(nom[0])] for nom in votals.items()]
-        # sorted_votals = sorted(sorted_votals, key=lambda x: x[1], reverse=True)
         # Sort by the number of votes, then alphabetically
         sorted_votals = sorted(sorted_votals, key=lambda x: (-x[1], str(x[2]).lower()))
         max_len = 0
@@ -606,10 +609,11 @@ class EiMM(Plugin):
         votal_fmt = '{{:<{}}} {{}}\n'.format(max_len+1)
         reply = '**__Votals__**```\n'
         for nom in sorted_votals:
-            reply += votal_fmt.format(
-                str(msg.server.get_member(nom[0])) + ':',
-                nom[1]
-            )
+            if nom[0] not in self.interview.opt_outs:
+                reply += votal_fmt.format(
+                    str(msg.server.get_member(nom[0])) + ':',
+                    nom[1]
+                )
         reply += '```'
 
         if msg.author.id in self.interview.votes:
