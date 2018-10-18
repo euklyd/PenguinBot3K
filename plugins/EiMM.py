@@ -413,7 +413,7 @@ class EiMM(Plugin):
     @command("^ask[ \n](.+)", access=-1, name='interview ask',
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
-    async def ask_question(self, msg, arguments):
+    async def ask(self, msg, arguments):
         if self.interview is None:
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
@@ -452,9 +452,13 @@ class EiMM(Plugin):
         await self.add_reaction(msg, '✅')
 
     @command("^multi-ask\n(.+)", access=-1, name='interview multi-ask',
-             doc_brief="```multi-ask\n<question 1>\n<question 2>\n...`: "
-             "Submits multiple questions for the current interview.")
-    async def ask_question(self, msg, arguments):
+             doc_brief="`multi-ask <list of questions on separate lines>: "
+             "Submits multiple questions for the current interview.",
+             doc_detail="Submits multiple questions for the current interview. "
+             "Syntax:```multi-ask\n<question 1>\n<question 2>\n...```"
+             "This will submit each <question> separately for the current "
+             "interviewee to answer.")
+    async def multi_ask(self, msg, arguments):
         if self.interview is None:
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
