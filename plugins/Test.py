@@ -46,7 +46,7 @@ class Test(Plugin):
         em = discord.Embed(
             title='here u go iris',
             color=msg.author.color,
-            description=desc
+            description=desc,
             timestamp=datetime.now()
         )
         for i in range(0, n_fields):
