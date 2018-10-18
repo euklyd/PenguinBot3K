@@ -582,11 +582,21 @@ class EiMM(Plugin):
     async def nominate(self, msg, arguments):
         # votes = list(set([mention.id for mention in msg.mentions]))
         votes = []
-        for mention_id in list(set([mention.id for mention in msg.mentions])):
-            if mention_id not in self.interview.opt_outs:
-                votes.append(mention_id)
+        filtered = []
+        for mention in msg.mentions:
+            if mention.id not in self.interview.opt_outs:
+                votes.append(mention.id)
+            else:
+                filtered.append(mention)
+        votes = list(set(votes))  # clear duplicates
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
+        if len(filtered) > 0:
+            await self.send_message(
+                msg.channel,
+                "{}, your votes for {} were ignored because they "
+                "opted-out.".format(msg.author, filtered)
+            )
         await self.add_reaction(msg, '✅')
 
     @command("^votals$", access=-1, name='votals',
