@@ -596,14 +596,19 @@ class EiMM(Plugin):
                 else:
                     votals[vote] = 1
         sorted_votals = sorted(votals.items(), key=lambda x: x[1])
-        reply = "**__Votals__**\n"
+        max_len = 0
         for nom in sorted_votals:
-            reply += "**{}:** {}".format(msg.server.get_member(nom[0]), nom[1])
+            max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
+        votal_fmt = '{{:<{}}} {{}}\n'.format(max_len+1)
+        reply = '**__Votals__**```\n'
+        for nom in sorted_votals:
+            reply += votal_fmt.format(msg.server.get_member(nom[0]) + ':', nom[1])
+        reply += '```'
 
         if msg.author.id in self.interview.votes:
-            reply += "You are currently voting for: "
+            reply += 'You are currently voting for: '
             for vote in self.interview.votes[msg.author.id]:
-                reply += "{}, ".format(msg.server.get_member(vote))
+                reply += '{}, '.format(msg.server.get_member(vote))
             reply = reply[:-2]
 
         await self.send_message(msg.channel, reply)
