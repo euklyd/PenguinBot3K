@@ -596,7 +596,7 @@ class EiMM(Plugin):
             await self.send_message(
                 msg.channel,
                 "**{}**, your votes for `{}` were ignored because they "
-                "opted-out.".format(msg.author, filtered)
+                "opted-out.".format(msg.author, ', '.join(filtered))
             )
         await self.add_reaction(msg, '✅')
 
