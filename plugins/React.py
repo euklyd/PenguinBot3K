@@ -80,9 +80,10 @@ class React(Plugin):
     #         await self.add_reaction(msg, '❤')
     #         await self.add_reaction(msg, virgin)
 
-    @filter("^.*$", name='catface', server='320996033268154378')
+    @filter("^.*$", name='catface', server=['320996033268154378', '469635806852808704'])
     async def catface(self, msg, arguments):
-        if (msg.channel.id == '332721908019625989' and msg.content != ":3"):
+        if (msg.channel.id in ['332721908019625989', '469720604191227905'] and
+                msg.content != ":3"):
             await self.delete_message(msg)
             tsktsk = await self.send_message(
                 msg.channel,
@@ -94,6 +95,14 @@ class React(Plugin):
     @filter("^<:(?:harold|GLORY_TO_THRACIA):[0-9]{16,20}>$", name='in america',
             server='190782508105728000')
     async def in_america(self, msg, arguments):
+        if (random.randint(0, 17) == 0):
+            await self.add_reaction(msg, '🇨🇦')
+        else:
+            await self.add_reaction(msg, '🇺🇸')
+
+    @filter("^<:YEAH_WEED:[0-9]{16,20}>$", name='YEAH_CANADA',
+            server='190782508105728000')
+    async def yeah_canada(self, msg, arguments):
         if (random.randint(0, 17) == 0):
             await self.add_reaction(msg, '🇨🇦')
         else:
