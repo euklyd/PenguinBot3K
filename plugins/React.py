@@ -40,7 +40,9 @@ class React(Plugin):
         if (random.randint(0, 17) == 0):
             await self.add_reaction(msg, self.core.emoji.any_emoji(['refabot']))
 
-    @filter("pregam(e|ing)", name='pregaming', server=reactservers)
+    @filter("pregam(e|ing)", name='pregaming', server=[
+            '328399532368855041', '436953982322081803', '258160125016014848',
+            '474037724551315456', '459150872371265538', '363831487382028308'])
     async def pregaming(self, msg, arguments):
         pregaming = self.core.emoji.any_emoji(['pregaming'])
         await self.add_reaction(msg, pregaming)
@@ -69,16 +71,6 @@ class React(Plugin):
             'nipples_the_enchilada', 'nipples'
         ])
         await self.add_reaction(msg, nipples)
-
-    # @filter("^<:[Cc]had:[0-9]{16,20}>$", name='chad x virgin',
-    #         server="190782508105728000")
-    # async def chad_x_virgin(self, msg, arguments):
-    #     if (random.randint(0, 8) == 0):
-    #         virgin = self.core.emoji.any_emoji([
-    #             "virgin"
-    #         ])
-    #         await self.add_reaction(msg, '❤')
-    #         await self.add_reaction(msg, virgin)
 
     @filter("^.*$", name='catface', server=['320996033268154378', '469635806852808704'])
     async def catface(self, msg, arguments):
