@@ -109,6 +109,7 @@
     "raven": "https://i.imgur.com/O5vhCm9.png",
     "regretful eskimo": "https://i.imgur.com/WIHIncm.png",
     "roll": "https://i.imgur.com/9azHpIN.png",
+    "smugbutt": "https://i.imgur.com/2A3XyDh.png",
     "slash man": "https://i.imgur.com/NFRAOGw.png",
     "snake man": "https://i.imgur.com/Dfj5pOa.png",
     "system": "https://i.imgur.com/fMu8iqs.png",
@@ -162,6 +163,11 @@
       "name": "refa",
       "quote": "i don't want to carry some useless shit\ni want to be the useless shit that gets carried",
       "icon": "zero"
+    },
+    "sb": {
+      "name": "sb",
+      "quote": "euk when are you adding an sb quote",
+      "icon": "smugbutt"
     },
     "short": {
       "name": "kim",
