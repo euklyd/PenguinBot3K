@@ -253,7 +253,7 @@ class Moderation(Plugin):
             await self.ban_user(user, msg.server, delete_message_days=0)
             self.logger.info("successfully banned {}".format(user.nick))
 
-    @command("^nuke <@!?([0-9]+)> ([1-7])$", access=ACCESS["ban"], name='nuke',
+    @command("^nuke <@!?([0-9]+)> ([0-7])$", access=ACCESS["ban"], name='nuke',
              doc_brief="`nuke @<user> <days>`: bans `<user>` from the current "
              "server and deletes their messages from the past <`days`> "
              "days.")
