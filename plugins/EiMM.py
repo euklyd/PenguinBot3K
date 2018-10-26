@@ -94,11 +94,63 @@ def interview_embed(question, interview, msg):
         icon_url=asker_url
     )
     em.set_footer(
-        # text="Question #{}".format(len(interview.questions)),
         text="Question #{}".format(interview.user_questions[msg.author.id]),
         icon_url=interview.interviewee.avatar_url
     )
     return em
+
+
+def blank_answers_embed(interview, msg, asker_id):
+    asker = msg.server.get_member(str(asker_id))
+    if asker is None:
+        asker_nick = "???"
+        asker = "???"
+        asker_url  = ""
+    else:
+        # asker_nick = get_nick_or_name(asker)
+        asker_nick = asker.name
+        asker_url  = asker.avatar_url
+    em = discord.Embed(
+        title="**{}**'s interview".format(interview.interviewee.name),
+        description=' ',
+        color=interview.interviewee.color
+    )
+    em.set_thumbnail(url=interview.interviewee.avatar_url)
+    # em.set_author(
+    #     name=asker_nick,
+    #     icon_url=asker_url
+    # )
+    em.set_author(
+        name=f'Asked by {asker}',
+        icon_url=asker_url
+    )
+    return em
+
+
+def add_answer(embed, num, question, answer, space=True):
+    BLANKSPACE = '<:blankspace:280996547708321792>'
+    if space:
+        question_text = f'```{question}```\n{answer}\n{BLANKSPACE}'
+    else:
+        question_text = f'```{question}```\n{answer}'
+    def split_text(text):
+        if len(text) >= 1000:
+            pos = text[:1000].rfind(' ')
+            if pos == -1:
+                # catch 'what if there are no spaces'
+                pos = 1000
+            remainder = text[pos:]
+            text = text[:pos]
+        else:
+            remainder = ''
+        return text, remainder
+    text, rem = split_text(question_text)
+    embed.add_field(name=f'Question #{num}', value=text, inline=False)
+    print(len(text))
+    while rem != '':
+        text, rem = split_text(rem)
+        embed.add_field(name=f'Question #{num} (cont.)', value=text, inline=False)
+        print(len(text))
 
 
 class InterviewMeta():
@@ -106,7 +158,6 @@ class InterviewMeta():
     question_channel = None
     answer_channel   = None
     interviewee      = None
-    # questions        = []
     user_questions   = {}
     salt             = None
     opt_outs         = set()
@@ -119,12 +170,10 @@ class InterviewMeta():
         if 'a_channel' in meta:
             iv_meta.answer_channel   = core.get_channel(meta['a_channel'])
         iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
-        # iv_meta.questions        = meta['questions']
         iv_meta.user_questions   = meta['user_questions']
         iv_meta.salt             = meta['salt']
         iv_meta.opt_outs         = set(meta['opt_outs'])
         iv_meta.votes            = meta['votes']
-        # logger.info(iv_meta.to_dict())
         return iv_meta
 
     @property
@@ -141,7 +190,6 @@ class InterviewMeta():
             self.salt = random.randint(1, 99999999)
         self.question_channel = question_channel
         self.interviewee      = interviewee
-        # self.questions        = []
         self.user_questions   = {}
 
     def to_dict(self):
@@ -150,7 +198,6 @@ class InterviewMeta():
             'q_channel':      self.question_channel.id,
             'a_channel':      self.answer_channel.id,
             'interviewee':    self.interviewee.id,
-            # 'questions': self.questions,
             'user_questions': self.user_questions,
             'salt':           self.salt,
             'opt_outs':       list(self.opt_outs),
@@ -168,6 +215,14 @@ class InterviewMeta():
         meta = self.to_dict()
         with open(filepath, 'w') as metafile:
             json.dump(meta, metafile)
+
+
+def get_sheet(sheet_name=INTERVIEW_SHEET):
+    creds   = ServiceAccountCredentials.from_json_keyfile_name(
+        SHEETS_SECRET, SCOPE)
+    client  = gspread.authorize(creds)
+    sheet   = client.open(sheet_name).sheet1
+    return sheet
 
 
 class EiMM(Plugin):
@@ -432,13 +487,8 @@ class EiMM(Plugin):
             'author_avatar': msg.author.avatar_url,
             'timestamp':     msg.timestamp
         }
-        # self.interview.questions.append(question)
 
-        creds   = ServiceAccountCredentials.from_json_keyfile_name(
-            SHEETS_SECRET, SCOPE)
-        client  = gspread.authorize(creds)
-        sheet   = client.open('EiMM Interviews').sheet1
-        # records = sheet.get_all_records()
+        sheet = get_sheet()
 
         self.interview.increment_question(msg.author)
 
@@ -449,7 +499,9 @@ class EiMM(Plugin):
                 str(msg.author),
                 msg.author.id,
                 self.interview.user_questions[msg.author.id],
-                msg.content[4:]
+                msg.content[4:],
+                '',
+                False
             ]
         )
         self.interview.dump()
@@ -459,7 +511,7 @@ class EiMM(Plugin):
         await self.add_reaction(msg, '✅')
 
     @command("^(mask|multi-ask)\n(.+)", access=-1, name='interview multi-ask',
-             doc_brief="`multi-ask <list of questions on separate lines>: "
+             doc_brief="`multi-ask <list of questions on separate lines>:` "
              "Submits multiple questions for the current interview.",
              doc_detail="Submits multiple questions for the current interview. "
              "Syntax:```\nmulti-ask\n<question 1>\n<question 2>\n...```"
@@ -479,10 +531,7 @@ class EiMM(Plugin):
             content = msg.content[10:]  # strip command name
         questions = content.split('\n')
 
-        creds   = ServiceAccountCredentials.from_json_keyfile_name(
-            SHEETS_SECRET, SCOPE)
-        client  = gspread.authorize(creds)
-        sheet   = client.open('EiMM Interviews').sheet1
+        sheet = get_sheet()
 
         for question_text in questions:
             if question_text == '':
@@ -503,7 +552,9 @@ class EiMM(Plugin):
                     str(msg.author),
                     msg.author.id,
                     self.interview.user_questions[msg.author.id],
-                    question_text
+                    question_text,
+                    '',
+                    False
                 ]
             )
             self.interview.dump()
@@ -519,10 +570,13 @@ class EiMM(Plugin):
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
-    @command("^question (\d+)", access=-1, name='interview retrieve',
-             doc_brief="`question <#>`: Retrieves the specified question and "
-             "posts it in the answer channel.")
-    async def get_question(self, msg, arguments):
+    @command("^answer(:? <@!?(\d)>)?", access=-1, name='interview answer',
+             doc_brief="`answer`: Answers as many questions as possible from "
+             "a single user.")
+    async def answer(self, msg, arguments):
+        # if the columns on the sheet change, this will need to be adjusted
+        POSTED_COL = 'H'
+
         if msg.author.id != self.interview.interviewee.id:
             await self.send_message(msg.channel,
                 "You must be the interviewee to use this command.")
@@ -531,12 +585,48 @@ class EiMM(Plugin):
             await self.send_message(msg.channel,
                 "The answer channel is not yet set up.")
             return
-        em = interview_embed(
-            self.interview.questions[int(arguments[0]) - 1],
-            self.interview,
-            msg
+
+        sheet       = get_sheet()
+        records     = sheet.get_all_records()
+        answers     = []
+        asker_id    = None
+        char_count  = 0
+        answered_qs = 0
+        for i, record in enumerate(records):
+            if record['Posted?'] != 'FALSE':
+                answered_qs += 1
+            elif record['Answer'] != '':
+                record['Question'] = str(record['Question'])
+                record['Answer'] = str(record['Answer'])
+                if asker_id == None:
+                    asker_id = record['ID']
+                elif record['ID'] != asker_id:
+                    # only collect questions from a single user
+                    continue
+                char_count += len(record['Question']) + len(record['Answer'])
+                if char_count > 5500:
+                    break
+                answers.append((i, record))
+        if len(answers) == 0:
+            await self.send_message(msg.channel,
+                'There are no new questions at this time.')
+            return
+        em = blank_answers_embed(self.interview, msg, asker_id)
+        for num, record in answers:
+            if num != answers[-1][0]:
+                add_answer(em, record['#'], record['Question'], record['Answer'])
+            else:
+                add_answer(em, record['#'], record['Question'], record['Answer'], space=False)
+        answered_qs += len(answers)
+        em.set_footer(
+            text="{} questions answered".format(answered_qs),
+            icon_url=self.interview.interviewee.avatar_url
         )
+
         await self.send_message(self.interview.answer_channel, embed=em)
+        for num, record in answers:
+            # The questions start on line 2, and the list is 0-indexed
+            sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
 
     @command("^iv stats( <@!?\d+>)?$", access=-1, name='iv stats',
              doc_brief="`iv stats <@user>`: Retrieves the number of questions "
@@ -584,7 +674,6 @@ class EiMM(Plugin):
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
-        # votes = list(set([mention.id for mention in msg.mentions]))
         votes     = []
         self_vote = False
         opt_outs  = []
