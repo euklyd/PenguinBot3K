@@ -127,14 +127,9 @@ def blank_answers_embed(interview, msg, asker_id):
     return em
 
 
-def add_answer(embed, num, question, answer, space=True):
-    BLANKSPACE = '<:blankspace:280996547708321792>'
-    if space:
-        question_text = f'```{question}```\n{answer}\n{BLANKSPACE}'
-    else:
-        question_text = f'```{question}```\n{answer}'
+def add_split_field(embed, num, text):
     def split_text(text):
-        if len(text) >= 1000:
+        if len(text) > 1000:
             pos = text[:1000].rfind(' ')
             if pos == -1:
                 # catch 'what if there are no spaces'
@@ -144,13 +139,26 @@ def add_answer(embed, num, question, answer, space=True):
         else:
             remainder = ''
         return text, remainder
-    text, rem = split_text(question_text)
+    text, rem = split_text(text)
     embed.add_field(name=f'Question #{num}', value=text, inline=False)
-    print(len(text))
     while rem != '':
         text, rem = split_text(rem)
         embed.add_field(name=f'Question #{num} (cont.)', value=text, inline=False)
-        print(len(text))
+
+
+def add_answer(embed, num, question, answer, space=True):
+    BLANKSPACE = '<:blankspace:280996547708321792>'
+    question = f'```{question}```'
+    if space:
+        answer = f'{answer}\n{BLANKSPACE}'
+    if len(question) > 1000:
+        question = question[:996] + '``` ```' + question[996:]
+    if len(question) + len(answer) > 1000:
+        add_split_field(embed, num, question)
+        add_split_field(embed, num, answer)
+    else:
+        question_text = f'{question}\n{answer}'
+        add_split_field(embed, num, question_text)
 
 
 class InterviewMeta():
@@ -602,6 +610,12 @@ class EiMM(Plugin):
                     asker_id = record['ID']
                 elif record['ID'] != asker_id:
                     # only collect questions from a single user
+                    continue
+                if len(record['Answer']) > 5500:
+                    await self.send_message(
+                        msg.channel,
+                        f'The answer in row {i+2} is too long to post; figure '
+                        'out posting that one yourself.')
                     continue
                 char_count += len(record['Question']) + len(record['Answer'])
                 if char_count > 5500:
