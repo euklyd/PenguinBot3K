@@ -612,10 +612,12 @@ class EiMM(Plugin):
                     # only collect questions from a single user
                     continue
                 if len(record['Answer']) > 5500:
+                    # The questions start on line 2, and the list is 0-indexed
+                    sheet.update_acell(f'{POSTED_COL}{i+2}', 'TOO LONG')
                     await self.send_message(
                         msg.channel,
                         f'The answer in row {i+2} is too long to post; figure '
-                        'out posting that one yourself.')
+                        'out posting that one yourself (then mark it Posted).')
                     continue
                 char_count += len(record['Question']) + len(record['Answer'])
                 if char_count > 5500:
