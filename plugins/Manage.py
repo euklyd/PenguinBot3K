@@ -20,11 +20,17 @@ from core.Decorators import *
 import conf.settings
 
 import asyncio
+import inspect
+import requests
 import sys
 import time
-import inspect
-from tabulate import tabulate
+
+
 from collections import namedtuple
+from io import BytesIO
+from PIL import Image
+from tabulate import tabulate
+
 
 ACCESS = {
     "trigger":       -1,
@@ -363,3 +369,14 @@ class Manage(Plugin):
             msg.channel,
             "I've been connected for: **{}**".format(readable_time(uptime))
         )
+
+    @command("^chavi (.*)$", access=ACCESS['manage'], name='chavi',
+             doc_brief="`chavi`: change this bot's avatar.")
+    async def chavi(self, msg, arguments):
+        try:
+            response = requests.get(arguments[0])
+            await self.core.edit_profile(avatar=response.content)
+            await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
+        except Exception as e:
+            await self.send_message(msg.channel, f"`ERROR`: {e}")
+            await self.add_reaction(msg, self.core.emoji.any_emoji(['redtick']))
