@@ -121,14 +121,14 @@ class Manage(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command("^(?:list commands|help) (\w+)", name='list commands',
+    @command("^(?:list commands|help) (\w+)", name='list commands', access=-1,
              doc_brief="`list commands <plugin>`: lists all commands that "
              "you have access to in `<plugin>`.")
     async def list_commands(self, msg, arguments):
         plugin = arguments[0]
-        plugin_list = self.core.plugin.list()
+        plugin_list = [p.lower() for p in self.core.plugin.list()]
         access = self.core.ACL.getAccess(msg.author.id)
-        if (plugin in plugin_list or plugin.capitalize() in plugin_list):
+        if (plugin.lower() in plugin_list or plugin.capitalize() in plugin_list):
             command_list = self.core.command.commands
             command_block = "**List of commands in plugin `{}`:**\n".format(
                 plugin
