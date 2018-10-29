@@ -562,6 +562,8 @@ class Interview(Plugin):
                     votals[vote] += 1
                 else:
                     votals[vote] = 1
+        # sorted_votals is a list of lists of the format:
+        # [ID, votes, member]
         sorted_votals = [list(nom) + [msg.server.get_member(nom[0])] for nom in votals.items()]
         # Sort by the number of votes, then alphabetically
         sorted_votals = sorted(sorted_votals, key=lambda x: (-x[1], str(x[2]).lower()))
@@ -575,6 +577,47 @@ class Interview(Plugin):
                 reply += votal_fmt.format(
                     str(msg.server.get_member(nom[0])) + ':',
                     nom[1]
+                )
+        reply += '```'
+
+        if msg.author.id in self.interview.votes:
+            if len(self.interview.votes[msg.author.id]) == 0:
+                reply += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+            else:
+                reply += '*You are currently voting for: '
+                for vote in self.interview.votes[msg.author.id]:
+                    reply += '{}, '.format(msg.server.get_member(vote))
+                reply = reply[:-2] + '*'
+
+        await self.send_message(msg.channel, reply)
+
+    @command("^votals --full$", access=300, name='votals (full)',
+             doc_brief="`votals --full`: Displays full vote information "
+             "for the top <num> candidates.")
+    async def votals_full(self, msg, arguments):
+        votals = {}
+        for voter, votes in self.interview.votes.items():
+            for vote in votes:
+                if vote in votals:
+                    votals[vote].append(voter)
+                else:
+                    votals[vote] = [voter]
+        # sorted_votals is a list of lists of the format:
+        # [ID, [voter IDs], member]
+        sorted_votals = [list(nom) + [msg.server.get_member(nom[0])] for nom in votals.items()]
+        # Sort by the number of votes, then alphabetically
+        sorted_votals = sorted(sorted_votals, key=lambda x: (-len(x[1]), str(x[2]).lower()))
+        max_len = 0
+        for nom in sorted_votals:
+            max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
+        votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
+        reply = '**__Votals__**```\n'
+        for nom in sorted_votals:
+            if nom[0] not in self.interview.opt_outs:
+                reply += votal_fmt.format(
+                    str(msg.server.get_member(nom[0])) + ':',
+                    len(nom[1]),
+                    ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
                 )
         reply += '```'
 
