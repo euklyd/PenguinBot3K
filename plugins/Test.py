@@ -69,6 +69,7 @@ class Test(Plugin):
         else:
             duration = int(arguments[3].split(' ')[0]) * 60 * 60
         repetitions = duration/period
+        await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
         while repetitions > 0:
             repetitions -= 1
             await self.send_message(msg.channel_mentions[0], text)
