@@ -54,6 +54,28 @@ class Test(Plugin):
             em.add_field(name='field {}'.format(i), value=''.join(random.choices(string.ascii_uppercase + string.digits, k=field_len)))
         await self.send_message(msg.channel, embed=em)
 
+    @command("^spam <#(\d+)> `(.*)` every (\d+ (?:sec|min)) for (\d+ (?:min|hours?))",
+             access=1000, name='spam')
+    async def spam(self, msg, arguments):
+        text = arguments[1]
+        period = 60
+        duration = 3600
+        if ("min" in arguments[2]):
+            period = int(arguments[2].split(' ')[0]) * 60
+        else:
+            period = int(arguments[2].split(' ')[0])
+        if ("min" in arguments[3]):
+            duration = int(arguments[3].split(' ')[0]) * 60
+        else:
+            duration = int(arguments[3].split(' ')[0]) * 60 * 60
+        repetitions = duration/period
+        while repetitions > 0:
+            repetitions -= 1
+            await self.send_message(msg.channel_mentions[0], text)
+            await asyncio.sleep(period)
+        await self.send_message(msg.channel_mentions[0], text)
+        await self.send_message(msg.channel_mentions[0], f"Done spamming `{text}`.")
+
     # @command("^test playlist embed$", name="test playlist embed")
     # async def playlist_embed(self, msg, arguments):
     #     now_playing = ("Darius Gaiden (Arcade) - 01 - VISIONNERZ Arrange Version", "CaptainGordonVGM", "(Nightmarre#5295)")
