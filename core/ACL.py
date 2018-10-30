@@ -214,6 +214,20 @@ class ACL():
                 max_access = self.roles[rid][plugin]
         return max_access
 
+    def get_final_user_access(self, user, plugin):
+        """
+            Returns the max access between a user's personal access and
+            their role access.
+        """
+        max_access = self.getAccess(user)
+        for role in user.roles:
+            rid = role.id
+            if (rid in self.roles and plugin in self.roles[rid] and
+                    self.roles[rid][plugin] > max_access
+            ):
+                max_access = self.roles[rid][plugin]
+        return max_access
+
     def get_role_accesses(self, role):
         """
             Summary:
