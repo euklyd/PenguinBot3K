@@ -218,21 +218,27 @@ class EiMM(Plugin):
     @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step on')
     async def step_on(self, msg, arguments):
         victim = None
-        if msg.mentions[0].id not in self.conquerors:
+        if msg.mentions[0].id in self.conquerors['steppees']:
+            if 'role' in self.conquerors['steppees'][msg.mentions[0].id]:
+                role = self.conquerors['steppees'][msg.mentions[0].id]['role']
+            else:
+                role = 'Pancake'
+        elif msg.mentions[0].id not in self.conquerors:
             await self.send_message(msg.channel,
-                                    "Didn't you mean to step on someone else?")
+                                "Didn't you mean to step on someone else?")
             return
-        if msg.author.id not in self.conquerors[msg.mentions[0].id]['heels']:
+        elif msg.author.id not in self.conquerors[msg.mentions[0].id]['heels']:
             await self.send_message(
                 msg.channel,
                 "Sorry, but you're not wearing the right heels for this."
             )
             return
-        victim = msg.mentions[0]
-        if 'role' in self.conquerors[msg.mentions[0].id]:
-            role = self.conquerors[msg.mentions[0].id]['role']
         else:
-            role = 'Pancake'
+            if 'role' in self.conquerors[msg.mentions[0].id]:
+                role = self.conquerors[msg.mentions[0].id]['role']
+            else:
+                role = 'Pancake'
+        victim = msg.mentions[0]
         if type(victim) is not discord.Member or victim.nick is None:
             victim_name = victim.name
         else:
