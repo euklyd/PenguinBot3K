@@ -512,6 +512,22 @@ class Interview(Plugin):
         self.interview.dump()
         await self.send_message(msg.channel, reply.format(msg.author))
 
+    @command("^opt[ -]list$", access=-1, name='opt list',
+             doc_brief="`opt list`: List users opted out of interviews.")
+    async def opt_list(self, msg, arguments):
+        users = [
+            msg.server.get_member(user) for user in self.interview.opt_outs
+        ]
+        users = sorted(users, key=lambda x: str(x).lower())
+        reply = '__**Opted-Out Users**__```'
+        for user in users:
+            reply += str(user) + '\n'
+        reply += (
+            '```*As they have opted-out, you cannot nominate any of these '
+            'users for interviews.*'
+        )
+        await self.send_message(msg.channel, reply)
+
     @command("^(nom|nominate)(:? <@!?\d+>){1,3}$", access=-1, name='nominate',
              doc_brief="`nominate <@user1> [<@user2>] [@user3]`: Nominate up "
              "to three users for interviews. If you've already made "
