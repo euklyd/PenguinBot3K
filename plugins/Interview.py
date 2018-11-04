@@ -704,6 +704,7 @@ class Interview(Plugin):
                     )
                     if len(reply) < 1900:
                         reply += line
+                    else:
                         overflow = True
                     txt_reply += line
         else:
@@ -716,6 +717,7 @@ class Interview(Plugin):
                     )
                     if len(reply) < 1900:
                         reply += line
+                    else:
                         overflow = True
                     txt_reply += line
         reply += '```'
