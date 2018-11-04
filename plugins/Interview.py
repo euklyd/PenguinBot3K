@@ -721,5 +721,8 @@ class Interview(Plugin):
                 ))
                 reply += '{}, '.format(votelist)
                 reply = reply[:-2] + '*'
+        else:
+            if len(self.interview.votes[msg.author.id]) == 0:
+                reply += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
 
         await self.send_message(msg.channel, reply)
