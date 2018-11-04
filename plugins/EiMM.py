@@ -225,7 +225,7 @@ class EiMM(Plugin):
                 role = 'Pancake'
         elif msg.mentions[0].id not in self.conquerors:
             await self.send_message(msg.channel,
-                                "Didn't you mean to step on someone else?")
+                                    "Didn't you mean to step on someone else?")
             return
         elif msg.author.id not in self.conquerors[msg.mentions[0].id]['heels']:
             await self.send_message(
