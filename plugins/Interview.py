@@ -689,25 +689,35 @@ class Interview(Plugin):
             max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
 
         reply = '**__Votals__**```\n'
+        txt_reply = reply
+        overflow  = False
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
         if arguments[0] == '--full' and access >= 300:
             votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
             for nom in sorted_votals:
                 if nom[0] not in self.interview.opt_outs:
-                    reply += votal_fmt.format(
+                    line = votal_fmt.format(
                         str(msg.server.get_member(nom[0])) + ':',
                         len(nom[1]),
                         # alphabetize
                         ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
                     )
+                    if len(reply) < 1900:
+                        reply += line
+                        overflow = True
+                    txt_reply += line
         else:
             votal_fmt = '{{:<{}}} {{}}\n'.format(max_len+1)
             for nom in sorted_votals:
                 if nom[0] not in self.interview.opt_outs:
-                    reply += votal_fmt.format(
+                    line = votal_fmt.format(
                         str(msg.server.get_member(nom[0])) + ':',
                         len(nom[1])
                     )
+                    if len(reply) < 1900:
+                        reply += line
+                        overflow = True
+                    txt_reply += line
         reply += '```'
 
         if msg.author.id in self.interview.votes:
@@ -724,4 +734,10 @@ class Interview(Plugin):
         else:
             reply += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
 
-        await self.send_message(msg.channel, reply)
+        if not overflow:
+            await self.send_message(msg.channel, reply)
+        else:
+            dest = '/tmp/votals.txt'
+            with open(dest, 'w') as votalfile:
+                votalfile.write(txt_reply)
+            await self.send_file(msg.channel, dest, content=reply)
