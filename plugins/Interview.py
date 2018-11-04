@@ -420,10 +420,13 @@ class Interview(Plugin):
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
-    @command("^ans(?:wer)?(:? <@!?(\d)>)?", access=-1, name='interview answer',
+    @command("^ans(?:wer)?", access=-1, name='interview answer',
              doc_brief="`answer`: Answers as many questions as possible from "
              "a single user.")
     async def answer(self, msg, arguments):
+        # Pass a channel ID argument when *calling* this method to run
+        # in preview mode.
+
         # if the columns on the sheet change, this will need to be adjusted
         POSTED_COL = 'H'
 
@@ -431,10 +434,15 @@ class Interview(Plugin):
             await self.send_message(msg.channel,
                 'You must be the interviewee to use this command.')
             return
-        if self.interview.answer_channel is None:
-            await self.send_message(msg.channel,
-                'The answer channel is not yet set up.')
-            return
+
+        if len(arguments) == 0:
+            if self.interview.answer_channel is None:
+                await self.send_message(msg.channel,
+                    'The answer channel is not yet set up.')
+                return
+            dest_channel = self.interview.answer_channel
+        else:
+            dest_channel = arguments[0]
 
         sheet       = get_sheet()
         records     = sheet.get_all_records()
@@ -481,10 +489,21 @@ class Interview(Plugin):
             icon_url=self.interview.interviewee.avatar_url
         )
 
-        await self.send_message(self.interview.answer_channel, embed=em)
-        for num, record in answers:
-            # The questions start on line 2, and the list is 0-indexed
-            sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
+        await self.send_message(dest_channel, embed=em)
+        if len(arguments) == 0:
+            # only update cells if not in preview mode
+            for num, record in answers:
+                # The questions start on line 2, and the list is 0-indexed
+                sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
+
+    @command("^preview?", access=-1, name='interview preview',
+             doc_brief="`preview`: Previews the responses to questions as if "
+             "you had used `##answer`, only in the hidden backstage channel.")
+    async def preview(self, msg, arguments):
+        await self.answer(
+            msg,
+            [self.interview.question_channel]
+        )
 
     @command("^iv stats( <@!?\d+>)?$", access=-1, name='iv stats',
              doc_brief="`iv stats <@user>`: Retrieves the number of questions "
