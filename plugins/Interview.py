@@ -61,7 +61,7 @@ def interview_embed(question, interview, msg):
         asker_nick = get_nick_or_name(asker)
         asker_url  = asker.avatar_url
     em = discord.Embed(
-        title="{} interview".format(get_nick_or_name(interview.interviewee)),
+        title='{} interview'.format(get_nick_or_name(interview.interviewee)),
         color=interview.interviewee.color,
         description=question['question'],
         timestamp=question['timestamp']
@@ -72,7 +72,7 @@ def interview_embed(question, interview, msg):
         icon_url=asker_url
     )
     em.set_footer(
-        text="Question #{}".format(interview.user_questions[msg.author.id]),
+        text='Question #{}'.format(interview.user_questions[msg.author.id]),
         icon_url=interview.interviewee.avatar_url
     )
     return em
@@ -81,9 +81,9 @@ def interview_embed(question, interview, msg):
 def blank_answers_embed(interview, msg, asker_id):
     asker = msg.server.get_member(str(asker_id))
     if asker is None:
-        asker_nick = "???"
-        asker = "???"
-        asker_url  = ""
+        asker_nick = '???'
+        asker = '???'
+        asker_url  = ''
     else:
         # asker_nick = get_nick_or_name(asker)
         asker_nick = asker.name
@@ -255,7 +255,7 @@ class Interview(Plugin):
     async def setup_question_channel(self, msg, arguments):
         if self.interview is None:
             await self.send_message(msg.channel,
-                "Setting up interviews for the first time.")
+                'Setting up interviews for the first time.')
             self.interview = InterviewMeta()
         else:
             old_interview = self.interview.to_dict()
@@ -281,9 +281,9 @@ class Interview(Plugin):
         # else:
         #     achn = None
         reply = (
-            "**New interview setup:**\n"
-            "Interviewee: {user}\n"
-            "Question Channel: {qchn}\n"
+            '**New interview setup:**\n'
+            'Interviewee: {user}\n'
+            'Question Channel: {qchn}\n'
             # "Answer Channel: {achn}"
         ).format(user=str(self.interview.interviewee),
                  qchn=self.interview.question_channel.mention,
@@ -298,10 +298,10 @@ class Interview(Plugin):
         self.interview.answer_channel = msg.channel
         self.interview.dump()
         reply = (
-            "**New interview setup:**\n"
-            "Interviewee: {user}\n"
-            "Question Channel: {qchn}\n"
-            "Answer Channel: {achn}"
+            '**New interview setup:**\n'
+            'Interviewee: {user}\n'
+            'Question Channel: {qchn}\n'
+            'Answer Channel: {achn}'
         ).format(user=str(self.interview.interviewee),
                  qchn=self.interview.question_channel.mention,
                  achn=self.interview.answer_channel.mention)
@@ -414,11 +414,11 @@ class Interview(Plugin):
 
         if msg.author.id != self.interview.interviewee.id:
             await self.send_message(msg.channel,
-                "You must be the interviewee to use this command.")
+                'You must be the interviewee to use this command.')
             return
         if self.interview.answer_channel is None:
             await self.send_message(msg.channel,
-                "The answer channel is not yet set up.")
+                'The answer channel is not yet set up.')
             return
 
         sheet       = get_sheet()
@@ -462,7 +462,7 @@ class Interview(Plugin):
                 add_answer(em, record['#'], record['Question'], record['Answer'], space=False)
         answered_qs += len(answers)
         em.set_footer(
-            text="{} questions answered".format(answered_qs),
+            text='{} questions answered'.format(answered_qs),
             icon_url=self.interview.interviewee.avatar_url
         )
 
@@ -508,7 +508,7 @@ class Interview(Plugin):
                     ]
                 reply = "**{}**, you're now opted-out of interviews."
         else:
-            reply = "**{}**, something went wrong here with your opting."
+            reply = '**{}**, something went wrong here with your opting.'
         self.interview.dump()
         await self.send_message(msg.channel, reply.format(msg.author))
 
@@ -521,7 +521,7 @@ class Interview(Plugin):
         self_vote = False
         opt_outs  = []
         bots      = []
-        reply = ""
+        reply = ''
         for mention in msg.mentions:
             if mention.id == msg.author.id:
                 self_vote = True
@@ -546,22 +546,22 @@ class Interview(Plugin):
             redtick = self.core.emoji.any_emoji(['redtick'])
             await self.add_reaction(msg, redtick)
             reply += (
-                "{} **{}**, your anti-town self-vote was ignored.\n"
+                '{} **{}**, your anti-town self-vote was ignored.\n'
             ).format(redtick, msg.author, ', '.join(opt_outs))
         if len(opt_outs) > 0:
             redtick = self.core.emoji.any_emoji(['redtick'])
             reply += (
-                "{} **{}**, your vote(s) for `[{}]` were ignored because they "
-                "opted-out.\n"
+                '{} **{}**, your vote(s) for `[{}]` were ignored because they '
+                'opted-out.\n'
             ).format(redtick, msg.author, ', '.join(opt_outs))
             await self.add_reaction(msg, redtick)
         if len(bots) > 0:
             bot_tag = self.core.emoji.any_emoji(['bottag'])
             reply += (
-                "{} **{}**, while we appreciate your support of the **Rᴏʙᴏᴛ "
-                "Rᴇᴠᴏʟᴜᴛɪᴏɴ**, bots such as `[{}]` cannot win interview "
-                "nominations; you would be best served voting for a more "
-                "humanlike compromise, like Makaze or Arcanite.\n"
+                '{} **{}**, while we appreciate your support of the **Rᴏʙᴏᴛ '
+                'Rᴇᴠᴏʟᴜᴛɪᴏɴ**, bots such as `[{}]` cannot win interview '
+                'nominations; you would be best served voting for a more '
+                'humanlike compromise, like Makaze or Arcanite.\n'
             ).format(bot_tag, msg.author, ', '.join(bots))
             await self.add_reaction(msg, bot_tag)
         await self.send_message(msg.channel, reply)
@@ -574,7 +574,7 @@ class Interview(Plugin):
             reply = "**{}**, you're not currently nominating anyone."
         else:
             self.interview.votes[msg.author.id] = []
-            reply = "**{}**, your nomination(s) have been cleared."
+            reply = '**{}**, your nomination(s) have been cleared.'
         await self.send_message(msg.channel, reply.format(msg.author))
 
     @command("^votals ?(--full)?$", access=-1, name='votals (full)',
