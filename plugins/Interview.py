@@ -58,10 +58,12 @@ def interview_embed(question, interview, msg):
         asker_nick = question['author_name']
         asker_url  = question['author_avatar']
     else:
-        asker_nick = get_nick_or_name(asker)
+        # asker_nick = get_nick_or_name(asker)
+        asker_nick = asker.name
         asker_url  = asker.avatar_url
     em = discord.Embed(
-        title='{} interview'.format(get_nick_or_name(interview.interviewee)),
+        # title='{} interview'.format(get_nick_or_name(interview.interviewee)),
+        title="{}'s interview".format(interview.interviewee.name),
         color=interview.interviewee.color,
         description=question['question'],
         timestamp=question['timestamp']
