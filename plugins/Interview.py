@@ -181,6 +181,7 @@ class InterviewMeta():
         self.question_channel = question_channel
         self.interviewee      = interviewee
         self.user_questions   = {}
+        self.votes            = {}
         self.active           = True
 
     def to_dict(self):
