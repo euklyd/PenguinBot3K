@@ -692,7 +692,7 @@ class Interview(Plugin):
         txt_reply = reply
         overflow  = False
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
-        if arguments[0] == '--full' and access >= 300:
+        if arguments[0] == '--full':
             votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
             for nom in sorted_votals:
                 if nom[0] not in self.interview.opt_outs:
