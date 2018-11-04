@@ -71,7 +71,7 @@ class ACL(Plugin):
             icon_url=user.avatar_url
         )
         em.add_field(name="ID", value=user.id)
-        em.add_field(name="User Access", value=access)
+        em.add_field(name="Global User Access", value=f'**{access}**')
 
         # await self.send_message(
         #     msg.channel,
@@ -79,6 +79,20 @@ class ACL(Plugin):
         #         user.name, user.discriminator, user.id, access
         #     )
         # )
+        em.add_field(name="Role Accesses",
+                     value="*Access levels for individual plugins*",
+                     inline=False)
+        plugin_accesses = {}
+        for role in msg.mentions[0].roles:
+            role_map = self.core.ACL.get_role_accesses(role)
+            if role_map is not None:
+                for plugin, access in role_map.items():
+                    if plugin not in plugin_accesses:
+                        plugin_accesses[plugin] = access
+                    elif access > plugin_accesses[plugin]:
+                        plugin_accesses[plugin] = access
+        for plugin in plugin_accesses:
+            em.add_field(name=plugin, value=plugin_accesses[plugin])
         await self.send_message(msg.channel, embed=em)
 
     @command("^whoami", access=-1, name='whoami',
