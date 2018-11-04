@@ -148,6 +148,7 @@ class InterviewMeta():
     salt             = None
     opt_outs         = set()
     votes            = {}
+    active           = True
 
     def load_from_dict(meta, core):
         iv_meta = InterviewMeta()
@@ -160,6 +161,7 @@ class InterviewMeta():
         iv_meta.salt             = meta['salt']
         iv_meta.opt_outs         = set(meta['opt_outs'])
         iv_meta.votes            = meta['votes']
+        iv_meta.active           = meta['active']
         return iv_meta
 
     @property
@@ -177,6 +179,7 @@ class InterviewMeta():
         self.question_channel = question_channel
         self.interviewee      = interviewee
         self.user_questions   = {}
+        self.active           = True
 
     def to_dict(self):
         meta = {
@@ -187,7 +190,8 @@ class InterviewMeta():
             'user_questions': self.user_questions,
             'salt':           self.salt,
             'opt_outs':       list(self.opt_outs),
-            'votes':          self.votes
+            'votes':          self.votes,
+            'active':         self.active
         }
         return meta
 
@@ -315,6 +319,12 @@ class Interview(Plugin):
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
             return
+        if self.interview.active is False:
+            await self.send_message(
+                msg.channel,
+                'Interview questions are currently **closed**; please wait '
+                'for the next round to begin.')
+            return
         question = {
             'question':      msg.content[4:],  # i hope this works
             'author_id':     msg.author.id,
@@ -359,7 +369,12 @@ class Interview(Plugin):
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
             return
-
+        if self.interview.active is False:
+            await self.send_message(
+                msg.channel,
+                'Interview questions are currently **closed**; please wait '
+                'for the next round to begin.')
+            return
         if arguments[0] == 'mask':
             content = msg.content[5:]
         else:
@@ -528,11 +543,39 @@ class Interview(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
+    @command("^iv (enable|disable)$", access=700, name='toggle',
+             doc_brief="`iv <enable/disable>`: Enables or disables interview "
+             "voting and nominating.")
+    async def toggle(self, msg, arguments):
+        if arguments[0] == 'enable':
+            if self.interview.active is not True:
+                self.interview.active = True
+                await self.send_message(msg.channel, "Interviews **enabled**.")
+            else:
+                await self.send_message(msg.channel,
+                                        "Interviews already **enabled**.")
+                return
+        else:
+            if self.interview.active is not False:
+                self.interview.active = False
+                await self.send_message(msg.channel, "Interviews **disabled**.")
+            else:
+                await self.send_message(msg.channel,
+                                        "Interviews already **disabled**.")
+                return
+        self.interview.dump()
+
     @command("^(nom|nominate)(:? <@!?\d+>){1,3}$", access=-1, name='nominate',
              doc_brief="`nominate <@user1> [<@user2>] [@user3]`: Nominate up "
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
+        if self.interview.active is False:
+            await self.send_message(
+                msg.channel,
+                'Nominations are currently **closed**; please wait for '
+                'the next round to begin.')
+            return
         votes     = []
         self_vote = False
         opt_outs  = []
@@ -586,6 +629,12 @@ class Interview(Plugin):
              name='unvote',
              doc_brief="`unnom`: Deletes all your current votes.")
     async def unvote(self, msg, arguments):
+        if self.interview.active is False:
+            await self.send_message(
+                msg.channel,
+                'Nominations are currently **closed**; please wait for '
+                'the next round to begin.')
+            return
         if msg.author.id not in self.interview.votes or len(self.interview.votes[msg.author.id]) == 0:
             reply = "**{}**, you're not currently nominating anyone."
         else:
