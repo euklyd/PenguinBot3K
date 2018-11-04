@@ -219,7 +219,7 @@ class Interview(Plugin):
 
     You can nominate 1-3 users with `##nominate`. For example, `##nominate @Ampharos#1651 @Iris#5134 @Monde#6197`.
     To change your votes, simply `##nominate` different users. If you want to delete your votes, just `##unvote` to clear everything.
-    When you've successfully voted, PenguinBot will react to your message with :greentick:.
+    When you've successfully voted, PenguinBot will react to your message with <:greentick:502460759197089802>.
     To opt-out of the nomination process entirely, just `##opt out`. If you change your mind, simply `##opt in`.
 
     **Asking Questions**
