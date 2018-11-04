@@ -126,10 +126,16 @@ class Manage(Plugin):
              "you have access to in `<plugin>`.")
     async def list_commands(self, msg, arguments):
         plugin = arguments[0]
-        plugin_list = [p.lower() for p in self.core.plugin.list()]
+        plugin_list = {k.lower(): e for k, e in self.core.plugin.list().items()}
         access = self.core.ACL.getAccess(msg.author.id)
         if (plugin.lower() in plugin_list or plugin.capitalize() in plugin_list):
             command_list = self.core.command.commands
+            if plugin_list[plugin.lower()]['instance'].__doc__ is not None:
+                await self.send_message(
+                    msg.channel,
+                    plugin_list[plugin.lower()]['instance'].__doc__
+                )
+            # print(plugin_list[plugin.lower()])
             command_block = "**List of commands in plugin `{}`:**\n".format(
                 plugin
             )
