@@ -355,7 +355,7 @@ class Interview(Plugin):
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, '✅')
 
-    @command("^(mask|multi-ask)\n(.+)", access=-1, name='interview multi-ask',
+    @command("^(mask|multi-ask) *\n(.+)", access=-1, name='interview multi-ask',
              doc_brief="`multi-ask <list of questions on separate lines>:` "
              "Submits multiple questions for the current interview.",
              doc_detail="Submits multiple questions for the current interview. "
