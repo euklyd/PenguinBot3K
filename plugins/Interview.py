@@ -212,6 +212,32 @@ def get_sheet(sheet_name=INTERVIEW_SHEET):
 
 
 class Interview(Plugin):
+    """
+    __**PenguinBot Interview User Guide**__
+
+    **Voting**
+
+    You can nominate 1-3 users with `##nominate`. For example, `##nominate @Ampharos#1651 @Iris#5134 @Monde#6197`.
+    To change your votes, simply `##nominate` different users. If you want to delete your votes, just `##unvote` to clear everything.
+    When you've successfully voted, PenguinBot will react to your message with :greentick:.
+    To opt-out of the nomination process entirely, just `##opt out`. If you change your mind, simply `##opt in`.
+
+    **Asking Questions**
+
+    Questions can be submitted for the current interviewee with `##ask <your question here>`. For example, `##ask euklyd, why is your bot so hard to use?`. If you'd rather harass your friends with a deluge of many questions at once, use `##mask`, like so:
+    ```
+    ##mask
+    euklyd, why is your bot so hard to use?
+    also, why is its avatar a piplup?
+    what is it with you and penguins, anyways?
+    ```
+    (Each question should be on a different line.)
+
+    **Answering Questions**
+
+    Interviewees will have access to both a hidden channel and a Google sheet with each question.
+    After filling in the **Answer** column of the sheet for a question, you can use the command `##answer`, and PenguinBot will post several answers at a time in the interview answers channel.
+    """
     async def activate(self):
         try:
             with open(PATH.format(INTERVIEW_META),  'r') as meta:
@@ -584,6 +610,7 @@ class Interview(Plugin):
                     reply += votal_fmt.format(
                         str(msg.server.get_member(nom[0])) + ':',
                         len(nom[1]),
+                        # alphabetize
                         ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
                     )
         else:
