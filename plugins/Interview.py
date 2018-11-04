@@ -587,7 +587,7 @@ class Interview(Plugin):
                 return
         self.interview.dump()
 
-    @command("^(nom|nominate)(:? <@!?\d+>){1,3}$", access=-1, name='nominate',
+    @command("^(nom|nominate)(:? ?<@!?\d+>){1,3}$", access=-1, name='nominate',
              doc_brief="`nominate <@user1> [<@user2>] [@user3]`: Nominate up "
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
