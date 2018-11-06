@@ -672,6 +672,11 @@ class Interview(Plugin):
              "long as the user's access is ≥ 300, detailed votal information "
              "will be calculated.")
     async def votals(self, msg, arguments):
+        SERVER_LEFT_MSG = '[Member Left Server]'
+        def name_or_default(member):
+            if member is not None:
+                return str(member)
+            return SERVER_LEFT_MSG
         votals = {}
         for voter, votes in self.interview.votes.items():
             for vote in votes:
@@ -684,11 +689,11 @@ class Interview(Plugin):
         sorted_votals = [list(nom) + [msg.server.get_member(nom[0])] for nom in votals.items()]
         # Sort by the number of votes, then alphabetically
         sorted_votals = sorted(sorted_votals, key=lambda x: (-len(x[1]), str(x[2]).lower()))
-        max_len = 0
+        max_len = len(SERVER_LEFT_MSG)
         for nom in sorted_votals:
             max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
 
-        reply = '**__Votals__**```\n'
+        reply = '**__Votals__**```ini\n'
         txt_reply = reply
         overflow  = False
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
@@ -696,11 +701,17 @@ class Interview(Plugin):
             votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
             for nom in sorted_votals:
                 if nom[0] not in self.interview.opt_outs:
+                    if msg.server.get_member(nom[0]) is not None:
+                        # voter = str(msg.server.get_member(nom[0]))
+                        voter = name_or_default(msg.server.get_member(nom[0]))
+                    else:
+                        voter = SERVER_LEFT_MSG
                     line = votal_fmt.format(
-                        str(msg.server.get_member(nom[0])) + ':',
+                        voter + ':',
                         len(nom[1]),
                         # alphabetize
-                        ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
+                        # ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
+                        ', '.join(sorted([name_or_default(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
                     )
                     if len(reply) < 1900:
                         reply += line
@@ -711,8 +722,13 @@ class Interview(Plugin):
             votal_fmt = '{{:<{}}} {{}}\n'.format(max_len+1)
             for nom in sorted_votals:
                 if nom[0] not in self.interview.opt_outs:
+                    if msg.server.get_member(nom[0]) is not None:
+                        # voter = str(msg.server.get_member(nom[0]))
+                        voter = name_or_default(msg.server.get_member(nom[0]))
+                    else:
+                        voter = SERVER_LEFT_MSG
                     line = votal_fmt.format(
-                        str(msg.server.get_member(nom[0])) + ':',
+                        voter + ':',
                         len(nom[1])
                     )
                     if len(reply) < 1900:
@@ -728,7 +744,8 @@ class Interview(Plugin):
             else:
                 reply += '*You are currently voting for: '
                 votelist = ', '.join(sorted(
-                    [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
+                    # [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
+                    [name_or_default(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
                     key=lambda x: x.lower()
                 ))
                 reply += '{}, '.format(votelist)
