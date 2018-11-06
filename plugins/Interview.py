@@ -609,7 +609,7 @@ class Interview(Plugin):
                 )
         elif len(msg.mentions) != 0:
             # single user answer
-            if len(answers[int(msg.mentions[0].id)]) == 0:
+            if msg.mentions[0].id not in answers or len(answers[int(msg.mentions[0].id)]) == 0:
                 await self.send_message(
                     msg.channel,
                     f'There are no new answers for {msg.mentions[0]} '
