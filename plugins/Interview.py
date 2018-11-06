@@ -672,7 +672,7 @@ class Interview(Plugin):
              "long as the user's access is ≥ 300, detailed votal information "
              "will be calculated.")
     async def votals(self, msg, arguments):
-        SERVER_LEFT_MSG = '[Member Left Server]'
+        SERVER_LEFT_MSG = '[Member Left]'
         def name_or_default(member):
             if member is not None:
                 return str(member)
@@ -693,7 +693,23 @@ class Interview(Plugin):
         for nom in sorted_votals:
             max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
 
-        reply = '**__Votals__**```ini\n'
+        footer = ''
+        if msg.author.id in self.interview.votes:
+            if len(self.interview.votes[msg.author.id]) == 0:
+                footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+            else:
+                footer += '*You are currently voting for: '
+                votelist = ', '.join(sorted(
+                    # [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
+                    [name_or_default(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
+                    key=lambda x: x.lower()
+                ))
+                footer += '{}, '.format(votelist)
+                footer = footer[:-2] + '*'
+        else:
+            footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+
+        reply     = '**__Votals__**```ini\n'
         txt_reply = reply
         overflow  = False
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
@@ -713,7 +729,7 @@ class Interview(Plugin):
                         # ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
                         ', '.join(sorted([name_or_default(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
                     )
-                    if len(reply) < 1900:
+                    if len(reply + line + footer) < 1990:
                         reply += line
                     else:
                         overflow = True
@@ -731,27 +747,16 @@ class Interview(Plugin):
                         voter + ':',
                         len(nom[1])
                     )
-                    if len(reply) < 1900:
+                    if len(reply + line + footer) < 1990:
                         reply += line
                     else:
                         overflow = True
                     txt_reply += line
         reply += '```'
 
-        if msg.author.id in self.interview.votes:
-            if len(self.interview.votes[msg.author.id]) == 0:
-                reply += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
-            else:
-                reply += '*You are currently voting for: '
-                votelist = ', '.join(sorted(
-                    # [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
-                    [name_or_default(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
-                    key=lambda x: x.lower()
-                ))
-                reply += '{}, '.format(votelist)
-                reply = reply[:-2] + '*'
-        else:
-            reply += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+        reply += footer
+
+        print(len(reply))
 
         if not overflow:
             await self.send_message(msg.channel, reply)
