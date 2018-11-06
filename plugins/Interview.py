@@ -594,7 +594,7 @@ class Interview(Plugin):
         if len(answers) == 0:
             await self.send_message(
                 msg.channel,
-                'There are no new answers at this time.'
+                'There are no new answers to be posted at this time.'
             )
             return
 
@@ -612,7 +612,8 @@ class Interview(Plugin):
             if len(answers[int(msg.mentions[0].id)]) == 0:
                 await self.send_message(
                     msg.channel,
-                    f'There are no new answers for {msg.mentions[0]} at this time.'
+                    f'There are no new answers for {msg.mentions[0]} '
+                    'to be posted at this time.'
                 )
                 return
             await self.post_answers(
