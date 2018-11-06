@@ -592,9 +592,12 @@ class Interview(Plugin):
                 #     break
                 answers[record['ID']].append((i, record))
         if len(answers) == 0:
-            await self.send_message(msg.channel,
-                'There are no new questions at this time.')
+            await self.send_message(
+                msg.channel,
+                'There are no new answers at this time.'
+            )
             return
+
         if arguments[0] is None:
             # all answers
             for user, user_answers in answers.items():
@@ -606,6 +609,12 @@ class Interview(Plugin):
                 )
         elif len(msg.mentions) != 0:
             # single user answer
+            if len(answers[int(msg.mentions[0].id)]) == 0:
+                await self.send_message(
+                    msg.channel,
+                    f'There are no new answers for {msg.mentions[0]} at this time.'
+                )
+                return
             await self.post_answers(
                 msg,
                 dest_channel,
@@ -616,8 +625,13 @@ class Interview(Plugin):
             # single line answer
             if int(arguments[0]) < 2:
                 await self.send_message(msg.channel, 'Answers start on the second row.')
-            single_answer = [(arguments[0], records[int(arguments[0])-2])]
-            await self.post_answers(msg, dest_channel, single_answer, answered_qs)
+            elif len(records) < int(arguments[0])-2:
+                await self.send_message(msg.channel, f'There are only {len(records)} rows.')
+            elif records[int(arguments[0])-2]['Answer'] == '':
+                await self.send_message(msg.channel, "This question isn't answered yet.")
+            else:
+                single_answer = [(arguments[0], records[int(arguments[0])-2])]
+                await self.post_answers(msg, dest_channel, single_answer, answered_qs)
         # em = blank_answers_embed(self.interview, msg, asker_id)
         # for num, record in answers:
         #     if num != answers[-1][0]:
@@ -646,7 +660,7 @@ class Interview(Plugin):
             [arguments[0], self.interview.question_channel]
         )
 
-    @command("^iv stats( <@!?\d+>)?$", access=-1, name='iv stats',
+    @command("^iv stats( <@!?\d+>)?$", access=300, name='iv stats',
              doc_brief="`iv stats <@user>`: Retrieves the number of questions "
              "`user` has asked, and the total number of questions.")
     async def iv_stats(self, msg, arguments):
