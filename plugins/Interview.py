@@ -652,7 +652,7 @@ class Interview(Plugin):
         #         # The questions start on line 2, and the list is 0-indexed
         #         sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
 
-    @command("^preview (<@!?\d+>|\d+)$", access=-1, name='interview preview',
+    @command("^preview ?(<@!?\d+>|\d+)?$", access=-1, name='interview preview',
              doc_brief="`preview`: Previews the responses to questions as if "
              "you had used `##answer`, only in the hidden backstage channel.")
     async def preview(self, msg, arguments):
