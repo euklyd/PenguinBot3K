@@ -499,7 +499,10 @@ class Interview(Plugin):
     #             # The questions start on line 2, and the list is 0-indexed
     #             sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
 
-    async def post_cluster(self, em, dest_channel, cluster, answered_qs):
+    async def post_cluster(self, em, sheet, dest_channel, cluster, answered_qs):
+        # if the columns on the sheet change, this will need to be adjusted
+        POSTED_COL = 'H'
+
         for n, r in cluster:
             if n != cluster[-1][0]:
                 add_answer(em, r['#'], r['Question'], r['Answer'])
@@ -510,16 +513,18 @@ class Interview(Plugin):
             icon_url=self.interview.interviewee.avatar_url
         )
         await self.send_message(dest_channel, embed=em)
-        if dest_channel.id == self.interview.answer_channel:
+        print(type(dest_channel.id), type(self.interview.answer_channel.id))
+        print(dest_channel.id, self.interview.answer_channel.id)
+        print(dest_channel.id == self.interview.answer_channel.id)
+        if dest_channel.id == self.interview.answer_channel.id:
             # only update cells if not in preview mode
+            print(f'updating cluster')
             for num, record in cluster:
                 # The questions start on line 2, and the list is 0-indexed
+                print(f'updating {POSTED_COL}{num+2}')
                 sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
 
-    async def post_answers(self, msg, dest_channel, answers, answered_qs):
-        # if the columns on the sheet change, this will need to be adjusted
-        POSTED_COL = 'H'
-
+    async def post_answers(self, msg, sheet, dest_channel, answers, answered_qs):
         char_count = 0
         cluster = []
         em = blank_answers_embed(self.interview, msg, answers[0][1]['ID'])
@@ -535,7 +540,7 @@ class Interview(Plugin):
             else:
                 cluster.append((num, record))
         answered_qs += len(cluster)
-        await self.post_cluster(em, dest_channel, cluster, answered_qs)
+        await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
 
 
     @command("^ans(?:wer)? ?(<@!?\d+>|\d+)?", access=-1, name='interview answer',
@@ -603,6 +608,7 @@ class Interview(Plugin):
             for user, user_answers in answers.items():
                 await self.post_answers(
                     msg,
+                    sheet,
                     dest_channel,
                     user_answers,
                     answered_qs
@@ -618,6 +624,7 @@ class Interview(Plugin):
                 return
             await self.post_answers(
                 msg,
+                sheet,
                 dest_channel,
                 answers[int(msg.mentions[0].id)],
                 answered_qs
@@ -632,7 +639,7 @@ class Interview(Plugin):
                 await self.send_message(msg.channel, "This question isn't answered yet.")
             else:
                 single_answer = [(arguments[0], records[int(arguments[0])-2])]
-                await self.post_answers(msg, dest_channel, single_answer, answered_qs)
+                await self.post_answers(msg, sheet, dest_channel, single_answer, answered_qs)
         # em = blank_answers_embed(self.interview, msg, asker_id)
         # for num, record in answers:
         #     if num != answers[-1][0]:
