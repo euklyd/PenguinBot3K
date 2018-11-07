@@ -538,7 +538,7 @@ class Interview(Plugin):
         await self.post_cluster(em, dest_channel, cluster, answered_qs)
 
 
-    @command("^ans(?:wer)? (<@!?\d+>|\d+)?", access=-1, name='interview answer',
+    @command("^ans(?:wer)? ?(<@!?\d+>|\d+)?", access=-1, name='interview answer',
              doc_brief="`answer`: Answers as many questions as possible from "
              "a single user.")
     async def answer(self, msg, arguments):
