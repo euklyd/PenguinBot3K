@@ -37,7 +37,20 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 logger = logging.getLogger(__name__)
 
-PATH = 'resources/eimm/{}'
+PATH          = 'resources/eimm/{}'
+SHEETS_SECRET = 'resources/interview/client_secret.json'
+PROFILE_SHEET = 'EiMM Community Profiles'
+SCOPE         = [
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/drive'
+]
+
+def get_sheet(sheet_name=PROFILE_SHEET):
+    creds   = ServiceAccountCredentials.from_json_keyfile_name(
+        SHEETS_SECRET, SCOPE)
+    client  = gspread.authorize(creds)
+    sheet   = client.open(sheet_name).sheet1
+    return sheet
 
 def get_avatar_image(user):
     response = requests.get(user.avatar_url)
@@ -251,3 +264,87 @@ class EiMM(Plugin):
         em = discord.Embed(color=victim.color)
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         await self.send_message(msg.channel, flip_msg, embed=em)
+
+    @command("^eimmprofile ?(<@!?\d+>|\d+)?$", access=-1, name='eimmprofile')
+    async def eimmprofile(self, msg, arguments):
+        if arguments[0] is None:
+            # get own profile
+            uid = msg.author.id
+        elif len(msg.mentions) == 0:
+            # get user profile by ID
+            uid = arguments[0]
+        else:
+            # get user profile by mention
+            uid = msg.mentions[0].id
+        user = msg.server.get_member(uid)
+        if user is None:
+            user = await self.core.get_user_info(uid)
+
+        sheet   = get_sheet()
+        records = sheet.get_all_records()
+        profile = None
+        if 'UID' in sheet.row_values(1):
+            # search by discord id snowflake
+            return
+        else:
+            # search by discord username#disc combo
+            for record in records:
+                if record['Discord ID'].lower() == str(user).lower():
+                    profile = record
+                    break
+            if uid == self.core.user.id:
+                profile = 'penguin override'
+            elif profile is None:
+                await self.send_message("User not found.")
+                return
+        if type(user) is discord.Member:
+            em = discord.Embed(
+                # title='{} interview'.format(get_nick_or_name(interview.interviewee)),
+                title="User Profile",
+                color=user.color,
+                # timestamp=user.joined_at
+            )
+        else:
+            em = discord.Embed(
+                # title='{} interview'.format(get_nick_or_name(interview.interviewee)),
+                title="User Profile",
+                color=msg.server.get_member(self.core.user.id).color
+            )
+        em.set_thumbnail(url=user.avatar_url)
+        em.set_author(
+            name=str(user),
+            icon_url=user.avatar_url
+        )
+        if type(user) is discord.Member:
+            em.set_footer(
+                text='Server member since {}'.format(user.joined_at.date()),
+                icon_url=user.avatar_url
+            )
+
+        if profile == 'penguin override':
+            em.description = (
+                "🐧 King Dedede 🐧 is definitely top tier. The king's got it all: disjoint ⚔, power 💪, recovery ✈, and damaging throw combos 💥. He is the hardest character in the game to kill vertically ⬆💀, and with the safest and strongest ways to kill 💀 being traditionally ⬆vertical⬆, that's huge ⛰. His presence at the ledge is not to be ignored, as with clever <:gordo:407347632479010816> setups, he can cover most if not all ledge options with a potentially deadly hitbox 💀. He might be combo food 🍖, but he wants all that 💢 rage 💢 so he can kill with his safe and powerful back air 🔨🐻 even earlier than usual. An obvious member of 🐧 top tier🐧.\n"
+                "🐧 THE 🐧 KING 🐧 IS 🐧 TOP 🐧 TIER 🐧"
+            )
+            await self.send_message(msg.channel, embed=em)
+            return
+        # for field, value in profile.items():
+        #     if value == '' or value is None:
+        #         value = '---'
+        #     em.add_field(name=field, value=value)
+        fields = [
+            'Primary Name', 'Also Known As', 'Pronouns', 'Home Community',
+            'Country', 'Timezone (in UTC)', 'Birthday', # 'Age Range',
+            'Favorite EiMM Game?', 'Favorite EiMM Role?',
+            'Favorite type of EiMM?'
+        ]
+        for field in fields:
+            if field in profile:
+                value = profile[field]
+            else:
+                continue
+            if value == '' or value is None:
+                value = '---'
+            em.add_field(name=field, value=value)
+
+        await self.send_message(msg.channel, embed=em)
