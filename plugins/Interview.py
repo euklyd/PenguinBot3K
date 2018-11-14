@@ -534,7 +534,7 @@ class Interview(Plugin):
             # print(char_count)
             if char_count > 5500:
                 # post
-                await self.post_cluster(em, dest_channel, cluster, answered_qs)
+                await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
                 em = blank_answers_embed(self.interview, msg, answers[0][1]['ID'])
             else:
                 cluster.append((num, record))
