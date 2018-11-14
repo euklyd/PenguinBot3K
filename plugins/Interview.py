@@ -534,12 +534,10 @@ class Interview(Plugin):
             # print(char_count)
             if char_count > 5500:
                 # post
-                answered_qs += len(cluster)
                 await self.post_cluster(em, dest_channel, cluster, answered_qs)
                 em = blank_answers_embed(self.interview, msg, answers[0][1]['ID'])
             else:
                 cluster.append((num, record))
-        answered_qs += len(cluster)
         await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
 
 
@@ -573,14 +571,9 @@ class Interview(Plugin):
             if record['Posted?'] != 'FALSE':
                 answered_qs += 1
             elif record['Answer'] != '':
-                # answered_qs += 1
+                answered_qs += 1
                 record['Question'] = str(record['Question'])
                 record['Answer'] = str(record['Answer'])
-                # if asker_id == None:
-                #     asker_id = record['ID']
-                # elif record['ID'] != asker_id:
-                #     # only collect questions from a single user
-                #     continue
                 if record['ID'] not in answers:
                     answers[record['ID']] = []
 
@@ -592,9 +585,6 @@ class Interview(Plugin):
                         f'The answer in row {i+2} is too long to post; figure '
                         'out posting that one yourself (then mark it `Posted`).')
                     continue
-                # char_count += len(record['Question']) + len(record['Answer'])
-                # if char_count > 5500:
-                #     break
                 answers[record['ID']].append((i, record))
         if len(answers) == 0:
             await self.send_message(
@@ -640,24 +630,6 @@ class Interview(Plugin):
             else:
                 single_answer = [(arguments[0], records[int(arguments[0])-2])]
                 await self.post_answers(msg, sheet, dest_channel, single_answer, answered_qs)
-        # em = blank_answers_embed(self.interview, msg, asker_id)
-        # for num, record in answers:
-        #     if num != answers[-1][0]:
-        #         add_answer(em, record['#'], record['Question'], record['Answer'])
-        #     else:
-        #         add_answer(em, record['#'], record['Question'], record['Answer'], space=False)
-        # # answered_qs += len(answers)
-        # em.set_footer(
-        #     text='{} questions answered'.format(answered_qs),
-        #     icon_url=self.interview.interviewee.avatar_url
-        # )
-
-        # await self.send_message(dest_channel, embed=em)
-        # if len(arguments) == 1:
-        #     # only update cells if not in preview mode
-        #     for num, record in answers:
-        #         # The questions start on line 2, and the list is 0-indexed
-        #         sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
 
     @command("^preview ?(<@!?\d+>|\d+)?$", access=-1, name='interview preview',
              doc_brief="`preview`: Previews the responses to questions as if "
