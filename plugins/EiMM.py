@@ -88,6 +88,7 @@ class EiMM(Plugin):
             self.ganons = json.load(ganon)
         with open(PATH.format('conquerors.json'),  'r') as conquerors:
             self.conquerors = json.load(conquerors)
+        self.plus_ultra = {}
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -228,10 +229,26 @@ class EiMM(Plugin):
         await asyncio.sleep(1)
         await self.send_message(msg.channel, "**PHASE UNPAUSE**")
 
-    @command("^(?:step on|conquer) <@!?\d+>$", access=-1, name='step on')
+    @command("^(?:step on|conquer|STEP ON) <@!?\d+> *,?(REALLY HARD|PLUS ULTRA)?$",
+             access=-1, name='step on')
     async def step_on(self, msg, arguments):
         victim = None
-        if msg.mentions[0].id in self.conquerors['steppees']:
+        plus_ultra = False
+        print(arguments)
+        if arguments[0] is not None and msg.author.id in self.conquerors['plus ultra'] + [self.core.config.backdoor]:
+            plus_ultra = True
+            if msg.author.id != self.core.config.backdoor and msg.author.id in self.plus_ultra:
+                diff = datetime.now() - self.plus_ultra[msg.author.id]
+                if diff.days <= 1:
+                    await self.send_message(msg.channel,
+                                            "You're still a bit too tired for that...")
+                    return
+            self.plus_ultra[msg.author.id] = datetime.now()
+            if msg.mentions[0].id in self.conquerors['steppees'] and 'role' in self.conquerors['steppees'][msg.mentions[0].id]:
+                role = self.conquerors['steppees'][msg.mentions[0].id]['role']
+            else:
+                role = 'Pancake'
+        elif msg.mentions[0].id in self.conquerors['steppees']:
             if 'role' in self.conquerors['steppees'][msg.mentions[0].id]:
                 role = self.conquerors['steppees'][msg.mentions[0].id]['role']
             else:
@@ -263,6 +280,8 @@ class EiMM(Plugin):
         )
         em = discord.Embed(color=victim.color)
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
+        if plus_ultra:
+            flip_msg = flip_msg.upper()
         await self.send_message(msg.channel, flip_msg, embed=em)
 
     @command("^eimmprofile ?(<@!?\d+>|\d+)?$", access=-1, name='eimmprofile')
