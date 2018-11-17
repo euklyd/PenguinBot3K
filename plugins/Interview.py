@@ -670,6 +670,12 @@ class Interview(Plugin):
              doc_brief="`opt <in/out>`: Opt-in or-out of interviews "
              "nominations. Default is opted-in.")
     async def opt(self, msg, arguments):
+        if self.interview.active is False and arguments[0] == 'out':
+            await self.send_message(
+                msg.channel,
+                "Please don't opt out until votes have been tallied and the"
+                "next round has begun.")
+            return
         if arguments[0] == 'in':
             if msg.author.id not in self.interview.opt_outs:
                 reply = "**{}**, you're already opted-in to interviews."
