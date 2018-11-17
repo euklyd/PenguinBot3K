@@ -533,12 +533,16 @@ class Interview(Plugin):
             char_count += len(record['Question']) + len(record['Answer'])
             # print(char_count)
             if char_count > 5500:
-                # post
+                # Post an answer cluster
                 await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
+                # Clear the queued cluster after posting
+                char_count = 0
+                cluster = []
                 em = blank_answers_embed(self.interview, msg, answers[0][1]['ID'])
             else:
                 cluster.append((num, record))
-        await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
+        if len(cluster) > 0:
+            await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
 
 
     @command("^ans(?:wer)? ?(<@!?\d+>|\d+)?", access=-1, name='interview answer',
@@ -635,10 +639,16 @@ class Interview(Plugin):
              doc_brief="`preview`: Previews the responses to questions as if "
              "you had used `##answer`, only in the hidden backstage channel.")
     async def preview(self, msg, arguments):
-        await self.answer(
-            msg,
-            [arguments[0], self.interview.question_channel]
-        )
+        if msg.author.id == self.interview.interviewee.id:
+            await self.answer(
+                msg,
+                [arguments[0], self.interview.question_channel]
+            )
+        else:
+            await self.answer(
+                msg,
+                [arguments[0], msg.channel]
+            )
 
     @command("^iv stats( <@!?\d+>)?$", access=300, name='iv stats',
              doc_brief="`iv stats <@user>`: Retrieves the number of questions "
