@@ -146,7 +146,7 @@
     },
     "kitty": {
       "name": "kitty",
-      "quote": "```rena, the fairest maden | Today at 5:31 PM\ni do feel unusually happy tho,```OH NO\nCURSED TIMELINE",
+      "quote": "```rena, the fairest maden | 10/13/2018 at 5:31 PM\ni do feel unusually happy tho,```OH NO\nCURSED TIMELINE",
       "icon": "roll"
     },
     "Kitty": {
@@ -177,6 +177,11 @@
     "short": {
       "name": "kim",
       "quote": "how to help iris tho\nshe's like\nunloveable",
+      "icon": "roll"
+    },
+    "shy": {
+      "name": "kim",
+      "quote": "```RADd me too ur chats | 11/11/2018 at 12:14 AM\nkim claiming to be shy```\ni *am* shy you fuck nugget @RADd me too ur chats",
       "icon": "roll"
     },
     "stardust": {
