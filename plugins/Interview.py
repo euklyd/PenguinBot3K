@@ -45,6 +45,9 @@ SCOPE           = [
     'https://www.googleapis.com/auth/drive'
 ]
 
+# If the columns on the sheet change, this will need to be adjusted
+POSTED_COL = 'H'
+
 
 def get_nick_or_name(member):
     if member.nick is None:
@@ -500,9 +503,6 @@ class Interview(Plugin):
     #             sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
 
     async def post_cluster(self, em, sheet, dest_channel, cluster, answered_qs):
-        # if the columns on the sheet change, this will need to be adjusted
-        POSTED_COL = 'H'
-
         for n, r in cluster:
             if n != cluster[-1][0]:
                 add_answer(em, r['#'], r['Question'], r['Answer'])
