@@ -26,7 +26,7 @@ class ttl_cache(object):
 
 
 def command(pattern, access=0, trigger="", silent=False, name=None,
-            doc_brief=None, doc_detail=None):
+            doc_brief=None, doc_detail=None, flags=0):
     def decorate(callback):
         def wrapper(self, msg, arguments):
             return callback(self, msg, arguments)
@@ -43,12 +43,14 @@ def command(pattern, access=0, trigger="", silent=False, name=None,
             setattr(wrapper, 'name', name)
             setattr(wrapper, 'doc_brief', doc_brief)
             setattr(wrapper, 'doc_detail', doc_detail)
+            setattr(wrapper, 'flags', flags)
 
         return wrapper
     return decorate
 
 
-def filter(pattern, ignore=None, name=None, server=None, doc_brief=None, doc_detail=None):
+def filter(pattern, ignore=None, name=None, server=None, doc_brief=None,
+           doc_detail=None, flags=0):
     def decorate(callback):
         def wrapper(self, msg, arguments):
             return callback(self, msg, arguments)
@@ -64,6 +66,7 @@ def filter(pattern, ignore=None, name=None, server=None, doc_brief=None, doc_det
             setattr(wrapper, 'server', server)
             setattr(wrapper, 'doc_brief', doc_brief)
             setattr(wrapper, 'doc_detail', doc_detail)
+            setattr(wrapper, 'flags', flags)
 
         return wrapper
     return decorate

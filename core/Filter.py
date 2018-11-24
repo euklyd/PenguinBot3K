@@ -21,7 +21,7 @@ import re
 
 class Filter():
     def __init__(self, pattern, callback, ignore=None, name=None, plugin=None,
-                 server=None, doc_brief=None, doc_detail=None):
+                 server=None, doc_brief=None, doc_detail=None, flags=0):
         self.pattern   = pattern
         self.callback  = callback
         self.ignore    = ignore
@@ -29,6 +29,7 @@ class Filter():
         self.plugin    = plugin
         self.server    = server
         self.doc_brief = doc_brief
+        self.flags     = flags
         if (doc_detail is None):
             self.doc_detail = doc_brief
         else:
@@ -66,9 +67,10 @@ class FilterManager():
         filters = list(self.filters.items())
         # self.logger.info(filters)
         for key, msg_filter in filters:
-            # self.logger.info("key:     {}".format(key))
+            # self.logger.info("key:    {}".format(key))
             # self.logger.info("filter: {}".format(msg_filter))
-            match = re.search(msg_filter.pattern, message.content)
+            # self.logger.info("flags:  {}".format(msg_filter.flags))
+            match = re.search(msg_filter.pattern, message.content, msg_filter.flags)
             if (msg_filter.server is not None and
                 match and (
                     msg_filter.server is True or
@@ -83,7 +85,7 @@ class FilterManager():
                     await msg_filter.invoke(message, arguments)
 
     def register(self, pattern, callback, ignore=None, filter_name=None,
-                 server=None, doc_brief=None, doc_detail=None):
+                 server=None, doc_brief=None, doc_detail=None, flags=0):
         """
             Summary:
                 Pushes Filter instance to filter list
@@ -116,7 +118,8 @@ class FilterManager():
                 plugin=clazz,
                 server=server,
                 doc_brief=doc_brief,
-                doc_detail=doc_detail
+                doc_detail=doc_detail,
+                flags=flags
             )
             # self.logger.info(self.filters[name])
 

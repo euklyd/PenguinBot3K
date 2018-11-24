@@ -162,7 +162,8 @@ class PluginManager():
                     silent=callback.silent,
                     cmd_name=callback.name,
                     doc_brief=callback.doc_brief,
-                    doc_detail=callback.doc_detail
+                    doc_detail=callback.doc_detail,
+                    flags=callback.flags
                 )
 
             if hasattr(callback, "is_filter"):
@@ -173,7 +174,8 @@ class PluginManager():
                     filter_name=callback.name,
                     server=callback.server,
                     doc_brief=callback.doc_brief,
-                    doc_detail=callback.doc_detail
+                    doc_detail=callback.doc_detail,
+                    flags=callback.flags
                 )
 
             if hasattr(callback, "is_subscriber"):
@@ -186,7 +188,8 @@ class PluginManager():
         self.plugins[plugin.name] = {
             "instance": plugin,
             "module": plugin_module,
-            "status": "Enabled"
+            "status": "Enabled",
+            "doc": plugin.__doc__
         }
         self.logger.info("Loaded plugin \"" + plugin.name + "\"")
 

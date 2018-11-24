@@ -21,7 +21,8 @@ import logging
 
 class Command():
     def __init__(self, pattern, callback, trigger="", access=0, silent=False,
-                 name=None, plugin=None, doc_brief=None, doc_detail=None):
+                 name=None, plugin=None, doc_brief=None, doc_detail=None,
+                 flags=0):
         self.pattern   = pattern
         self.access    = access
         self.callback  = callback
@@ -30,6 +31,7 @@ class Command():
         self.name      = name
         self.plugin    = plugin
         self.doc_brief = doc_brief
+        self.flags     = flags
         if (doc_detail is None):
             self.doc_detail = doc_brief
         else:
@@ -80,7 +82,7 @@ class CommandManager():
                     t = command.trigger  # debug
                     content = message.content.replace(command.trigger, "", 1)
 
-                match = re.search(command.pattern, content)
+                match = re.search(command.pattern, content, flags=command.flags)
 
                 if (match):
                     # self.logger.info("trigger '{}' matched!".format(t))
@@ -116,7 +118,7 @@ class CommandManager():
                         )
 
     def register(self, pattern, callback, trigger="", access=0, silent=False,
-                 cmd_name=None, doc_brief=None, doc_detail=None):
+                 cmd_name=None, doc_brief=None, doc_detail=None, flags=0):
         """
             Summary:
                 Pushes command instance to command list
@@ -160,7 +162,8 @@ class CommandManager():
                 name=cmd_name,
                 plugin=clazz,
                 doc_brief=doc_brief,
-                doc_detail=doc_detail
+                doc_detail=doc_detail,
+                flags=flags
             )
             # self.logger.info(self.commands[name])
             self.logger.debug("Command has trigger: {}".format(trigger))
