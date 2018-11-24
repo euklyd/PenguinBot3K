@@ -22,6 +22,7 @@ import discord
 import json
 import logging
 import random
+import re
 
 path = "resources/filter/{}"
 
@@ -42,7 +43,8 @@ class React(Plugin):
 
     @filter("pregam(e|ing)", name='pregaming', server=[
             '328399532368855041', '436953982322081803', '258160125016014848',
-            '474037724551315456', '459150872371265538', '363831487382028308'])
+            '474037724551315456', '459150872371265538', '363831487382028308'],
+            flags=re.IGNORECASE)
     async def pregaming(self, msg, arguments):
         pregaming = self.core.emoji.any_emoji(['pregaming'])
         await self.add_reaction(msg, pregaming)
