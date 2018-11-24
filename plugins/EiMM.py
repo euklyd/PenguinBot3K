@@ -413,7 +413,7 @@ class EiMM(Plugin):
 
         await self.send_message(msg.channel, embed=em)
 
-    @filter("(euklyd|iris|monde) sux", name='mod sux', server=(
+    @filter("^(euklyd|iris|monde) sux$", name='mod sux', server=(
             '328399532368855041', '126104649018245123'), flags=re.IGNORECASE)
     async def mods_dont_suck(self, msg, arguments):
         # await self.send_message(msg.channel, 'nuh')
@@ -428,7 +428,7 @@ class EiMM(Plugin):
         await self.delete_message(m)
         await self.send_message(msg.channel, "...but not as much as amy")
 
-    @filter("amy sux", name='amy sux', server=('328399532368855041',
+    @filter("^amy sux$", name='amy sux', server=('328399532368855041',
             '126104649018245123'), flags=re.IGNORECASE)
     async def amy_sux(self, msg, arguments):
         # await self.send_message(msg.channel, 'nuh')
