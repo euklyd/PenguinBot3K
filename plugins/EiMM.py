@@ -27,6 +27,7 @@ import logging
 import operator
 import os
 import random
+import re
 import requests
 
 from datetime import datetime
@@ -292,6 +293,8 @@ class EiMM(Plugin):
                 channel=msg.channel,
                 check=lambda m: m.content.lower() == 'y' or m.content.lower() == 'n'
             )
+            if m is None:
+                return
             if m.content.lower() == 'n':
                 await self.send_message(msg.channel, f'Good choice, **{msg.author}.** Your `{self.cats[msg.author.id]}` kitties continue happily purring.')
                 return
@@ -409,3 +412,33 @@ class EiMM(Plugin):
             em.add_field(name=field, value=value)
 
         await self.send_message(msg.channel, embed=em)
+
+    @filter("(euklyd|iris|monde) sux", name='mod sux', server=(
+            '328399532368855041', '126104649018245123'), flags=re.IGNORECASE)
+    async def mods_dont_suck(self, msg, arguments):
+        # await self.send_message(msg.channel, 'nuh')
+        m = await self.core.wait_for_message(
+            timeout=30,
+            author=msg.server.get_member('116275390695079945'),
+            channel=msg.channel,
+            content='agreed tbh'
+        )
+        if m is None:
+            return
+        await self.delete_message(m)
+        await self.send_message(msg.channel, "...but not as much as amy")
+
+    @filter("amy sux", name='amy sux', server=('328399532368855041',
+            '126104649018245123'), flags=re.IGNORECASE)
+    async def amy_sux(self, msg, arguments):
+        # await self.send_message(msg.channel, 'nuh')
+        m = await self.core.wait_for_message(
+            timeout=30,
+            author=msg.server.get_member('116275390695079945'),
+            channel=msg.channel,
+            content='<:despairein:392820084739145748>'
+        )
+        if m is None:
+            return
+        # await self.delete_message(m)
+        await self.send_message(msg.channel, "**the truth cannot be silenced** 😤")
