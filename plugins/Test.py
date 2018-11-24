@@ -77,6 +77,12 @@ class Test(Plugin):
         await self.send_message(msg.channel_mentions[0], text)
         await self.send_message(msg.channel_mentions[0], f"Done spamming `{text}`.")
 
+    @command("^max access <@!?\d+> (\w+)$",
+             access=1000, name='max access')
+    async def max_access(self, msg, arguments):
+        access = self.core.ACL.get_final_user_access(msg.mentions[0], arguments[0])
+        await self.send_message(msg.channel, access)
+
     # @command("^test playlist embed$", name="test playlist embed")
     # async def playlist_embed(self, msg, arguments):
     #     now_playing = ("Darius Gaiden (Arcade) - 01 - VISIONNERZ Arrange Version", "CaptainGordonVGM", "(Nightmarre#5295)")
