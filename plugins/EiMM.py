@@ -89,6 +89,8 @@ class EiMM(Plugin):
         with open(PATH.format('conquerors.json'),  'r') as conquerors:
             self.conquerors = json.load(conquerors)
         self.plus_ultra = {}
+        with open(PATH.format('cats.json'),  'r') as cats:
+            self.cats = json.load(cats)
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -136,13 +138,13 @@ class EiMM(Plugin):
                 list(roles['additions'].keys()),
                 weights=list(roles['additions'].values())
             )[0]
-        role = ""
-        alignment = "Mafia"
+        role = ''
+        alignment = 'Mafia'
         if modifier is not None:
-            role += modifier + " "
+            role += modifier + ' '
         role += base
         if addition is not None:
-            role += " + {}x {}".format(random.randint(1, 3), addition)
+            role += ' + {}x {}'.format(random.randint(1, 3), addition)
         if type(target) is not discord.Member or target.nick is None:
             user = target.name
         else:
@@ -158,8 +160,8 @@ class EiMM(Plugin):
                         weights=list(role.values())
                     )[0]
                 else:
-                    print("not a dict")
-        flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
+                    print('not a dict')
+        flip_msg = '**{user}** has died! They were **{alignment} {role}**!'.format(
             user=user,
             alignment=alignment,
             role=role
@@ -183,11 +185,11 @@ class EiMM(Plugin):
                     msg.author.name
             ))
             return
-        await self.send_message(msg.channel, "**PHASE PAUSE**")
+        await self.send_message(msg.channel, '**PHASE PAUSE**')
         await asyncio.sleep(1.5)
         await self.shoot(msg, arguments)
         await asyncio.sleep(1)
-        await self.send_message(msg.channel, "**PHASE UNPAUSE**")
+        await self.send_message(msg.channel, '**PHASE UNPAUSE**')
 
     @command("^GANON CANNON <@!?\d+>$", access=-1, name='ganon cannon')
     async def ganon_cannon(self, msg, arguments):
@@ -217,17 +219,17 @@ class EiMM(Plugin):
                 "destroyed you! And now, I will too!"
             ),
             (
-                f"**{ganon} There shall be no heroes today {ganon}**"
+                f'**{ganon} There shall be no heroes today {ganon}**'
             )
         ]
         for reply in replies:
             await self.send_message(msg.channel, reply)
             await asyncio.sleep(0.5)
-        await self.send_message(msg.channel, "**PHASE PAUSE**")
+        await self.send_message(msg.channel, '**PHASE PAUSE**')
         await asyncio.sleep(1.5)
         await self.shoot(msg, arguments)
         await asyncio.sleep(1)
-        await self.send_message(msg.channel, "**PHASE UNPAUSE**")
+        await self.send_message(msg.channel, '**PHASE UNPAUSE**')
 
     @command("^(?:step on|conquer|STEP ON) <@!?\d+> *,?(REALLY HARD|PLUS ULTRA)?$",
              access=-1, name='step on')
@@ -273,7 +275,7 @@ class EiMM(Plugin):
             victim_name = victim.name
         else:
             victim_name = victim.nick
-        flip_msg = "**{user}** has died! They were **{alignment} {role}**!".format(
+        flip_msg = '**{user}** has died! They were **{alignment} {role}**!'.format(
             user=victim_name,
             alignment='Mafia',
             role=role
@@ -282,7 +284,47 @@ class EiMM(Plugin):
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
         if plus_ultra:
             flip_msg = flip_msg.upper()
+        if msg.author.id in self.cats and self.cats[msg.author.id] > 0 and victim.id in self.cats['cat bearers']:
+            await self.send_message(msg.channel, f"You're currently immobilized by `{self.cats[msg.author.id]}` adorable, innocent kitties. Do you *really* want to disturb them...? `[y/n]`")
+            m = await self.core.wait_for_message(
+                timeout=300,
+                author=msg.author,
+                channel=msg.channel,
+                check=lambda m: m.content.lower() == 'y' or m.content.lower() == 'n'
+            )
+            if m.content.lower() == 'n':
+                await self.send_message(msg.channel, f'Good choice, **{msg.author}.** Your `{self.cats[msg.author.id]}` kitties continue happily purring.')
+                return
+            ohno = self.core.emoji.any_emoji(['ohno'])
+            await self.send_message(msg.channel, f'{ohno} The kitties all scatter...')
+            self.cats[msg.author.id] = 0
         await self.send_message(msg.channel, flip_msg, embed=em)
+
+    @command("^cat +(<@!?\d+>|\d+)?$", access=200, name='cat')
+    async def cat(self, msg, arguments):
+        '''
+        {
+            "user ID 1": # of cats,
+            "user ID 2": # of cats,
+            ...
+            "cat bearers": [
+                "user ID A", "user ID B", ...
+            ]
+        }
+        '''
+        if len(msg.mentions) > 0:
+            user = msg.mentions[0]
+        else:
+            user = msg.server.get_member(arguments[0])
+        if msg.author.id not in self.cats['cat bearers']:
+            await self.send_message(msg.channel, f"Sorry **{msg.author}**, you don't have any cats to gift...")
+            return
+        if user.id not in self.cats:
+            await self.send_message(msg.channel, f'Sorry, but **{user}** is not a **Platinum Elite Member** of the Cat Fanclub™.')
+            return
+        self.cats[user.id] += 1
+        ohmy = self.core.emoji.any_emoji(['ohmy'])
+        await self.send_message(msg.channel, f"Wow **{msg.author}**, you're such a good friend! You've visited **{user}** with an adorable cat! {ohmy}")
 
     @command("^eimmprofile ?(<@!?\d+>|\d+)?$", access=-1, name='eimmprofile')
     async def eimmprofile(self, msg, arguments):
@@ -314,19 +356,19 @@ class EiMM(Plugin):
             if uid == self.core.user.id:
                 profile = 'penguin override'
             elif profile is None:
-                await self.send_message("User not found.")
+                await self.send_message('User not found.')
                 return
         if type(user) is discord.Member:
             em = discord.Embed(
                 # title='{} interview'.format(get_nick_or_name(interview.interviewee)),
-                title="User Profile",
+                title='User Profile',
                 color=user.color,
                 # timestamp=user.joined_at
             )
         else:
             em = discord.Embed(
                 # title='{} interview'.format(get_nick_or_name(interview.interviewee)),
-                title="User Profile",
+                title='User Profile',
                 color=msg.server.get_member(self.core.user.id).color
             )
         em.set_thumbnail(url=user.avatar_url)
