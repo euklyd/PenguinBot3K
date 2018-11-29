@@ -232,7 +232,7 @@ class EiMM(Plugin):
         await asyncio.sleep(1)
         await self.send_message(msg.channel, '**PHASE UNPAUSE**')
 
-    @command("^(?:step on|conquer|STEP ON) <@!?\d+> *,?(REALLY HARD|PLUS ULTRA)?$",
+    @command("^(?:step on|conquer|STEP ON) <@!?\d+> *,?(REALLY HARD|PLUS ULTRA|gently|softly,? with grace)?$",
              access=-1, name='step on')
     async def step_on(self, msg, arguments):
         victim = None
@@ -240,6 +240,13 @@ class EiMM(Plugin):
         print(arguments)
         if arguments[0] is not None and msg.author.id in self.conquerors['plus ultra'] + [self.core.config.backdoor]:
             plus_ultra = True
+            if 'ly' in arguments[0]:
+                # catch "gently" and "softly,? with grace"
+                if msg.author.id != self.core.config.backdoor:
+                    await self.send_message(msg.channel, "Nice try, but things don't quite work that way.")
+                    return
+                else:
+                    plus_ultra = False
             if msg.author.id != self.core.config.backdoor and msg.author.id in self.plus_ultra:
                 diff = datetime.now() - self.plus_ultra[msg.author.id]
                 if diff.days <= 1:
@@ -283,6 +290,8 @@ class EiMM(Plugin):
         )
         em = discord.Embed(color=victim.color)
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
+        if 'softly' in arguments[0]:
+            em.description = 'https://www.youtube.com/watch?v=AH4JiIcDvkc'
         if plus_ultra:
             flip_msg = flip_msg.upper()
         if msg.author.id in self.cats and self.cats[msg.author.id] > 0 and victim.id in self.cats['cat bearers']:
