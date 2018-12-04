@@ -87,6 +87,10 @@
       "alignment": "Town",
       "freq": 0.5
     },
+    "237811431712489473": {
+      "role": "Barista",
+      "freq": 0.75
+    },
     "186610017309425664": {
       "role": "Shot Tracker Arsonist",
       "freq": 0.5
