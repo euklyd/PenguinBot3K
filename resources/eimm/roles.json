@@ -86,6 +86,10 @@
       "role": "Hated",
       "alignment": "Town",
       "freq": 0.5
+    },
+    "186610017309425664": {
+      "role": "Shot Tracker Arsonist",
+      "freq": 0.5
     }
   }
 }
