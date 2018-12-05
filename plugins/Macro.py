@@ -659,7 +659,7 @@ class Macro(Plugin):
         if (ganon != "`:return_of_ganon:`"):
             await self.send_message(msg.channel, ganon)
 
-    @command("^pasta ?(.*)$", access=-1, name='pasta',
+    @command("^pasta ?(.*)$", access=-1, name='pasta', server=('190782508105728000'),
              doc_brief="`pasta <pasta name>`: The associatedd "
              "pasta for `<pasta name>`. Use without arguments to list "
              "available pastas.")
@@ -682,7 +682,7 @@ class Macro(Plugin):
             )
 
     @command('^makepasta name:"([^"]*)" text:"([^"]*)"$', access=500,
-             name='makepasta',
+             name='makepasta', server=('190782508105728000'),
              doc_brief='`makepasta name:"<name>" text:"<pastatext>"`: Creates '
              'a new pasta for use with the `pasta` command.',
              doc_detail='`makepasta name:"<name>" text:"<pastatext>"`: '
