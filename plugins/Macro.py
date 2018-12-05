@@ -659,7 +659,7 @@ class Macro(Plugin):
         if (ganon != "`:return_of_ganon:`"):
             await self.send_message(msg.channel, ganon)
 
-    @command("^pasta ?(.*)$", access=-1, name='pasta', server=('190782508105728000'),
+    @command("^pasta ?(.*)$", access=-1, name='pasta',
              doc_brief="`pasta <pasta name>`: The associatedd "
              "pasta for `<pasta name>`. Use without arguments to list "
              "available pastas.")
@@ -667,13 +667,15 @@ class Macro(Plugin):
         pasta = arguments[0].lower()
         with open(macro_path.format("pastas.json"), 'r') as pastafile:
             pastas = json.load(pastafile)
-            if (pasta == "" or pasta == "--list" or pasta == "--help"):
+            if msg.server.id not in pastas:
+                reply = "This server has no pastas..."
+            elif (pasta == "" or pasta == "--list" or pasta == "--help"):
                 reply = "**Available pastas:** "
-                for k in pastas:
+                for k in pastas[msg.server.id]:
                     reply += "`{}`, ".format(k)
                 reply = reply[0:-2]
-            elif (pasta in pastas):
-                reply = pastas[pasta]
+            elif (pasta in pastas[msg.server.id]):
+                reply = pastas[msg.server.id][pasta]
             else:
                 reply = "No such pasta."
             await self.send_message(
@@ -682,7 +684,7 @@ class Macro(Plugin):
             )
 
     @command('^makepasta name:"([^"]*)" text:"([^"]*)"$', access=500,
-             name='makepasta', server=('190782508105728000'),
+             name='makepasta',
              doc_brief='`makepasta name:"<name>" text:"<pastatext>"`: Creates '
              'a new pasta for use with the `pasta` command.',
              doc_detail='`makepasta name:"<name>" text:"<pastatext>"`: '
@@ -693,13 +695,15 @@ class Macro(Plugin):
         pastas = {}
         with open(macro_path.format("pastas.json"), 'r') as pastafile:
             pastas = json.load(pastafile)
-        if (name in pastas):
+        if msg.server.id not in pastas:
+            pastas[msg.server.id] = {}
+        if (name in pastas[msg.server.id]):
             reply = "**ERR:** Pasta `{}` already exists.".format(name)
         elif (name[0:2] == "--"):
             reply = "**ERR:** `--` is a reserved sequence."
         else:
             try:
-                pastas[name] = arguments[1]
+                pastas[msg.server.id][name] = arguments[1]
                 with open(macro_path.format("pastas.json"), 'w') as pastafile:
                     json.dump(pastas, pastafile, indent=2)
                 reply = "Successfully added new pasta `{}`.".format(name)
