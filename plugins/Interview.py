@@ -793,7 +793,8 @@ class Interview(Plugin):
                 'humanlike compromise, like Makaze or Arcanite.\n'
             ).format(bot_tag, msg.author, ', '.join(bots))
             await self.add_reaction(msg, bot_tag)
-        await self.send_message(msg.channel, reply)
+        if len(reply) > 0:
+            await self.send_message(msg.channel, reply)
 
     @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
              name='unvote',
