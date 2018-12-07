@@ -55,6 +55,13 @@ def get_nick_or_name(member):
     return member.nick
 
 
+SERVER_LEFT_MSG = '[Member Left]'
+def name_or_default(member):
+    if member is not None:
+        return str(member)
+    return SERVER_LEFT_MSG
+
+
 def interview_embed(question, interview, msg):
     asker = msg.server.get_member(question['author_id'])
     if asker is None:
@@ -796,6 +803,27 @@ class Interview(Plugin):
         if len(reply) > 0:
             await self.send_message(msg.channel, reply)
 
+    @command("^(nommed|im rssp1? and i hate (votals|rufflets))$", access=-1,
+             name='nommed',
+             doc_brief="`nommed`: Check who you're currently voting for.")
+    async def nommed(self, msg, arguments):
+        footer = ''
+        if msg.author.id in self.interview.votes:
+            if len(self.interview.votes[msg.author.id]) == 0:
+                footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+            else:
+                footer += '*You are currently voting for: '
+                votelist = ', '.join(sorted(
+                    # [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
+                    [name_or_default(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
+                    key=lambda x: x.lower()
+                ))
+                footer += '{}, '.format(votelist)
+                footer = footer[:-2] + '*'
+        else:
+            footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+        await self.send_message(msg.channel, footer)
+
     @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
              name='unvote',
              doc_brief="`unnom`: Deletes all your current votes.")
@@ -821,11 +849,6 @@ class Interview(Plugin):
              "long as the user's access is ≥ 300, detailed votal information "
              "will be calculated.")
     async def votals(self, msg, arguments):
-        SERVER_LEFT_MSG = '[Member Left]'
-        def name_or_default(member):
-            if member is not None:
-                return str(member)
-            return SERVER_LEFT_MSG
         votals = {}
         for voter, votes in self.interview.votes.items():
             for vote in votes:
