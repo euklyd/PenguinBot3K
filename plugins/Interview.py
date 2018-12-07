@@ -137,10 +137,10 @@ def add_split_field(embed, num, text):
 
 
 def add_answer(embed, num, question, answer, space=True):
-    BLANKSPACE = '<:blankspace:280996547708321792>'
+    BLANK_LINE = '\n\u200b'  ## newline + zero-width space
     question = f'```{question}```'
     if space:
-        answer = f'{answer}\n{BLANKSPACE}'
+        answer = f'{answer}\n{BLANK_LINE}'
     if len(question) > 1000:
         question = question[:996] + '``` ```' + question[996:]
     if len(question) + len(answer) > 1000:
