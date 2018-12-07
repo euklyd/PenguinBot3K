@@ -747,6 +747,14 @@ class Interview(Plugin):
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
+        # hehe let's bully conq
+        if msg.author.id == '237811431712489473' and msg.channel.id = '501536160066174976':
+            await self.send_message(
+                msg.server.get_channel('508588927158845460'),
+                f'Nice try {msg.author.mention}, but you gotta vote publicly.'
+            )
+            await self.core.delete_channel_permissions(msg.channel, msg.author)
+
         if self.interview.active is False:
             await self.send_message(
                 msg.channel,
