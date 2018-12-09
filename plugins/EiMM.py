@@ -290,7 +290,7 @@ class EiMM(Plugin):
         )
         em = discord.Embed(color=victim.color)
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
-        if msg.arguments[0] is not None and 'softly' in arguments[0]:
+        if arguments[0] is not None and 'softly' in arguments[0]:
             em.description = 'https://www.youtube.com/watch?v=AH4JiIcDvkc'
         if plus_ultra:
             flip_msg = flip_msg.upper()
