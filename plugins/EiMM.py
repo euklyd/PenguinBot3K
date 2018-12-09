@@ -290,7 +290,7 @@ class EiMM(Plugin):
         )
         em = discord.Embed(color=victim.color)
         em.set_image(url='https://i.imgur.com/jTs7pRq.gif')
-        if 'softly' in arguments[0]:
+        if msg.arguments[0] is not None and 'softly' in arguments[0]:
             em.description = 'https://www.youtube.com/watch?v=AH4JiIcDvkc'
         if plus_ultra:
             flip_msg = flip_msg.upper()
@@ -409,7 +409,7 @@ class EiMM(Plugin):
             'Primary Name', 'Also Known As', 'Pronouns', 'Home Community',
             'Country', 'Timezone (in UTC)', 'Birthday', # 'Age Range',
             'Favorite EiMM Game?', 'Favorite EiMM Role?',
-            'Favorite type of EiMM?'
+            'Favorite type of EiMM?', 'About Me'
         ]
         for field in fields:
             if field in profile:
@@ -421,6 +421,18 @@ class EiMM(Plugin):
             em.add_field(name=field, value=value)
 
         await self.send_message(msg.channel, embed=em)
+
+    # @command("^sadcat ?(\d+)?$", access=-1, name='sadcat',
+    #          doc_brief="`sadcat`: posts a random sad cat 😿")
+    # async def sadcat(self, msg, arguments):
+    #     sadcats = {}  # TODO: fill this in
+    #     if arguments[0] is not None and arguments[0].lower() in sadcats:
+    #         sadcat = sadcats[arguments[0].lower()]
+    #     else:
+    #         sadcat = random.choice(list(sadcats.values()))
+    #     em = discord.Embed(color=msg.server.get_member(self.core.user.id).color)
+    #     em.set_image(url=sadcat)
+
 
     @filter("^(euklyd|iris|monde) sux$", name='mod sux', server=(
             '328399532368855041', '126104649018245123'), flags=re.IGNORECASE)
