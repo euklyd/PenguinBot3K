@@ -49,6 +49,13 @@ SCOPE           = [
 POSTED_COL = 'H'
 
 
+def link_to_msg(msg):
+    return (
+        f'https://discordapp.com/channels/{msg.server.id}/'
+        f'{msg.channel.id}/{msg.id}'
+    )
+
+
 def get_nick_or_name(member):
     if member.nick is None:
         return member.name
@@ -270,6 +277,15 @@ class Interview(Plugin):
              doc_brief="`iv setup <@user>`: Sets up an interview for "
              "<user>, with the secret questions in the current channel.")
     async def setup_question_channel(self, msg, arguments):
+        # Post votals in the answer channel before resetting votes.
+        if self.interview is not None and self.interview.answer_channel is not None:
+            if self.interview.votes is not None:
+                # There's gotta be a better way, but I don't think we have a
+                # copy constructor.
+                channel = msg.channel
+                msg.channel = self.interview.answer_channel
+                await self.votals(msg, ['--full'])
+                msg.channel = channel
         if self.interview is None:
             await self.send_message(msg.channel,
                 'Setting up interviews for the first time.')
