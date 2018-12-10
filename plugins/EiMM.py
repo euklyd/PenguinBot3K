@@ -422,16 +422,29 @@ class EiMM(Plugin):
 
         await self.send_message(msg.channel, embed=em)
 
-    # @command("^sadcat ?(\d+)?$", access=-1, name='sadcat',
-    #          doc_brief="`sadcat`: posts a random sad cat 😿")
-    # async def sadcat(self, msg, arguments):
-    #     sadcats = {}  # TODO: fill this in
-    #     if arguments[0] is not None and arguments[0].lower() in sadcats:
-    #         sadcat = sadcats[arguments[0].lower()]
-    #     else:
-    #         sadcat = random.choice(list(sadcats.values()))
-    #     em = discord.Embed(color=msg.server.get_member(self.core.user.id).color)
-    #     em.set_image(url=sadcat)
+    @command("^sadcat ?(\w+)?$", access=-1, name='sadcat',
+             doc_brief="`sadcat`: posts a random sad cat 😿")
+    async def sadcat(self, msg, arguments):
+        SADCAT_ALBUM = ['tYiOD5a', 'kSwj6F5']
+        sadcats = []
+        if type(SADCAT_ALBUM) is list:
+            for album in SADCAT_ALBUM:
+                sadcats += self.core.imgur.get_album_images(album)
+        else:
+            sadcats = self.core.imgur.get_album_images(SADCAT_ALBUM)
+        sadcat = random.choice(sadcats)
+        if arguments[0] is not None:
+            for cat in sadcats:
+                if cat.description is not None and cat.description.lower() == arguments[0].lower():
+                    sadcat = cat
+                    break
+        em = discord.Embed(
+            title=sadcat.description,
+            color=msg.server.get_member(self.core.user.id).color
+        )
+        em.set_image(url=sadcat.link)
+        em.set_footer(text=f'{len(sadcats)} sad cats')
+        await self.send_message(msg.channel, embed=em)
 
 
     @filter("^(euklyd|iris|monde) sux$", name='mod sux', server=(
