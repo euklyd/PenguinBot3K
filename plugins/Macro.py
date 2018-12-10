@@ -125,6 +125,15 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, cloudcopypasta)
 
+    @command("^k ?rool$", access=50, name='krool',
+             doc_brief="`k rool`: How big is a crocodile main's brain?")
+    async def krool(self, msg, arguments):
+        em = discord.Embed(
+            color=msg.server.get_member(self.core.user.id).color
+        )
+        em.set_image(url='https://i.imgur.com/xixeRFm.png')
+        await self.send_message(msg.channel, embed=em)
+
     @command("^(?:waddle|ddd|THE KING)$", access=50, name='waddle',
              doc_brief="`waddle`: The dankest of 🐧 Penguin 🐧 memes")
     async def waddle(self, msg, arguments):
