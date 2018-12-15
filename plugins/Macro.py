@@ -842,7 +842,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, d_char)
         # await self.send_message(msg.channel, superweed) # too many characters
 
-    @command("what ?(\d+)?$", access=-1, name='what',
+    @command("^what ?(\d+)?$", access=-1, name='what',
              doc_brief="`what`: posts a random mega man sprite quote")
     async def mmquote(self, msg, arguments):
         with open(macro_path.format("megaman_quotes.json"), 'r') as whatfile:
