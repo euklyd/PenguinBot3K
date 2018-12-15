@@ -168,6 +168,16 @@ class InterviewMeta():
     opt_outs         = set()
     votes            = {}
     active           = True
+    past_nominees    = {
+        '280945905241423873': {
+            'name': 'Iris',
+            'last interviewed': <timestamp here>
+        },
+        '100165629373337600': {
+            'name': 'euklyd',
+            'last interviewed': <timestamp here>
+        }
+    }
 
     def load_from_dict(meta, core):
         iv_meta = InterviewMeta()
@@ -382,7 +392,8 @@ class Interview(Plugin):
 
         em = interview_embed(question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
-        await self.add_reaction(msg, '✅')
+        greentick = self.core.emoji.any_emoji(['greentick'])
+        await self.add_reaction(msg, greentick)
 
     @command("^(mask|multi-ask) *\n?(.+)", access=-1, name='interview mask',
              doc_brief="`multi-ask <list of questions on separate lines>:` "
@@ -447,7 +458,8 @@ class Interview(Plugin):
         }
         em = interview_embed(composite_question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
-        await self.add_reaction(msg, '✅')
+        greentick = self.core.emoji.any_emoji(['greentick'])
+        await self.add_reaction(msg, greentick)
 
     # @command("^ans(?:wer)?", access=-1, name='interview answer',
     #          doc_brief="`answer`: Answers as many questions as possible from "
@@ -763,6 +775,9 @@ class Interview(Plugin):
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
+        self.core.emoji.any_emoji(['greentick'])
+        redtick = self.core.emoji.any_emoji(['redtick'])
+
         # hehe let's bully conq
         if msg.author.id == '237811431712489473' and msg.channel.id == '501536160066174976':
             await self.send_message(
@@ -770,6 +785,15 @@ class Interview(Plugin):
                 f'Nice try {msg.author.mention}, but you gotta vote publicly.'
             )
             await self.core.delete_channel_permissions(msg.channel, msg.author)
+
+        if self.interview.server.id != msg.server.id:
+            await self.send_message(
+                msg.channel,
+                'You can only nominate in the server this interview is being '
+                'conducted in.'
+            )
+            await self.add_reaction(msg, redtick)
+            return
 
         if self.interview.active is False:
             await self.send_message(
@@ -801,15 +825,13 @@ class Interview(Plugin):
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
         if len(self.interview.votes[msg.author.id]) > 0:
-            await self.add_reaction(msg, self.core.emoji.any_emoji(['greentick']))
+            await self.add_reaction(msg, greentick)
         if self_vote:
-            redtick = self.core.emoji.any_emoji(['redtick'])
             await self.add_reaction(msg, redtick)
             reply += (
                 '{} **{}**, your anti-town self-vote was ignored.\n'
             ).format(redtick, msg.author, ', '.join(opt_outs))
         if len(opt_outs) > 0:
-            redtick = self.core.emoji.any_emoji(['redtick'])
             reply += (
                 '{} **{}**, your vote(s) for `[{}]` were ignored because they '
                 'opted-out.\n'
