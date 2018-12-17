@@ -168,16 +168,16 @@ class InterviewMeta():
     opt_outs         = set()
     votes            = {}
     active           = True
-    past_nominees    = {
-        '280945905241423873': {
-            'name': 'Iris',
-            'last interviewed': <timestamp here>
-        },
-        '100165629373337600': {
-            'name': 'euklyd',
-            'last interviewed': <timestamp here>
-        }
-    }
+    # past_nominees    = {
+    #     '280945905241423873': {
+    #         'name': 'Iris',
+    #         'last interviewed': <timestamp here>
+    #     },
+    #     '100165629373337600': {
+    #         'name': 'euklyd',
+    #         'last interviewed': <timestamp here>
+    #     }
+    # }
 
     def load_from_dict(meta, core):
         iv_meta = InterviewMeta()
@@ -701,7 +701,7 @@ class Interview(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
-    @command("^opt[ -](in|out)$", access=-1, name='opt',
+    @command("^(opt|wimp)[ -](in|out)$", access=-1, name='opt',
              doc_brief="`opt <in/out>`: Opt-in or-out of interviews "
              "nominations. Default is opted-in.")
     async def opt(self, msg, arguments):
@@ -731,6 +731,14 @@ class Interview(Plugin):
             reply = '**{}**, something went wrong here with your opting.'
         self.interview.dump()
         await self.send_message(msg.channel, reply.format(msg.author))
+
+    @command("^i'?m a coward$", access=-1)
+    async def opt_out(self, msg, arguments):
+        await self.opt(msg, ['out'])
+
+    @command("^am i a coward\??$", access=-1)
+    async def coward_list(self, msg, arguments):
+        await self.opt_list(msg, [])
 
     @command("^opt[ -]list$", access=-1, name='opt list',
              doc_brief="`opt list`: List users opted out of interviews.")
