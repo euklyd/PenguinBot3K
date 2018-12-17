@@ -48,6 +48,9 @@ SCOPE           = [
 # If the columns on the sheet change, this will need to be adjusted
 POSTED_COL = 'H'
 
+GREENTICK = None
+REDTICK = None
+
 
 def link_to_msg(msg):
     return (
@@ -282,6 +285,10 @@ class Interview(Plugin):
         except FileNotFoundError:
             self.logger.warning("couldn't find interview meta, loading new")
             self.interview = None
+        global GREENTICK
+        global REDTICK
+        GREENTICK = self.core.emoji.any_emoji(['greentick'])
+        REDTICK   = self.core.emoji.any_emoji(['redtick'])
 
     @command("^iv setup <@!?\d+>$", access=700, name='iv setup',
              doc_brief="`iv setup <@user>`: Sets up an interview for "
@@ -392,8 +399,7 @@ class Interview(Plugin):
 
         em = interview_embed(question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
-        greentick = self.core.emoji.any_emoji(['greentick'])
-        await self.add_reaction(msg, greentick)
+        await self.add_reaction(msg, GREENTICK)
 
     @command("^(mask|multi-ask) *\n?(.+)", access=-1, name='interview mask',
              doc_brief="`multi-ask <list of questions on separate lines>:` "
@@ -458,84 +464,7 @@ class Interview(Plugin):
         }
         em = interview_embed(composite_question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
-        greentick = self.core.emoji.any_emoji(['greentick'])
-        await self.add_reaction(msg, greentick)
-
-    # @command("^ans(?:wer)?", access=-1, name='interview answer',
-    #          doc_brief="`answer`: Answers as many questions as possible from "
-    #          "a single user.")
-    # async def answer(self, msg, arguments):
-    #     # Pass a channel ID argument when *calling* this method to run
-    #     # in preview mode.
-    #
-    #     # if the columns on the sheet change, this will need to be adjusted
-    #     POSTED_COL = 'H'
-    #
-    #     if msg.author.id != self.interview.interviewee.id:
-    #         await self.send_message(msg.channel,
-    #             'You must be the interviewee to use this command.')
-    #         return
-    #
-    #     if len(arguments) == 0:
-    #         if self.interview.answer_channel is None:
-    #             await self.send_message(msg.channel,
-    #                 'The answer channel is not yet set up.')
-    #             return
-    #         dest_channel = self.interview.answer_channel
-    #     else:
-    #         dest_channel = arguments[0]
-    #
-    #     sheet       = get_sheet()
-    #     records     = sheet.get_all_records()
-    #     answers     = []
-    #     asker_id    = None
-    #     char_count  = 0
-    #     answered_qs = 0
-    #     for i, record in enumerate(records):
-    #         if record['Posted?'] != 'FALSE':
-    #             answered_qs += 1
-    #         elif record['Answer'] != '':
-    #             record['Question'] = str(record['Question'])
-    #             record['Answer'] = str(record['Answer'])
-    #             if asker_id == None:
-    #                 asker_id = record['ID']
-    #             elif record['ID'] != asker_id:
-    #                 # only collect questions from a single user
-    #                 continue
-    #             if len(record['Answer']) > 5500:
-    #                 # The questions start on line 2, and the list is 0-indexed
-    #                 sheet.update_acell(f'{POSTED_COL}{i+2}', 'TOO LONG')
-    #                 await self.send_message(
-    #                     msg.channel,
-    #                     f'The answer in row {i+2} is too long to post; figure '
-    #                     'out posting that one yourself (then mark it Posted).')
-    #                 continue
-    #             char_count += len(record['Question']) + len(record['Answer'])
-    #             if char_count > 5500:
-    #                 break
-    #             answers.append((i, record))
-    #     if len(answers) == 0:
-    #         await self.send_message(msg.channel,
-    #             'There are no new questions at this time.')
-    #         return
-    #     em = blank_answers_embed(self.interview, msg, asker_id)
-    #     for num, record in answers:
-    #         if num != answers[-1][0]:
-    #             add_answer(em, record['#'], record['Question'], record['Answer'])
-    #         else:
-    #             add_answer(em, record['#'], record['Question'], record['Answer'], space=False)
-    #     answered_qs += len(answers)
-    #     em.set_footer(
-    #         text='{} questions answered'.format(answered_qs),
-    #         icon_url=self.interview.interviewee.avatar_url
-    #     )
-    #
-    #     await self.send_message(dest_channel, embed=em)
-    #     if len(arguments) == 0:
-    #         # only update cells if not in preview mode
-    #         for num, record in answers:
-    #             # The questions start on line 2, and the list is 0-indexed
-    #             sheet.update_acell(f'{POSTED_COL}{num+2}', 'TRUE')
+        await self.add_reaction(msg, GREENTICK)
 
     async def post_cluster(self, em, sheet, dest_channel, cluster, answered_qs):
         for n, r in cluster:
@@ -783,9 +712,6 @@ class Interview(Plugin):
              "to three users for interviews. If you've already made "
              "nominations, they will all be replaced.")
     async def nominate(self, msg, arguments):
-        self.core.emoji.any_emoji(['greentick'])
-        redtick = self.core.emoji.any_emoji(['redtick'])
-
         # hehe let's bully conq
         if msg.author.id == '237811431712489473' and msg.channel.id == '501536160066174976':
             await self.send_message(
@@ -800,7 +726,7 @@ class Interview(Plugin):
                 'You can only nominate in the server this interview is being '
                 'conducted in.'
             )
-            await self.add_reaction(msg, redtick)
+            await self.add_reaction(msg, REDTICK)
             return
 
         if self.interview.active is False:
@@ -833,18 +759,18 @@ class Interview(Plugin):
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
         if len(self.interview.votes[msg.author.id]) > 0:
-            await self.add_reaction(msg, greentick)
+            await self.add_reaction(msg, GREENTICK)
         if self_vote:
-            await self.add_reaction(msg, redtick)
+            await self.add_reaction(msg, REDTICK)
             reply += (
                 '{} **{}**, your anti-town self-vote was ignored.\n'
-            ).format(redtick, msg.author, ', '.join(opt_outs))
+            ).format(REDTICK, msg.author, ', '.join(opt_outs))
         if len(opt_outs) > 0:
             reply += (
                 '{} **{}**, your vote(s) for `[{}]` were ignored because they '
                 'opted-out.\n'
-            ).format(redtick, msg.author, ', '.join(opt_outs))
-            await self.add_reaction(msg, redtick)
+            ).format(REDTICK, msg.author, ', '.join(opt_outs))
+            await self.add_reaction(msg, REDTICK)
         if len(bots) > 0:
             bot_tag = self.core.emoji.any_emoji(['bottag'])
             reply += (
