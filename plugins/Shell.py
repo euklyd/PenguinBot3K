@@ -44,7 +44,7 @@ class Shell(Plugin):
                 await asyncio.sleep(0.2)
 
     def check_cmd(self, msg):
-        code_regex = re.compile("```(.*)```")
+        code_regex = re.compile("```\n?(.*)\n?```")
         match = code_regex.match(msg.content)
         if (match is None):
             self.logger.info("nah")
