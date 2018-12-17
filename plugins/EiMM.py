@@ -338,7 +338,7 @@ class EiMM(Plugin):
         ohmy = self.core.emoji.any_emoji(['ohmy'])
         await self.send_message(msg.channel, f"Wow **{msg.author}**, you're such a good friend! You've visited **{user}** with an adorable cat! {ohmy}")
 
-    @command("^eimmprofile ?(<@!?\d+>|\d+)?$", access=-1, name='eimmprofile')
+    @command("^eimmprof ?(<@!?\d+>|\d+)?$", access=1000, name='eimmprofile')
     async def eimmprofile(self, msg, arguments):
         if arguments[0] is None:
             # get own profile
