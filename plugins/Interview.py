@@ -330,13 +330,15 @@ class Interview(Plugin):
             json.dump(self.interview.to_dict(), archive_file)
 
         sheet = get_sheet()
-        print(sheet)
-        return
         newsheet = sheet.duplicate(
             insert_sheet_index=0,
             new_sheet_name='{user.name} [{user.id}]'.format(user=self.interview.interviewee)
         )
-        newsheet.resize(rows=1)
+        newsheet.resize(rows=2)
+        # You can't actually delete all non-frozen rows cuz google is
+        # kinda dumb about this.
+        # TODO: Figure out what to do here. It may involve automatically
+        # asking the husk question.
 
         reply = (
             '**New interview setup:**\n'
