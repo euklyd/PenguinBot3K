@@ -328,10 +328,16 @@ class Interview(Plugin):
             self.interview.interviewee.name))
         with open(filepath, 'w') as archive_file:
             json.dump(self.interview.to_dict(), archive_file)
-        # if self.interview.answer_channel is not None:
-        #     achn = self.interview.answer_channel.mention
-        # else:
-        #     achn = None
+
+        sheet = get_sheet()
+        print(sheet)
+        return
+        newsheet = sheet.duplicate(
+            insert_sheet_index=0,
+            new_sheet_name='{user.name} [{user.id}]'.format(user=self.interview.interviewee)
+        )
+        newsheet.resize(rows=1)
+
         reply = (
             '**New interview setup:**\n'
             'Interviewee: {user}\n'
