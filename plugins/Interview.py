@@ -100,8 +100,8 @@ def interview_embed(question, interview, msg):
     return em
 
 
-def blank_answers_embed(interview, msg, asker_id):
-    asker = msg.server.get_member(str(asker_id))
+def blank_answers_embed(interview, msg, record):
+    asker = msg.server.get_member(str(record['ID']))
     if asker is None:
         asker_nick = '???'
         asker = '???'
@@ -113,7 +113,8 @@ def blank_answers_embed(interview, msg, asker_id):
     em = discord.Embed(
         title="**{}**'s interview".format(interview.interviewee.name),
         description=' ',
-        color=interview.interviewee.color
+        color=interview.interviewee.color,
+        url=f"https://discordapp.com/channels/{record['Server ID']}/{record['Channel ID']}/{record['Message ID']}"
     )
     em.set_thumbnail(url=interview.interviewee.avatar_url)
     # em.set_author(
@@ -122,7 +123,8 @@ def blank_answers_embed(interview, msg, asker_id):
     # )
     em.set_author(
         name=f'Asked by {asker}',
-        icon_url=asker_url
+        icon_url=asker_url,
+        url=f"https://discordapp.com/channels/{record['Server ID']}/{record['Channel ID']}/{record['Message ID']}"
     )
     return em
 
@@ -377,6 +379,9 @@ class Interview(Plugin):
             'author_name':   msg.author.name,
             'author_avatar': msg.author.avatar_url,
             'timestamp':     msg.timestamp
+            # 'server_id':     msg.server.id,
+            # 'channel_id':    msg.channel.id,
+            # 'msg_id':        msg.id
         }
 
         sheet = get_sheet()
@@ -392,7 +397,10 @@ class Interview(Plugin):
                 self.interview.user_questions[msg.author.id],
                 msg.content[4:],
                 '',
-                False
+                False,
+                msg.server.id,
+                msg.channel.id,
+                msg.id
             ]
         )
         self.interview.dump()
@@ -450,7 +458,10 @@ class Interview(Plugin):
                     self.interview.user_questions[msg.author.id],
                     question_text,
                     '',
-                    False
+                    False,
+                    msg.server.id,
+                    msg.channel.id,
+                    msg.id
                 ]
             )
             self.interview.dump()
@@ -491,7 +502,7 @@ class Interview(Plugin):
     async def post_answers(self, msg, sheet, dest_channel, answers, answered_qs):
         char_count = 0
         cluster = []
-        em = blank_answers_embed(self.interview, msg, answers[0][1]['ID'])
+        em = blank_answers_embed(self.interview, msg, answers[0][1])
         # print(answers)
         for num, record in answers:
             char_count += len(record['Question']) + len(record['Answer'])
@@ -502,7 +513,7 @@ class Interview(Plugin):
                 # Clear the queued cluster after posting
                 char_count = 0
                 cluster = []
-                em = blank_answers_embed(self.interview, msg, answers[0][1]['ID'])
+                em = blank_answers_embed(self.interview, msg, answers[0][1])
             else:
                 cluster.append((num, record))
         if len(cluster) > 0:
