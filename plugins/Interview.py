@@ -334,11 +334,26 @@ class Interview(Plugin):
             insert_sheet_index=0,
             new_sheet_name='{user.name} [{user.id}]'.format(user=self.interview.interviewee)
         )
+        # You can't actually delete all non-frozen rows cuz google is kinda
+        # dumb about this. Instead we'll insert a new opening question every
+        # time we begin a new interview.
+        newsheet.insert_row(
+            [
+                datetime.utcnow().strftime('%m/%d/%Y %H:%m:%S'),
+                datetime.utcnow().timestamp(),
+                str(self.core.user),
+                self.core.user.id,
+                1,
+                'Will you pregame with me? :piplupcry:',
+                '',
+                False,
+                msg.server.id,
+                msg.channel.id,
+                msg.id
+            ],
+            2
+        )
         newsheet.resize(rows=2)
-        # You can't actually delete all non-frozen rows cuz google is
-        # kinda dumb about this.
-        # TODO: Figure out what to do here. It may involve automatically
-        # asking the husk question.
 
         reply = (
             '**New interview setup:**\n'
@@ -367,7 +382,7 @@ class Interview(Plugin):
                  achn=self.interview.answer_channel.mention)
         await self.send_message(msg.channel, reply)
 
-    @command("^ask[ \n](.+)", access=-1, name='ask',
+    @command("^ask[ \n]+(.+)", access=-1, name='ask',
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
     async def ask(self, msg, arguments):
@@ -649,7 +664,7 @@ class Interview(Plugin):
         )
         await self.send_message(msg.channel, reply)
 
-    @command("^(opt|wimp)[ -](in|out)$", access=-1, name='opt',
+    @command("^(?:opt|wimp)[ -](in|out)$", access=-1, name='opt',
              doc_brief="`opt <in/out>`: Opt-in or-out of interviews "
              "nominations. Default is opted-in.")
     async def opt(self, msg, arguments):
