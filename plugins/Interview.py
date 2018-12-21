@@ -256,10 +256,10 @@ class Interview(Plugin):
 
     **Voting**
 
-    You can nominate 1-3 users with `##nominate`. For example, `##nominate @Ampharos#1651 @Iris#5134 @Monde#6197`.
-    To change your votes, simply `##nominate` different users. If you want to delete your votes, just `##unvote` to clear everything.
+    You can vote for 1-3 users with `##vote`. For example, `##vote @Ampharos#1651 @Iris#5134 @Monde#6197`.
+    To change your votes, simply `##vote` different users. If you want to delete your votes, just `##unvote` to clear everything.
     When you've successfully voted, PenguinBot will react to your message with <:greentick:502460759197089802>.
-    To opt-out of the nomination process entirely, just `##opt out`. If you change your mind, simply `##opt in`.
+    To opt-out of the voting process entirely, just `##opt out`. If you change your mind, simply `##opt in`.
 
     **Asking Questions**
 
@@ -665,8 +665,8 @@ class Interview(Plugin):
         await self.send_message(msg.channel, reply)
 
     @command("^(?:opt|wimp)[ -](in|out)$", access=-1, name='opt',
-             doc_brief="`opt <in/out>`: Opt-in or-out of interviews "
-             "nominations. Default is opted-in.")
+             doc_brief="`opt <in/out>`: Opt-in or-out of interviews voting. "
+             "Default is opted-in.")
     async def opt(self, msg, arguments):
         if self.interview.active is False and arguments[0] == 'out':
             await self.send_message(
@@ -714,14 +714,14 @@ class Interview(Plugin):
         for user in users:
             reply += str(user) + '\n'
         reply += (
-            '```*As they have opted-out, you cannot nominate any of these '
+            '```*As they have opted-out, you cannot vote for any of these '
             'users for interviews.*'
         )
         await self.send_message(msg.channel, reply)
 
     @command("^iv (enable|disable)$", access=700, name='toggle',
              doc_brief="`iv <enable/disable>`: Enables or disables interview "
-             "voting and nominating.")
+             "voting and question-asking.")
     async def toggle(self, msg, arguments):
         if arguments[0] == 'enable':
             if self.interview.active is not True:
@@ -741,11 +741,11 @@ class Interview(Plugin):
                 return
         self.interview.dump()
 
-    @command("^(nom|nominate):?(?: *<@!?\d+>){1,3}$", access=-1, name='nominate',
-             doc_brief="`nominate <@user1> [<@user2>] [@user3]`: Nominate up "
-             "to three users for interviews. If you've already made "
-             "nominations, they will all be replaced.")
-    async def nominate(self, msg, arguments):
+    @command("^(vote|nominate):?(?: *<@!?\d+>){1,3}$", access=-1, name='vote',
+             doc_brief="`vote <@user1> [<@user2>] [@user3]`: Vote for up "
+             "to three users for interviews. If you've already made votes, "
+             "they will all be replaced.")
+    async def vote(self, msg, arguments):
         # hehe let's bully conq
         if msg.author.id == '237811431712489473' and msg.channel.id == '501536160066174976':
             await self.send_message(
@@ -757,8 +757,8 @@ class Interview(Plugin):
         if self.interview.server.id != msg.server.id:
             await self.send_message(
                 msg.channel,
-                'You can only nominate in the server this interview is being '
-                'conducted in.'
+                'You can only vote for interviewees in the server this '
+                'interview is being conducted in.'
             )
             await self.add_reaction(msg, REDTICK)
             return
@@ -766,8 +766,8 @@ class Interview(Plugin):
         if self.interview.active is False:
             await self.send_message(
                 msg.channel,
-                'Nominations are currently **closed**; please wait for '
-                'the next round to begin.')
+                'Voting is currently **closed**; please wait for the next '
+                'round to begin.')
             return
         votes     = []
         self_vote = False
@@ -809,22 +809,22 @@ class Interview(Plugin):
             bot_tag = self.core.emoji.any_emoji(['bottag'])
             reply += (
                 '{} **{}**, while we appreciate your support of the **Rᴏʙᴏᴛ '
-                'Rᴇᴠᴏʟᴜᴛɪᴏɴ**, bots such as `[{}]` cannot win interview '
-                'nominations; you would be best served voting for a more '
-                'humanlike compromise, like Makaze or Arcanite.\n'
+                'Rᴇᴠᴏʟᴜᴛɪᴏɴ**, bots such as `[{}]` cannot be interviewed; '
+                'you would be best served voting for a more humanlike '
+                'compromise, like Makaze or Arcanite.\n'
             ).format(bot_tag, msg.author, ', '.join(bots))
             await self.add_reaction(msg, bot_tag)
         if len(reply) > 0:
             await self.send_message(msg.channel, reply)
 
-    @command("^(nommed|im rssp1? and i hate (votals|rufflets))$", access=-1,
-             name='nommed',
-             doc_brief="`nommed`: Check who you're currently voting for.")
-    async def nommed(self, msg, arguments):
+    @command("^(votes|im rssp1? and i hate (votals|rufflets))$", access=-1,
+             name='votes',
+             doc_brief="`votes`: Check who you're currently voting for.")
+    async def votes(self, msg, arguments):
         footer = ''
         if msg.author.id in self.interview.votes:
             if len(self.interview.votes[msg.author.id]) == 0:
-                footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+                footer += '*You are not currently voting; vote with `vote <@user1> <@user2> <@user3>`.*'
             else:
                 footer += '*You are currently voting for: '
                 votelist = ', '.join(sorted(
@@ -835,33 +835,32 @@ class Interview(Plugin):
                 footer += '{}, '.format(votelist)
                 footer = footer[:-2] + '*'
         else:
-            footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+            footer += '*You are not currently voting; vote with `vote <@user1> <@user2> <@user3>`.*'
         await self.send_message(msg.channel, footer)
 
-    @command("^(unvote|unnom|im conq and i hate voting)$", access=-1,
+    @command("^(unvote|im conq and i hate voting)$", access=-1,
              name='unvote',
-             doc_brief="`unnom`: Deletes all your current votes.")
+             doc_brief="`unvote`: Deletes all your current votes.")
     async def unvote(self, msg, arguments):
         if self.interview.active is False:
             await self.send_message(
                 msg.channel,
-                'Nominations are currently **closed**; please wait for '
+                'Voting is currently **closed**; please wait for '
                 'the next round to begin.')
             return
         if msg.author.id not in self.interview.votes or len(self.interview.votes[msg.author.id]) == 0:
-            reply = "**{}**, you're not currently nominating anyone."
+            reply = "**{}**, you're not currently voting for anyone."
         else:
             self.interview.votes[msg.author.id] = []
-            reply = '**{}**, your nomination(s) have been cleared.'
+            reply = '**{}**, your vote(s) have been cleared.'
         await self.send_message(msg.channel, reply.format(msg.author))
 
     @command("^votals ?(--full)?$", access=-1, name='votals (full)',
-             doc_brief="`votals [--full]`: Displays current vote totals for "
-             "interview nominations.",
+             doc_brief="`votals [--full]`: Displays vote totals for the "
+             "current period of interview voting.",
              doc_detail="`votals [--full]`: Displays current vote totals for "
-             "interview nominations. If the `--full` flag is provided, so "
-             "long as the user's access is ≥ 300, detailed votal information "
-             "will be calculated.")
+             "the current period of interview voting. If the `--full` flag is "
+             "provided, detailed votal information will be shown.")
     async def votals(self, msg, arguments):
         votals = {}
         for voter, votes in self.interview.votes.items():
@@ -882,7 +881,7 @@ class Interview(Plugin):
         footer = ''
         if msg.author.id in self.interview.votes:
             if len(self.interview.votes[msg.author.id]) == 0:
-                footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+                footer += '*You are not currently voting; vote with `vote <@user1> <@user2> <@user3>`.*'
             else:
                 footer += '*You are currently voting for: '
                 votelist = ', '.join(sorted(
@@ -893,7 +892,7 @@ class Interview(Plugin):
                 footer += '{}, '.format(votelist)
                 footer = footer[:-2] + '*'
         else:
-            footer += '*You are not currently voting; vote with `nominate <@user1> <@user2> <@user3>`.*'
+            footer += '*You are not currently voting; vote with `vote <@user1> <@user2> <@user3>`.*'
 
         reply     = '**__Votals__**```ini\n'
         txt_reply = reply
