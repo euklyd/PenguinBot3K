@@ -169,13 +169,6 @@ class EiMM(Plugin):
         )
         await self.send_message(msg.channel, flip_msg)
 
-    @command("^vote <@!?(\d+)>(?:\*\*)?$", access=-1, name='vote')
-    async def vote(self, msg, arguments):
-        await self.send_message(
-            msg.channel,
-            "Sorry nerd, but there's no voting in Everyone is Mafia Mafia."
-        )
-
     @command("^[Tt]oo bad,? <@!?(\d+)> ?,? [Ii] never miss(?:\*\*)?$", access=-1,
              name='dayvig')
     async def dayvig(self, msg, arguments):
