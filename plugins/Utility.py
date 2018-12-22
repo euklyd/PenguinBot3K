@@ -156,7 +156,7 @@ class Utility(Plugin):
 
     @command("^avatar <@!?([0-9]*)>$", access=-1, name='avatar',
              doc_brief="`avatar @<user>`: posts a link to `<user>`'s avatar")
-    async def get_avatar(self, msg, arguments):
+    async def avatar(self, msg, arguments):
         """`avatar @<user>`: posts a link to `<user>`'s avatar"""
         if (len(msg.mentions) == 0):
             # msg.mentions will be empty if the mentioned user isn't a member
@@ -186,9 +186,14 @@ class Utility(Plugin):
             nitro = "Yes"
         else:
             nitro = "maybe? maybe not? 👀"
+            user.avatar_url
         em.add_field(name="Nickname", value=nick)
         em.add_field(name="Nitro", value=nitro)
-        em.add_field(name="URL", value="([long link, click here!]({}))".format(user.avatar_url), inline=False)
+        em.add_field(
+            name="URL",
+            value="([long link, click here!]({}))".format(
+                user.avatar_url.replace('webp', 'png')),
+            inline=False)
         await self.send_message(msg.channel, embed=em)
 
     @command("^info <@!?([0-9]*)>$", access=-1, name='info',
