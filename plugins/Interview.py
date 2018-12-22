@@ -80,11 +80,9 @@ def interview_embed(question, interview, msg):
         asker_nick = question['author_name']
         asker_url  = question['author_avatar']
     else:
-        # asker_nick = get_nick_or_name(asker)
         asker_nick = asker.name
         asker_url  = asker.avatar_url
     em = discord.Embed(
-        # title='{} interview'.format(get_nick_or_name(interview.interviewee)),
         title="{}'s interview".format(interview.interviewee.name),
         color=interview.interviewee.color,
         description=question['question'],
@@ -109,7 +107,6 @@ def blank_answers_embed(interview, msg, record):
         asker = '???'
         asker_url  = ''
     else:
-        # asker_nick = get_nick_or_name(asker)
         asker_nick = asker.name
         asker_url  = asker.avatar_url
     em = discord.Embed(
@@ -119,10 +116,6 @@ def blank_answers_embed(interview, msg, record):
         url=f"https://discordapp.com/channels/{record['Server ID']}/{record['Channel ID']}/{record['Message ID']}"
     )
     em.set_thumbnail(url=interview.interviewee.avatar_url)
-    # em.set_author(
-    #     name=asker_nick,
-    #     icon_url=asker_url
-    # )
     em.set_author(
         name=f'Asked by {asker}',
         icon_url=asker_url,
@@ -419,9 +412,6 @@ class Interview(Plugin):
             'author_name':   msg.author.name,
             'author_avatar': msg.author.avatar_url,
             'timestamp':     msg.timestamp
-            # 'server_id':     msg.server.id,
-            # 'channel_id':    msg.channel.id,
-            # 'msg_id':        msg.id
         }
 
         sheet = get_first_sheet()
@@ -543,10 +533,8 @@ class Interview(Plugin):
         char_count = 0
         cluster = []
         em = blank_answers_embed(self.interview, msg, answers[0][1])
-        # print(answers)
         for num, record in answers:
             char_count += len(record['Question']) + len(record['Answer'])
-            # print(char_count)
             if char_count > 5500:
                 # Post an answer cluster
                 await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
@@ -584,7 +572,6 @@ class Interview(Plugin):
         sheet       = get_first_sheet()
         records     = sheet.get_all_records()
         answers     = {}
-        # char_count  = 0
         answered_qs = 0
         for i, record in enumerate(records):
             if record['Posted?'] != 'FALSE':
@@ -888,7 +875,6 @@ class Interview(Plugin):
             else:
                 footer += '*You are currently voting for: '
                 votelist = ', '.join(sorted(
-                    # [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
                     [name_or_default(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
                     key=lambda x: x.lower()
                 ))
@@ -945,7 +931,6 @@ class Interview(Plugin):
             else:
                 footer += '*You are currently voting for: '
                 votelist = ', '.join(sorted(
-                    # [str(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
                     [name_or_default(msg.server.get_member(voter)) for voter in self.interview.votes[msg.author.id]],
                     key=lambda x: x.lower()
                 ))
@@ -963,7 +948,6 @@ class Interview(Plugin):
             for vote in sorted_votals:
                 if vote[0] not in self.interview.opt_outs:
                     if msg.server.get_member(vote[0]) is not None:
-                        # voter = str(msg.server.get_member(vote[0]))
                         voter = name_or_default(msg.server.get_member(vote[0]))
                     else:
                         voter = SERVER_LEFT_MSG
@@ -971,7 +955,6 @@ class Interview(Plugin):
                         voter + ':',
                         len(vote[1]),
                         # alphabetize
-                        # ', '.join(sorted([str(msg.server.get_member(voter)) for voter in vote[1]], key=lambda x: x.lower()))
                         ', '.join(sorted([name_or_default(msg.server.get_member(voter)) for voter in vote[1]], key=lambda x: x.lower()))
                     )
                     if len(reply + line + footer) < 1990:
@@ -984,7 +967,6 @@ class Interview(Plugin):
             for vote in sorted_votals:
                 if vote[0] not in self.interview.opt_outs:
                     if msg.server.get_member(vote[0]) is not None:
-                        # voter = str(msg.server.get_member(vote[0]))
                         voter = name_or_default(msg.server.get_member(vote[0]))
                     else:
                         voter = SERVER_LEFT_MSG
