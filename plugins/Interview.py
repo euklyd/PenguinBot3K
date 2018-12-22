@@ -29,7 +29,7 @@ import random
 import re
 import requests
 
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from oauth2client.service_account import ServiceAccountCredentials
 from PIL import Image
@@ -166,38 +166,30 @@ def add_answer(embed, num, question, answer, space=True):
 
 
 class InterviewMeta():
-    server           = None
-    question_channel = None
-    answer_channel   = None
-    interviewee      = None
-    user_questions   = {}
-    salt             = None
-    opt_outs         = set()
-    votes            = {}
-    active           = True
-    # past_nominees    = {
-    #     '280945905241423873': {
-    #         'name': 'Iris',
-    #         'last interviewed': <timestamp here>
-    #     },
-    #     '100165629373337600': {
-    #         'name': 'euklyd',
-    #         'last interviewed': <timestamp here>
-    #     }
-    # }
+    server            = None
+    question_channel  = None
+    answer_channel    = None
+    interviewee       = None
+    user_questions    = {}
+    salt              = None
+    opt_outs          = set()
+    votes             = {}
+    active            = True
+    reinterview_limit = None
 
     def load_from_dict(meta, core):
         iv_meta = InterviewMeta()
-        iv_meta.server           = core.get_server(meta['server_id'])
-        iv_meta.question_channel = core.get_channel(meta['q_channel'])
+        iv_meta.server            = core.get_server(meta['server_id'])
+        iv_meta.question_channel  = core.get_channel(meta['q_channel'])
         if 'a_channel' in meta:
-            iv_meta.answer_channel   = core.get_channel(meta['a_channel'])
-        iv_meta.interviewee      = iv_meta.server.get_member(meta['interviewee'])
-        iv_meta.user_questions   = meta['user_questions']
-        iv_meta.salt             = meta['salt']
-        iv_meta.opt_outs         = set(meta['opt_outs'])
-        iv_meta.votes            = meta['votes']
-        iv_meta.active           = meta['active']
+            iv_meta.answer_channel    = core.get_channel(meta['a_channel'])
+        iv_meta.interviewee       = iv_meta.server.get_member(meta['interviewee'])
+        iv_meta.user_questions    = meta['user_questions']
+        iv_meta.salt              = meta['salt']
+        iv_meta.opt_outs          = set(meta['opt_outs'])
+        iv_meta.votes             = meta['votes']
+        iv_meta.active            = meta['active']
+        iv_meta.reinterview_limit = datetime.utcfromtimestamp(meta['limit']).replace(tzinfo=timezone.utc)
         return iv_meta
 
     @property
@@ -212,11 +204,12 @@ class InterviewMeta():
             self.server = question_channel.server
         if self.salt is None:
             self.salt = random.randint(1, 99999999)
-        self.question_channel = question_channel
-        self.interviewee      = interviewee
-        self.user_questions   = {}
-        self.votes            = {}
-        self.active           = True
+        self.question_channel  = question_channel
+        self.interviewee       = interviewee
+        self.user_questions    = {}
+        self.votes             = {}
+        self.active            = True
+        self.reinterview_limit = datetime.utcfromtimestamp(0)
 
     def to_dict(self):
         meta = {
@@ -228,7 +221,8 @@ class InterviewMeta():
             'salt':           self.salt,
             'opt_outs':       list(self.opt_outs),
             'votes':          self.votes,
-            'active':         self.active
+            'active':         self.active,
+            'limit':          self.reinterview_limit.replace(tzinfo=timezone.utc).timestamp()
         }
         return meta
 
@@ -342,7 +336,7 @@ class Interview(Plugin):
             if not os.path.exists(os.path.dirname(filepath)):
                 try:
                     os.makedirs(os.path.dirname(filepath))
-                except OSError as e: # Guard against race condition
+                except OSError as e:  # Guard against race condition
                     if e.errno != errno.EEXIST:
                         raise
             with open(filepath, 'w') as archive_file:
@@ -384,10 +378,8 @@ class Interview(Plugin):
             '**New interview setup:**\n'
             'Interviewee: {user}\n'
             'Question Channel: {qchn}\n'
-            # "Answer Channel: {achn}"
         ).format(user=str(self.interview.interviewee),
-                 qchn=self.interview.question_channel.mention,
-                 # achn=achn)
+                 qchn=self.interview.question_channel.mention
                  )
         await self.send_message(msg.channel, reply)
 
@@ -766,6 +758,38 @@ class Interview(Plugin):
                 return
         self.interview.dump()
 
+    @command(r"^iv reinterview ?(?:(\d{4})[/ -](\d{1,2})[/ -](\d{1,2}))?$", access=700,
+             name='reinterview',
+             doc_brief="`iv reinterview YYYY/MM/DD`: Sets the reinterview "
+             "limit.",
+             doc_detail="`iv reinterview YYYY/MM/DD`: Sets the reinterview "
+             "limit. If your most recent interview is after this date, you "
+             "are not eligible to be reinterviewed.")
+    async def reinterview(self, msg, arguments):
+        if arguments[0] is None:
+            await self.send_message(
+                msg.channel,
+                'The current reinterview limit is '
+                f'`{self.interview.reinterview_limit}` '
+                f'`[{self.interview.reinterview_limit.replace(tzinfo=timezone.utc).timestamp()}]`.'
+            )
+            return
+        year, month, day = int(arguments[0]), int(arguments[1]), int(arguments[2])
+        old_limit = self.interview.reinterview_limit
+        try:
+            self.interview.reinterview_limit = datetime(
+                year, month, day, tzinfo=timezone.utc
+            )
+        except ValueError as e:
+            await self.send_message(msg.channel, f'{REDTICK} ValueError: {e}')
+            return
+        self.interview.dump()
+        await self.send_message(
+            msg.channel,
+            f'New reinterview limit: `{self.interview.reinterview_limit}`. '
+            f'Old limit: `{old_limit}`.'
+        )
+
     @command("^(vote|nominate):?(?: *<@!?\d+>){1,3}$", access=-1, name='vote',
              doc_brief="`vote <@user1> [<@user2>] [@user3]`: Vote for up "
              "to three users for interviews. If you've already made votes, "
@@ -794,16 +818,21 @@ class Interview(Plugin):
                 'Voting is currently **closed**; please wait for the next '
                 'round to begin.')
             return
+
         votes     = []
         self_vote = False
         opt_outs  = []
+        bad_prevs = []
         bots      = []
         reply = ''
+
         for mention in msg.mentions:
             if mention.id == msg.author.id:
                 self_vote = True
             elif mention.id in self.interview.opt_outs:
                 opt_outs.append(str(mention))
+            elif mention.id in self.past_nominees and self.past_nominees[mention.id] > self.interview.reinterview_limit:
+                bad_prevs.append(str(mention))
             elif mention.id == '224283755538284544':
                 bots.append(str(mention))
                 votes.append(mention.id)
@@ -817,19 +846,25 @@ class Interview(Plugin):
         opt_outs = list(set(opt_outs))
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
+
         if len(self.interview.votes[msg.author.id]) > 0:
             await self.add_reaction(msg, GREENTICK)
         if self_vote:
             await self.add_reaction(msg, REDTICK)
             reply += (
                 '{} **{}**, your anti-town self-vote was ignored.\n'
-            ).format(REDTICK, msg.author, ', '.join(opt_outs))
+            ).format(REDTICK, msg.author)
         if len(opt_outs) > 0:
             reply += (
                 '{} **{}**, your vote(s) for `[{}]` were ignored because they '
                 'opted-out.\n'
             ).format(REDTICK, msg.author, ', '.join(opt_outs))
             await self.add_reaction(msg, REDTICK)
+        if len(bad_prevs) > 0:
+            reply += (
+                '{} **{}**, your vote(s) for `[{}]` were ignored because they '
+                'have been interviewed too recently.\n'
+            ).format(REDTICK, msg.author, ', '.join(bad_prevs))
         if len(bots) > 0:
             bot_tag = self.core.emoji.any_emoji(['bottag'])
             reply += (
