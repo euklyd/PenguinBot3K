@@ -26,12 +26,14 @@ import logging
 import operator
 import os
 import random
+import re
 import requests
 
 from datetime import datetime
 from io import BytesIO
-from PIL import Image
 from oauth2client.service_account import ServiceAccountCredentials
+from PIL import Image
+from pprint import pprint
 
 
 logger = logging.getLogger(__name__)
@@ -246,8 +248,12 @@ def get_sheet(sheet_name=INTERVIEW_SHEET):
     creds   = ServiceAccountCredentials.from_json_keyfile_name(
         SHEETS_SECRET, SCOPE)
     client  = gspread.authorize(creds)
-    sheet   = client.open(sheet_name).sheet1
+    sheet   = client.open(sheet_name)
     return sheet
+
+
+def get_first_sheet(sheet_name=INTERVIEW_SHEET):
+    return get_sheet().sheet1
 
 
 class Interview(Plugin):
@@ -291,6 +297,25 @@ class Interview(Plugin):
         global REDTICK
         GREENTICK = self.core.emoji.any_emoji(['greentick'])
         REDTICK   = self.core.emoji.any_emoji(['redtick'])
+        # This isn't part of interview meta because state can be saved
+        # just fine using only the sheet.
+        sheet = get_sheet()
+        self.past_nominees = {}
+        for ws in sheet.worksheets():
+            match = re.match('.*\[(\d+)\].*', ws.title)
+            if match is None:
+                if self.interview.question_channel is not None:
+                    await self.send_message(
+                        self.interview.question_channel,
+                        f'Error in the title format of {ws}.'
+                    )
+                else:
+                    self.logger.error(f'Error in the title format of {ws}.')
+            else:
+                uid  = match.groups()[0]
+                time = datetime.utcfromtimestamp(float(ws.row_values(2)[1]))
+                self.past_nominees[uid] = time
+        # pprint(self.past_nominees)
 
     @command("^iv setup <@!?\d+>$", access=700, name='iv setup',
              doc_brief="`iv setup <@user>`: Sets up an interview for "
@@ -329,7 +354,7 @@ class Interview(Plugin):
         with open(filepath, 'w') as archive_file:
             json.dump(self.interview.to_dict(), archive_file)
 
-        sheet = get_sheet()
+        sheet = get_first_sheet()
         newsheet = sheet.duplicate(
             insert_sheet_index=0,
             new_sheet_name='{user.name} [{user.id}]'.format(user=self.interview.interviewee)
@@ -407,7 +432,7 @@ class Interview(Plugin):
             # 'msg_id':        msg.id
         }
 
-        sheet = get_sheet()
+        sheet = get_first_sheet()
 
         self.interview.increment_question(msg.author)
 
@@ -458,7 +483,7 @@ class Interview(Plugin):
             content = msg.content[10:]  # strip command name
         questions = content.split('\n')
 
-        sheet = get_sheet()
+        sheet = get_first_sheet()
 
         for question_text in questions:
             if question_text == '':
@@ -564,7 +589,7 @@ class Interview(Plugin):
         else:
             dest_channel = arguments[1]
 
-        sheet       = get_sheet()
+        sheet       = get_first_sheet()
         records     = sheet.get_all_records()
         answers     = {}
         # char_count  = 0
@@ -871,12 +896,12 @@ class Interview(Plugin):
                     votals[vote] = [voter]
         # sorted_votals is a list of lists of the format:
         # [ID, [voter IDs], member]
-        sorted_votals = [list(nom) + [msg.server.get_member(nom[0])] for nom in votals.items()]
+        sorted_votals = [list(vote) + [msg.server.get_member(vote[0])] for vote in votals.items()]
         # Sort by the number of votes, then alphabetically
         sorted_votals = sorted(sorted_votals, key=lambda x: (-len(x[1]), str(x[2]).lower()))
         max_len = len(SERVER_LEFT_MSG)
-        for nom in sorted_votals:
-            max_len = max(len(str(msg.server.get_member(nom[0]))), max_len)
+        for vote in sorted_votals:
+            max_len = max(len(str(msg.server.get_member(vote[0]))), max_len)
 
         footer = ''
         if msg.author.id in self.interview.votes:
@@ -900,19 +925,19 @@ class Interview(Plugin):
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
         if arguments[0] == '--full':
             votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
-            for nom in sorted_votals:
-                if nom[0] not in self.interview.opt_outs:
-                    if msg.server.get_member(nom[0]) is not None:
-                        # voter = str(msg.server.get_member(nom[0]))
-                        voter = name_or_default(msg.server.get_member(nom[0]))
+            for vote in sorted_votals:
+                if vote[0] not in self.interview.opt_outs:
+                    if msg.server.get_member(vote[0]) is not None:
+                        # voter = str(msg.server.get_member(vote[0]))
+                        voter = name_or_default(msg.server.get_member(vote[0]))
                     else:
                         voter = SERVER_LEFT_MSG
                     line = votal_fmt.format(
                         voter + ':',
-                        len(nom[1]),
+                        len(vote[1]),
                         # alphabetize
-                        # ', '.join(sorted([str(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
-                        ', '.join(sorted([name_or_default(msg.server.get_member(voter)) for voter in nom[1]], key=lambda x: x.lower()))
+                        # ', '.join(sorted([str(msg.server.get_member(voter)) for voter in vote[1]], key=lambda x: x.lower()))
+                        ', '.join(sorted([name_or_default(msg.server.get_member(voter)) for voter in vote[1]], key=lambda x: x.lower()))
                     )
                     if len(reply + line + footer) < 1990:
                         reply += line
@@ -921,16 +946,16 @@ class Interview(Plugin):
                     txt_reply += line
         else:
             votal_fmt = '{{:<{}}} {{}}\n'.format(max_len+1)
-            for nom in sorted_votals:
-                if nom[0] not in self.interview.opt_outs:
-                    if msg.server.get_member(nom[0]) is not None:
-                        # voter = str(msg.server.get_member(nom[0]))
-                        voter = name_or_default(msg.server.get_member(nom[0]))
+            for vote in sorted_votals:
+                if vote[0] not in self.interview.opt_outs:
+                    if msg.server.get_member(vote[0]) is not None:
+                        # voter = str(msg.server.get_member(vote[0]))
+                        voter = name_or_default(msg.server.get_member(vote[0]))
                     else:
                         voter = SERVER_LEFT_MSG
                     line = votal_fmt.format(
                         voter + ':',
-                        len(nom[1])
+                        len(vote[1])
                     )
                     if len(reply + line + footer) < 1990:
                         reply += line
