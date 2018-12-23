@@ -300,7 +300,7 @@ class Interview(Plugin):
                     self.logger.error(f'Error in the title format of {ws}.')
             else:
                 uid  = match.groups()[0]
-                time = datetime.utcfromtimestamp(float(ws.row_values(2)[1]))
+                time = datetime.utcfromtimestamp(float(ws.row_values(2)[1])).replace(tzinfo=timezone.utc)
                 self.past_nominees[uid] = time
         # pprint(self.past_nominees)
 
@@ -852,6 +852,7 @@ class Interview(Plugin):
                 '{} **{}**, your vote(s) for `[{}]` were ignored because they '
                 'have been interviewed too recently.\n'
             ).format(REDTICK, msg.author, ', '.join(bad_prevs))
+            await self.add_reaction(msg, REDTICK)
         if len(bots) > 0:
             bot_tag = self.core.emoji.any_emoji(['bottag'])
             reply += (
