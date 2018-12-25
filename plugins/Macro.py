@@ -22,6 +22,7 @@ import discord
 import json
 import logging
 import random
+import requests
 
 from datetime import datetime
 
@@ -893,6 +894,14 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
 
-    @command("what ?([A-Za-z ]+)?$", access=-1, name='what custom')
+    @command("^what ?([A-Za-z ]+)?$", access=-1, name='what custom')
     async def mmquote_custom(self, msg, arguments):
         await self.mmquote(msg, arguments)
+
+    @command("^inspireme$", access=-1, name='inspireme')
+    async def inspireme(self, msg, arguments):
+        INSPIREBOT_URL = "http://inspirobot.me/api?generate=true"
+        resp = requests.get(INSPIREBOT_URL)
+        em = discord.Embed()
+        em.set_image(url=resp.text)
+        await self.send_message(msg.channel, embed=em)
