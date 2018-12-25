@@ -61,7 +61,7 @@ class Macro(Plugin):
         self.logger.debug(arguments)
         emoji = arguments[0]
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
-        reply = "<@!{}>: {}".format(msg.author.id, reply)
+        reply = '<@!{}>: {}'.format(msg.author.id, reply)
         self.logger.info(reply)
         await self.delete_message(msg)
         await self.send_message(msg.channel, reply)
@@ -76,7 +76,7 @@ class Macro(Plugin):
         self.logger.debug(arguments)
         emoji = arguments[0]
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
-        reply = "<@!{}>: {}".format(msg.author.id, reply)
+        reply = '<@!{}>: {}'.format(msg.author.id, reply)
         self.logger.info(reply)
         await self.delete_message(msg)
         await self.send_message(msg.channel, reply)
@@ -89,7 +89,7 @@ class Macro(Plugin):
         self.logger.debug(arguments)
         emoji = arguments[0]
         reply = arguments[1].replace(' ', ' {} '.format(emoji))
-        reply = "<@!{}>: {}".format(msg.author.id, reply)
+        reply = '<@!{}>: {}'.format(msg.author.id, reply)
         self.logger.info(reply)
         await self.delete_message(msg)
         await self.send_whisper(msg.author, reply)
@@ -217,13 +217,13 @@ class Macro(Plugin):
     @command("^(?:penguin|\U0001F427)$", access=-1, name='penguin',
              doc_brief="`penguin`: Embeds the Skype `(penguin)` emoji")
     async def penguin(self, msg, arguments):
-        penguin_url = "https://i.imgur.com/MGNa91r.gif"
-        penguin_url = "https://cdn.discordapp.com/attachments/342186707028017152/360499286863249421/skype_penguin_transparent.gif"
+        penguin_url = 'https://i.imgur.com/MGNa91r.gif'
+        penguin_url = 'https://cdn.discordapp.com/attachments/342186707028017152/360499286863249421/skype_penguin_transparent.gif'
         user = msg.server.get_member(self.core.user.id)
         em = discord.Embed(color=user.color)
         em.set_thumbnail(url=penguin_url)
         em.set_footer(
-            text="",
+            text='',
             icon_url=user.avatar_url
         )
         await self.send_message(msg.channel, embed=em)
@@ -231,12 +231,12 @@ class Macro(Plugin):
     @command("^(?:cat|\U0001F408|\:3)$", access=-1, name='cat',
              doc_brief="`cat`: Embeds the Skype `(cat)` emoji")
     async def cat(self, msg, arguments):
-        cat_url = "http://i.imgur.com/kJYNv51.gif"
+        cat_url = 'http://i.imgur.com/kJYNv51.gif'
         user = msg.server.get_member(self.core.user.id)
         em = discord.Embed(color=user.color)
         em.set_thumbnail(url=cat_url)
         em.set_footer(
-            text="",
+            text='',
             icon_url=user.avatar_url
         )
         await self.send_message(msg.channel, embed=em)
@@ -245,12 +245,12 @@ class Macro(Plugin):
              doc_brief="`thinking`: Embeds the `:thinking:` emoji's ultimate "
              "form")
     async def thinking(self, msg, arguments):
-        thinking_url = "http://i.imgur.com/oHPYovk.gif"
+        thinking_url = 'http://i.imgur.com/oHPYovk.gif'
         user = msg.server.get_member(self.core.user.id)
         em = discord.Embed(color=user.color)
         em.set_thumbnail(url=thinking_url)
         em.set_footer(
-            text="",
+            text='',
             icon_url=user.avatar_url
         )
         await self.send_message(msg.channel, embed=em)
@@ -267,8 +267,8 @@ class Macro(Plugin):
     @command("^(?:[Ss]akurai|jank|game blows)$", access=-1, name='sakurai',
              doc_detail="`sakurai`: 👍")
     async def sakurai(self, msg, arguments):
-        ayy = ["http://i.imgur.com/rbpQb3M.gif",
-               "http://i.imgur.com/ahTXT2T.gif"]
+        ayy = ['http://i.imgur.com/rbpQb3M.gif',
+               'http://i.imgur.com/ahTXT2T.gif']
         await self.send_message(msg.channel, random.choice(ayy))
 
     @command("^( )?(?:boy|[Rr]oy|🔥🔥🔥|ph1r3)$", access=50, name='ph1r3',
@@ -305,12 +305,12 @@ class Macro(Plugin):
             "clone {marth}  😕 😩 😫\n\n"
             "**🔥 ROY'S 🔥 OUR 🔥 BOY 🔥**".format(marth=marf)
         ]
-        if (arguments[0] == " "):
+        if (arguments[0] == ' '):
             pasta = roypasta[0]
-        elif (msg.author.id in ["190933659887337472"]):
+        elif (msg.author.id in ['190933659887337472']):
             pasta = roypasta[0]
             pasta += random.choice(
-                ["", "\n(A great big steaming, wet, smelly 💩 shit 💩)"])
+                ['', '\n(A great big steaming, wet, smelly 💩 shit 💩)'])
         else:
             pasta = random.choice(roypasta)
         await self.send_message(msg.channel, pasta)
@@ -634,7 +634,7 @@ class Macro(Plugin):
              "PenguinBot3K breaks records. PenguinBot3.5K breaks the rules. "
              "Personally, I prefer the magic.")
     async def magic(self, msg, arguments):
-        with open(macro_path.format("magic.json"), 'r') as magicfile:
+        with open(macro_path.format('magic.json'), 'r') as magicfile:
             magic = json.load(magicfile)
             await self.send_message(
                 msg.channel,
@@ -650,7 +650,7 @@ class Macro(Plugin):
              "first put out there that I have been playing for years, "
              "and I have watched MANY videos of the tournament masters.")
     async def THE_PUNCH(self, msg, arguments):
-        with open(macro_path.format("the_punch.json"), 'r') as punchfile:
+        with open(macro_path.format('the_punch.json'), 'r') as punchfile:
             punch = json.load(punchfile)
             if (arguments[0] in punch['dict']):
                 await self.send_message(
@@ -660,13 +660,13 @@ class Macro(Plugin):
             else:
                 await self.send_message(
                     msg.channel,
-                    ("Section keys are: `{keys}`\n"
-                     "Use with `{trigger}THE PUNCH <key>`").format(
+                    ('Section keys are: `{keys}`\n'
+                     'Use with `{trigger}THE PUNCH <key>`').format(
                         keys="`, `".join(punch['dict']),
                         trigger=self.core.default_trigger)
                 )
         ganon = self.core.emoji.any_emoji(['return_of_ganon'])
-        if (ganon != "`:return_of_ganon:`"):
+        if (ganon != '`:return_of_ganon:`'):
             await self.send_message(msg.channel, ganon)
 
     @command("^pasta ?(.*)$", access=-1, name='pasta',
@@ -675,19 +675,19 @@ class Macro(Plugin):
              "available pastas.")
     async def pasta(self, msg, arguments):
         pasta = arguments[0].lower()
-        with open(macro_path.format("pastas.json"), 'r') as pastafile:
+        with open(macro_path.format('pastas.json'), 'r') as pastafile:
             pastas = json.load(pastafile)
             if msg.server.id not in pastas:
-                reply = "This server has no pastas..."
-            elif (pasta == "" or pasta == "--list" or pasta == "--help"):
-                reply = "**Available pastas:** "
+                reply = 'This server has no pastas...'
+            elif (pasta == '' or pasta == '--list' or pasta == '--help'):
+                reply = '**Available pastas:** '
                 for k in pastas[msg.server.id]:
                     reply += "`{}`, ".format(k)
                 reply = reply[0:-2]
             elif (pasta in pastas[msg.server.id]):
                 reply = pastas[msg.server.id][pasta]
             else:
-                reply = "No such pasta."
+                reply = 'No such pasta.'
             await self.send_message(
                 msg.channel,
                 reply
@@ -703,28 +703,28 @@ class Macro(Plugin):
     async def makepasta(self, msg, arguments):
         name = arguments[0].lower()
         pastas = {}
-        with open(macro_path.format("pastas.json"), 'r') as pastafile:
+        with open(macro_path.format('pastas.json'), 'r') as pastafile:
             pastas = json.load(pastafile)
         if msg.server.id not in pastas:
             pastas[msg.server.id] = {}
         if (name in pastas[msg.server.id]):
-            reply = "**ERR:** Pasta `{}` already exists.".format(name)
+            reply = '**ERR:** Pasta `{}` already exists.'.format(name)
         elif (name[0:2] == "--"):
-            reply = "**ERR:** `--` is a reserved sequence."
+            reply = '**ERR:** `--` is a reserved sequence.'
         else:
             try:
                 pastas[msg.server.id][name] = arguments[1]
-                with open(macro_path.format("pastas.json"), 'w') as pastafile:
+                with open(macro_path.format('pastas.json'), 'w') as pastafile:
                     json.dump(pastas, pastafile, indent=2)
-                reply = "Successfully added new pasta `{}`.".format(name)
+                reply = 'Successfully added new pasta `{}`.'.format(name)
             except:
-                reply = "ERR: Something went wrong."
+                reply = 'ERR: Something went wrong.'
         await self.send_message(msg.channel, reply)
 
     @command("^scizzy$", access=-1, name='scizzy',
              doc_brief="`scizzy`: random scizor quote")
     async def scizzy(self, msg, arguments):
-        with open(macro_path.format("scizzy.json"), 'r') as quotefile:
+        with open(macro_path.format('scizzy.json'), 'r') as quotefile:
             quotes = json.load(quotefile)
         await self.send_message(
             msg.channel,
@@ -735,20 +735,20 @@ class Macro(Plugin):
              doc_brief="`submitscizzy`: submit a scizor quote for `scizzy`")
     async def submitscizzy(self, msg, arguments):
         # quote = arguments[0]
-        quote = msg.content.split("submitscizzy ")[1]
+        quote = msg.content.split('submitscizzy ')[1]
         quotes = []
         try:
-            with open(macro_path.format("unchecked_scizzy.json"), 'r') as f:
+            with open(macro_path.format('unchecked_scizzy.json'), 'r') as f:
                 quotes = json.load(f)
         except FileNotFoundError:
             quotes = []
         quotes.append({'quote': quote, 'user': msg.author.name})
-        with open(macro_path.format("unchecked_scizzy.json"), 'w') as f:
+        with open(macro_path.format('unchecked_scizzy.json'), 'w') as f:
             json.dump(quotes, f, indent=2)
         await self.send_message(
             msg.channel,
-            "Thanks for the submission {}".format(
-                self.core.emoji.any_emoji(["ScizzyOK"])
+            'Thanks for the submission {}'.format(
+                self.core.emoji.any_emoji(['ScizzyOK'])
             )
         )
 
@@ -758,54 +758,54 @@ class Macro(Plugin):
         unchecked_quotes = []
         quotes = []
         try:
-            with open(macro_path.format("scizzy.json"), 'r') as quotefile:
+            with open(macro_path.format('scizzy.json'), 'r') as quotefile:
                 quotes = json.load(quotefile)
         except FileNotFoundError:
             quotes = []
         try:
-            with open(macro_path.format("unchecked_scizzy.json"), 'r') as f:
+            with open(macro_path.format('unchecked_scizzy.json'), 'r') as f:
                 unchecked_quotes = json.load(f)
         except FileNotFoundError:
             await self.send_message(
-                msg.channel, "No scizzy quotes to be validated!"
+                msg.channel, 'No scizzy quotes to be validated!'
             )
             return
         for q in unchecked_quotes:
             await self.send_message(
                 msg.channel,
-                "**Submission:**\n\t{}\nFrom: {}".format(q['quote'], q['user'])
+                '**Submission:**\n\t{}\nFrom: {}'.format(q['quote'], q['user'])
             )
             reply = await self.core.wait_for_message(author=msg.author,
                                                      channel=msg.channel)
-            if (reply.content.lower() == "y"):
+            if (reply.content.lower() == 'y'):
                 quote = q['quote']
                 quotes.append(quote)
-                await self.send_message(msg.channel, "Submission accepted.")
-            elif (reply.content.startswith("edit: ")):
-                quote = reply.content.split("edit: ")[1]
+                await self.send_message(msg.channel, 'Submission accepted.')
+            elif (reply.content.startswith('edit: ')):
+                quote = reply.content.split('edit: ')[1]
                 quotes.append(quote)
-                await self.send_message(msg.channel, "Submission modified.")
+                await self.send_message(msg.channel, 'Submission modified.')
             else:
-                await self.send_message(msg.channel, "Submission rejected.")
-        with open(macro_path.format("scizzy.json"), 'w') as quotefile:
+                await self.send_message(msg.channel, 'Submission rejected.')
+        with open(macro_path.format('scizzy.json'), 'w') as quotefile:
             json.dump(quotes, quotefile, indent=2)
-        with open(macro_path.format("unchecked_scizzy.json"), 'w') as f:
+        with open(macro_path.format('unchecked_scizzy.json'), 'w') as f:
             json.dump([], f, indent=2)
         await self.send_message(
             msg.channel,
-            "Scizzies saved {}".format(self.core.emoji.any_emoji(["ScizzyOK"]))
+            'Scizzies saved {}'.format(self.core.emoji.any_emoji(['ScizzyOK']))
         )
 
     @command("^(?:animes|mangos|animes_and_mangos)(?:\.gif)?$", access=-1,
              name='animes and mangos.gif',
              doc_brief='`animes_and_mangos.gif`: ~silly kids~')
     async def animes_and_mangos(self, msg, arguments):
-        filename = image_path.format("animes_and_mangos.gif")
+        filename = image_path.format('animes_and_mangos.gif')
         with open(filename, 'rb') as anime_file:
             sent_file = await self.send_file(
                 msg.channel,
                 anime_file,
-                filename="animes_and_mangos.gif"
+                filename='animes_and_mangos.gif'
             )
 
     @command("^YEAH[_ ]WEED", access=100)
@@ -846,7 +846,7 @@ class Macro(Plugin):
     @command("^what ?(\d+)?$", access=-1, name='what',
              doc_brief="`what`: posts a random mega man sprite quote")
     async def mmquote(self, msg, arguments):
-        with open(macro_path.format("megaman_quotes.json"), 'r') as whatfile:
+        with open(macro_path.format('megaman_quotes.json'), 'r') as whatfile:
             quotes = json.load(whatfile)
         # default state being random is good
         quote_num = random.randint(0, len(quotes['quotes']) - 1)
@@ -876,7 +876,7 @@ class Macro(Plugin):
                 icon_url = quotes['icons'][quotes['custom'][arguments[0]]['icon']]
                 quote_num = arguments[0]
         em = discord.Embed(
-            title="Megaman Sprite Game quotes",
+            title='Megaman Sprite Game quotes',
             color=msg.server.get_member(self.core.user.id).color,
             url="http://megamanspritecomic.tumblr.com/post/65735240451/megaman-sprite-game-released-on-october-31st",
             description=quote['quote'],
@@ -885,12 +885,12 @@ class Macro(Plugin):
         em.set_thumbnail(url=icon_url)
         em.set_author(
             name=quote['name'],
-            url="http://megamanspritecomic.tumblr.com/",
+            url='http://megamanspritecomic.tumblr.com/',
             icon_url=icon_url
         )
         em.set_footer(
-            text="Quote #{}".format(quote_num),
-            icon_url="https://66.media.tumblr.com/avatar_0d7144cecd81_128.pnj"
+            text='Quote #{}'.format(quote_num),
+            icon_url='https://66.media.tumblr.com/avatar_0d7144cecd81_128.pnj'
         )
         await self.send_message(msg.channel, embed=em)
 
@@ -900,8 +900,6 @@ class Macro(Plugin):
 
     @command("^inspireme$", access=-1, name='inspireme')
     async def inspireme(self, msg, arguments):
-        INSPIREBOT_URL = "http://inspirobot.me/api?generate=true"
-        resp = requests.get(INSPIREBOT_URL)
-        em = discord.Embed()
-        em.set_image(url=resp.text)
+        resp = requests.get('http://inspirobot.me/api?generate=true')
+        em = discord.Embed().set_image(url=resp.text)
         await self.send_message(msg.channel, embed=em)
