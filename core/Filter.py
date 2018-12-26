@@ -64,7 +64,7 @@ class FilterManager():
         """
         if message.author.bot:
             return
-        if msg.server is None:
+        if message.server is None:
             return
         filters = list(self.filters.items())
         # self.logger.info(filters)
