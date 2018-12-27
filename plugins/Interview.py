@@ -713,10 +713,10 @@ class Interview(Plugin):
         users = [
             msg.server.get_member(user) for user in self.interview.opt_outs
         ]
-        users = sorted(users, key=lambda x: str(x).lower())
+        users = sorted(users, key=lambda x: name_or_default(x).lower())
         reply = '__**Opted-Out Users**__```'
         for user in users:
-            reply += str(user) + '\n'
+            reply += name_or_default(user) + '\n'
         reply += (
             '```*As they have opted-out, you cannot vote for any of these '
             'users for interviews.*'
