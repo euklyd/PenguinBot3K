@@ -574,7 +574,7 @@ class Interview(Plugin):
         answers     = {}
         answered_qs = 0
         for i, record in enumerate(records):
-            if record['Posted?'] != 'FALSE':
+            if record['Posted?'] != 'FALSE' or record['Posted?'] == '':
                 answered_qs += 1
             elif record['Answer'] != '':
                 answered_qs += 1
