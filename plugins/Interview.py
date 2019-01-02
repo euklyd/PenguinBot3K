@@ -351,7 +351,7 @@ class Interview(Plugin):
         # time we begin a new interview.
         newsheet.insert_row(
             [
-                datetime.utcnow().strftime('%m/%d/%Y %H:%m:%S'),
+                datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
                 datetime.utcnow().timestamp(),
                 str(self.core.user),
                 self.core.user.id,
@@ -420,7 +420,7 @@ class Interview(Plugin):
 
         sheet.append_row(
             [
-                datetime.utcnow().strftime('%m/%d/%Y %H:%m:%S'),
+                datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
                 datetime.utcnow().timestamp(),
                 str(msg.author),
                 msg.author.id,
@@ -481,7 +481,7 @@ class Interview(Plugin):
 
             sheet.append_row(
                 [
-                    datetime.utcnow().strftime('%m/%d/%Y %H:%m:%S'),
+                    datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
                     datetime.utcnow().timestamp(),
                     str(msg.author),
                     msg.author.id,
