@@ -63,7 +63,7 @@ class Moderation(Plugin):
         await self.send_message(channel, arguments[1])
         await self.delete_message(msg)
 
-    @command("^whisper <@!?([0-9]*)> (.*)", access=ACCESS['debug'],
+    @command("^whisper (?:<@!?([0-9]*)>|([0-9]+)) (.*)", access=ACCESS['debug'],
              name='whisper')
     async def whisper(self, msg, arguments):
         user = await self.core.get_user_info(arguments[0])
