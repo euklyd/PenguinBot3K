@@ -400,6 +400,14 @@ class Interview(Plugin):
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
             return
+        if self.interview.server.id != msg.server.id:
+            await self.send_message(
+                msg.channel,
+                'You can only ask questions in the server this interview is '
+                'being conducted in.'
+            )
+            await self.add_reaction(msg, REDTICK)
+            return
         if self.interview.active is False:
             await self.send_message(
                 msg.channel,
@@ -452,6 +460,14 @@ class Interview(Plugin):
         if self.interview is None:
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
+            return
+        if self.interview.server.id != msg.server.id:
+            await self.send_message(
+                msg.channel,
+                'You can only ask questions in the server this interview is '
+                'being conducted in.'
+            )
+            await self.add_reaction(msg, REDTICK)
             return
         if self.interview.active is False:
             await self.send_message(
