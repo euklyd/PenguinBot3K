@@ -141,8 +141,13 @@
     },
     "edge": {
       "name": "wolv",
-      "quote": "i am the edge",
+      "quote": "[i am the edge](https://www.youtube.com/watch?v=_kTBbTSjZpI)",
       "icon": "dogmobile"
+    },
+    "fireball": {
+      "name": "shadoweh",
+      "quote": "i have some bad news... i-i think bad choices has been flirting with me all week\nwe had a REALLY good time last night when she handed me my fireball",
+      "icon": "woman"
     },
     "funny": {
       "name": "raven",
