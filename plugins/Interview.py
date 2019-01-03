@@ -551,7 +551,7 @@ class Interview(Plugin):
         em = blank_answers_embed(self.interview, msg, answers[0][1])
         for num, record in answers:
             char_count += len(record['Question']) + len(record['Answer'])
-            if char_count > 5500:
+            if char_count > 5000:
                 # Post an answer cluster
                 await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
                 # Clear the queued cluster after posting
