@@ -54,6 +54,15 @@ GREENTICK = None
 REDTICK = None
 
 
+def hated(msg):
+    if msg.author.id in ['389802735844851713', '181911235841884160']:
+        # penguinbot is a noted hater of sully and ken
+        if hash(msg.content) % 19 == 4:
+            # happy birthday, me
+            return True
+    return False
+
+
 def link_to_msg(msg):
     return (
         f'https://discordapp.com/channels/{msg.server.id}/'
@@ -396,6 +405,8 @@ class Interview(Plugin):
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
     async def ask(self, msg, arguments):
+        if hated(msg):
+            return
         if self.interview is None:
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
@@ -457,6 +468,8 @@ class Interview(Plugin):
              "the same line as the `multi-ask` command; the first question "
              "must be on the second line.*")
     async def mask(self, msg, arguments):
+        if hated(msg):
+            return
         if self.interview is None:
             await self.send_message(msg.channel,
                                     "Interviews haven't been set up yet.")
