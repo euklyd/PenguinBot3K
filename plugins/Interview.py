@@ -550,6 +550,7 @@ class Interview(Plugin):
         cluster = []
         em = blank_answers_embed(self.interview, msg, answers[0][1])
         for num, record in answers:
+            record['Answer'] = record['Answer'].rstrip()
             char_count += len(record['Question']) + len(record['Answer'])
             if char_count > 5000:
                 # Post an answer cluster
