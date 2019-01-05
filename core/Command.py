@@ -64,58 +64,58 @@ class CommandManager():
             Returns:
                 None
         """
+        triggers = self.core.triggers
+        if type(triggers) == tuple:
+            for trigger in triggers:
+                if message.content.startswith(trigger):
+                    # message.content needs to be set to be the stripped
+                    # content later so that in case of fall-through, it
+                    # doesn't break filters.
+                    content = message.content.replace(trigger, "", 1)
+                    break
+            else:
+                # not found
+                return
+        elif message.content.startswith(trigger):
+            content = message.content.replace(triggers, "", 1)
+        else:
+            # not found
+            return
+
         commands = list(self.commands.items())
-        # self.logger.info(commands)
         for key, command in commands:
-            # self.logger.info("key:     {}".format(key))
-            # self.logger.info("command: {}".format(command))
-            # self.logger.info("trigger: {}".format(command.trigger))
-            if (message.content.startswith(command.trigger)):
-                t = ""  # debug
-                if type(command.trigger) == tuple:
-                    for trigger in command.trigger:
-                        content = message.content.replace(trigger, "", 1)
-                        if (content != message.content):
-                            t = trigger  # debug
-                            break
-                else:
-                    t = command.trigger  # debug
-                    content = message.content.replace(command.trigger, "", 1)
+            match = re.search(command.pattern, content, flags=command.flags)
 
-                match = re.search(command.pattern, content, flags=command.flags)
-
-                if (match):
-                    # self.logger.info("trigger '{}' matched!".format(t))
-                    # self.logger.debug("'{}' detected")
-                    self.logger.info("'{}' detected".format(message.content))
-                    if (self.core.ACL.getAccess(message.author.id) >=
-                                command.access or
-                            message.author.id == self.core.config.backdoor or
-                            self.core.ACL.get_user_role_access(message.author,
-                                command.plugin) >= command.access
-                    ):  # noqa E124
-                        message.content = content
-                        arguments = match.groups()
-                        self.logger.info("'{}' invoked".format(
-                                         message.content))
-                        await command.invoke(message, arguments)
-                    elif (not command.silent):
-                        await self.core.send_message(
-                            message.channel,
-                            "\u200B<@!{}>: Sorry, you need `{}` access to use "
-                            "that command.".format(
-                                message.author.id, command.access)
-                        )  # TODO: get rid of zero-width space?
-                        self.logger.info("'{}' (from {} in {}) refused".format(
-                            message.content,
+            if (match):
+                self.logger.info("'{}' detected".format(message.content))
+                if (self.core.ACL.getAccess(message.author.id) >=
+                            command.access or
+                        message.author.id == self.core.config.backdoor or
+                        self.core.ACL.get_user_role_access(message.author,
+                            command.plugin) >= command.access
+                ):  # noqa E124
+                    message.content = content
+                    arguments = match.groups()
+                    self.logger.info("'{}' invoked".format(
+                                     message.content))
+                    await command.invoke(message, arguments)
+                elif (not command.silent):
+                    await self.core.send_message(
+                        message.channel,
+                        "\u200B<@!{}>: Sorry, you need `{}` access to use "
+                        "that command.".format(
+                            message.author.id, command.access)
+                    )  # TODO: get rid of zero-width space?
+                    self.logger.info("'{}' (from {} in {}) refused".format(
+                        message.content,
+                        message.author.id,
+                        message.channel)
+                    )
+                    self.logger.info(
+                        "{} only has ACL access level of {}".format(
                             message.author.id,
-                            message.channel)
-                        )
-                        self.logger.info(
-                            "{} only has ACL access level of {}".format(
-                                message.author.id,
-                                self.core.ACL.getAccess(message.author.id))
-                        )
+                            self.core.ACL.getAccess(message.author.id))
+                    )
 
     def register(self, pattern, callback, trigger="", access=0, silent=False,
                  cmd_name=None, doc_brief=None, doc_detail=None, flags=0):

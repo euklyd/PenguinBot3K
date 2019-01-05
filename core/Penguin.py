@@ -52,6 +52,7 @@ class PenguinBot(discord.Client):
         # Setup logger and load config
         self.setup_logger()
         self.config = self.load_config("settings")
+        self.triggers = self.config.trigger
         if (type(self.config.trigger) is tuple or
                 type(self.config.trigger) is list
         ):  # noqa E124
