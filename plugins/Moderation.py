@@ -17,13 +17,17 @@
 from core.Plugin import Plugin
 from core.Decorators import *
 
+import csv
 import datetime
 import discord
+import io
 import json
 import random
 import re
 import requests
 import string
+
+from datetime import datetime
 
 ACCESS = {
     'query': 200,
@@ -430,3 +434,43 @@ class Moderation(Plugin):
             self.logger.info(line)
             reply += line
         self.logger.info(reply)
+
+    @command("^userlist$", access=ACCESS['ban'], name='userlist',
+             doc_brief="`userlist`: Exports a list of all users in the server.")
+    async def userlist(self, msg, arguments):
+        FILENAME = f'/tmp/userlist-{msg.server.name}-{datetime.now()}.csv'
+
+        members = sorted(
+            msg.server.members,
+            key=lambda x: str(x).lower()
+        )
+        user_list = ''
+        csv_export = [[
+            'Discord Name',
+            'Server Nickname',
+            'Discord ID',
+            'Joined (POSIX)',
+            'Joined (UTC)',
+            'Roles'
+        ]]
+        def nick_or_blank(nick):
+            if nick is None:
+                return ''
+            return nick
+        for member in members:
+            csv_export.append([
+                str(member),
+                nick_or_blank(member.nick),
+                member.id,
+                member.joined_at.timestamp(),
+                member.joined_at.strftime('%m/%d/%Y %H:%M:%S'),
+                [role.name for role in member.roles]
+            ])
+        with open(FILENAME, 'w') as f:
+            writer = csv.writer(f, csv.QUOTE_NONNUMERIC)
+            writer.writerows(csv_export)
+        await self.send_file(
+            msg.channel,
+            FILENAME,
+            content=f'Exported {len(members)} members'
+        )
