@@ -841,7 +841,7 @@ class Interview(Plugin):
         opt_outs  = []
         bad_prevs = []
         bots      = []
-        reply = ''
+        reply     = ''
 
         for mention in msg.mentions:
             if mention.id == msg.author.id:
@@ -941,7 +941,11 @@ class Interview(Plugin):
     async def votals(self, msg, arguments):
         votals = {}
         for voter, votes in self.interview.votes.items():
+            if msg.server.get_member(voter) is None:
+                continue
             for vote in votes:
+                if msg.server.get_member(vote) is None:
+                    continue
                 if vote in votals:
                     votals[vote].append(voter)
                 else:
@@ -981,7 +985,9 @@ class Interview(Plugin):
                     if msg.server.get_member(vote[0]) is not None:
                         voter = name_or_default(msg.server.get_member(vote[0]))
                     else:
+                        # This should never happen, but if it does...
                         voter = SERVER_LEFT_MSG
+                        # continue
                     line = votal_fmt.format(
                         voter + ':',
                         len(vote[1]),
@@ -1000,7 +1006,9 @@ class Interview(Plugin):
                     if msg.server.get_member(vote[0]) is not None:
                         voter = name_or_default(msg.server.get_member(vote[0]))
                     else:
+                        # This should never happen, but if it does...
                         voter = SERVER_LEFT_MSG
+                        # continue
                     line = votal_fmt.format(
                         voter + ':',
                         len(vote[1])
