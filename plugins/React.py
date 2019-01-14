@@ -101,3 +101,11 @@ class React(Plugin):
             await self.add_reaction(msg, '🇨🇦')
         else:
             await self.add_reaction(msg, '🇺🇸')
+
+    @filter("^how cute\.*$", name='how cute', server=[
+            '328399532368855041', '436953982322081803', '258160125016014848',
+            '474037724551315456', '459150872371265538', '363831487382028308'])
+    async def how_cute(self, msg, arguments):
+        em = discord.Embed(color=msg.server.get_member(self.core.user.id).color)
+        em.set_image(url='https://cdn.discordapp.com/attachments/510313535998525440/534318002364219392/unknown.png')
+        await self.send_message(msg.channel, embed=em)
