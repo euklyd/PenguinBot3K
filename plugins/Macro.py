@@ -894,7 +894,7 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
 
-    @command("^what ?([A-Za-z ]+)?$", access=-1, name='what custom')
+    @command("^what +([A-Za-z ]+)$", access=-1, name='what custom')
     async def mmquote_custom(self, msg, arguments):
         await self.mmquote(msg, arguments)
 
