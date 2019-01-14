@@ -1031,3 +1031,8 @@ class Interview(Plugin):
             with open(dest, 'w') as votalfile:
                 votalfile.write(txt_reply)
             await self.send_file(msg.channel, dest, content=reply)
+
+    # vanity command for amy
+    @command("^im amy and i hate these commands$")
+    async def amy(self, msg, arguments):
+        await self.send(msg.channel, 'get smoked <:despairamy:392820084739145748>')
