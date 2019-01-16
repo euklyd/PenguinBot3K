@@ -1035,4 +1035,6 @@ class Interview(Plugin):
     # vanity command for amy
     @command("^im amy and i hate these commands$")
     async def amy(self, msg, arguments):
-        await self.send(msg.channel, 'get smoked <:despairamy:392820084739145748>')
+        if (msg.author.id != '145760498997133312'):
+            await self.send_message(msg.channel, "No. No, you're not.")
+        await self.send_message(msg.channel, "get smoked <:despairamy:392820084739145748>")
