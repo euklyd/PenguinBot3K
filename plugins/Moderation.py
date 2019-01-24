@@ -37,10 +37,17 @@ ACCESS = {
     'debug': 1000
 }
 
+GREENTICK = None
+REDTICK = None
+
 
 class Moderation(Plugin):
     async def activate(self):
         self.saved_messages = {}
+        global GREENTICK
+        global REDTICK
+        GREENTICK = self.core.emoji.any_emoji(['greentick'])
+        REDTICK   = self.core.emoji.any_emoji(['redtick'])
         pass
 
     @command("^repeat (.*)", access=ACCESS['anonymous'], name='repeat',
@@ -72,6 +79,7 @@ class Moderation(Plugin):
     async def whisper(self, msg, arguments):
         user = await self.core.get_user_info(arguments[0])
         await self.send_message(user, arguments[1])
+        await self.add_reaction(msg, GREENTICK)
 
     @command("^imgpost <#([0-9]*)>", access=ACCESS['debug'], name='imgpost')
     async def imgpost(self, msg, arguments):
@@ -248,7 +256,9 @@ class Moderation(Plugin):
                 banish = mtg_banish[key]
                 reply = "Geeeeeet **dunked on**, {}!".format(user.mention)
 
-            # self.core.connection.ban_user(server, user, delete_msgs=0) ##FIX?
+            em = discord.Embed(color=msg.server.get_member(self.core.user.id).color)
+            em.set_image(url=banish)
+            await self.send_message(msg.channel, embed=em)
             await self.send_message(msg.channel, banish) ##CHANGE? to upload
             await self.send_message(
                 msg.channel,
