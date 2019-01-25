@@ -33,7 +33,7 @@ ACCESS = {
     'query': 200,
     'pushPop': 300,
     'ban': 900,
-    'anonymous': 900,
+    'anonymous': 999,
     'debug': 1000
 }
 
