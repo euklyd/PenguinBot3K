@@ -705,7 +705,7 @@ class Interview(Plugin):
         if self.interview.active is False and arguments[0] == 'out':
             await self.send_message(
                 msg.channel,
-                "Please don't opt out until votes have been tallied and the"
+                "Please don't opt out until votes have been tallied and the "
                 "next round has begun.")
             return
         if arguments[0] == 'in':
