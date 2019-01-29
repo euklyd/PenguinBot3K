@@ -690,10 +690,14 @@ class Interview(Plugin):
             user = msg.mentions[0]
         else:
             user = msg.author
+        if user.id not in self.interview.user_questions:
+            total_user_qs = 0
+        else:
+            total_user_qs = self.interview.user_questions[user.id]
         reply = '**{}** has asked **{}** `{}` questions out of `{}` total.'.format(
             user,
             self.interview.interviewee,
-            self.interview.user_questions[user.id],
+            total_user_qs,
             self.interview.total_questions
         )
         await self.send_message(msg.channel, reply)
