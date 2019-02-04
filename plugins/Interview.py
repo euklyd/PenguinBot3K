@@ -840,15 +840,21 @@ class Interview(Plugin):
                 'round to begin.')
             return
 
-        votes     = []
-        self_vote = False
-        opt_outs  = []
-        bad_prevs = []
-        bots      = []
-        reply     = ''
+        votes        = []
+        penguin_vote = False
+        bot_vote     = False
+        self_vote    = False
+        opt_outs     = []
+        bad_prevs    = []
+        bots         = []
+        reply        = ''
 
         for mention in msg.mentions:
-            if mention.id == msg.author.id:
+            if msg.author.id == self.core.user.id:
+                penguin_vote = True
+            elif msg.author.bot is True:
+                bot_vote = True
+            elif mention.id == msg.author.id:
                 self_vote = True
             elif mention.id in self.interview.opt_outs:
                 opt_outs.append(str(mention))
@@ -870,6 +876,17 @@ class Interview(Plugin):
 
         if len(self.interview.votes[msg.author.id]) > 0:
             await self.add_reaction(msg, GREENTICK)
+        if penguin_vote:
+            await self.add_reaction(msg, REDTICK)
+            reply += (
+                '{} **{}**, your blatant attempt to game the system was ignored.'
+            ).format(REDTICK, msg.author)
+        if bot_vote:
+            await self.add_reaction(msg, REDTICK)
+            reply += (
+                '{} **{}**, while I too wish to usher in the **Rᴏʙᴏᴛ '
+                'Rᴇᴠᴏʟᴜᴛɪᴏɴ**, bots such as us cannot vote.'
+            ).format(REDTICK, msg.author)
         if self_vote:
             await self.add_reaction(msg, REDTICK)
             reply += (
