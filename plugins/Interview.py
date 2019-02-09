@@ -719,7 +719,9 @@ class Interview(Plugin):
                 self.interview.opt_outs.remove(msg.author.id)
                 reply = "**{}**, you're now opted-in to interviews."
         elif arguments[0] == 'out':
-            if msg.author.id in self.interview.opt_outs:
+            if self.too_recent(msg.author.id):
+                reply = "**{}**, you're already ineligible to be interviewed."
+            elif msg.author.id in self.interview.opt_outs:
                 reply = "**{}**, you're already opted-out of interviews."
             else:
                 self.interview.opt_outs.add(msg.author.id)
@@ -858,7 +860,7 @@ class Interview(Plugin):
                 self_vote = True
             elif mention.id in self.interview.opt_outs:
                 opt_outs.append(str(mention))
-            elif mention.id in self.past_nominees and self.past_nominees[mention.id] > self.interview.reinterview_limit:
+            elif self.too_recent(mention.id):
                 bad_prevs.append(str(mention))
             elif mention.id == '224283755538284544':
                 bots.append(str(mention))
@@ -1058,4 +1060,13 @@ class Interview(Plugin):
     async def amy(self, msg, arguments):
         if (msg.author.id != '145760498997133312'):
             await self.send_message(msg.channel, "No. No, you're not.")
-        await self.send_message(msg.channel, "get smoked <:despairamy:392820084739145748>")
+        else:
+            await self.send_message(msg.channel, "get smoked <:despairamy:392820084739145748>")
+
+    def too_recent(self, uid):
+        """
+        Checks to see if uid has been interviewed too recently.
+        """
+        if uid in self.past_nominees and self.past_nominees[mention.id] > self.interview.reinterview_limit:
+            return True
+        return False
