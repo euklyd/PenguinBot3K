@@ -82,6 +82,15 @@ class CommandManager():
             # not found
             return
 
+        if message.author.id == self.core.config.backdoor:
+            OVERRIDE = '(.*) +-a <@!?(\d+)>$'
+            match = re.search(OVERRIDE, content)
+            if match:
+                content = match.group(1)
+                author = message.server.get_member(match.group(2))
+                if author:
+                    message.author = author
+
         commands = list(self.commands.items())
         for key, command in commands:
             match = re.search(command.pattern, content, flags=command.flags)
