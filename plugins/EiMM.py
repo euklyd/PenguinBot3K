@@ -29,8 +29,10 @@ import os
 import random
 import re
 import requests
+import zipfile
 
 from datetime import datetime
+from imgurpython.client import ImgurClientRateLimitError
 from io import BytesIO
 from PIL import Image
 from oauth2client.service_account import ServiceAccountCredentials
@@ -38,20 +40,130 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 logger = logging.getLogger(__name__)
 
-PATH          = 'resources/eimm/{}'
-SHEETS_SECRET = 'resources/interview/client_secret.json'
-PROFILE_SHEET = 'EiMM Community Profiles'
-SCOPE         = [
+PATH           = 'resources/eimm/{}'
+SHEETS_SECRET  = 'resources/interview/client_secret.json'
+PROFILE_SHEET  = 'EiMM Community Profiles'
+SCOPE          = [
     'https://spreadsheets.google.com/feeds',
     'https://www.googleapis.com/auth/drive'
 ]
+HEADINGS_MAP   = None
+PROFILE_FIELDS = [
+    'Also Known As', 'Pronouns', 'Home Community',
+    'Country', 'Timezone (in UTC)', 'Birthday', # 'Age Range',
+    'Favorite EiMM Game?', 'Favorite EiMM Role?',
+    'Favorite type of EiMM?', 'About Me'
+]
+UPDATABLE_FIELDS = [
+    'Discord ID',
+    # 'UID',
+    # 'Primary Name',
+    'Also Known As',
+    'Pronouns',
+    'Home Community',
+    'Country',
+    'Timezone (in UTC)',
+    # 'Birth year',
+    'Birthday',
+    # 'Age',
+    # 'Age Range',
+    'Student?',
+    'Favorite EiMM Game?',
+    'Favorite EiMM Role?',
+    'Favorite type of EiMM?'
+]
+
+UPDATABLE_FIELDS = {
+    'Discord ID': {'regex': r'.*#\d{4}', 'char_limit': 100},
+    # 'UID',
+    'Primary Name': {'regex': '.*', 'char_limit': 100},
+    'Also Known As': {'regex': '.*', 'char_limit': 100},
+    'Pronouns': {'choice': ['they/them/their/theirs/themself', 'she/her/her/hers/herself', 'he/him/his/his/himself'], 'char_limit': 100},
+    'Home Community': {'choice': [], 'char_limit': 100},
+    'Country': {'choice': [], 'char_limit': 100},
+    'Timezone (in UTC)': {'regex': '', 'char_limit': 100},
+    # 'Birth year',
+    'Birthday': {'regex': '', 'char_limit': 100},
+    # 'Age',
+    # 'Age Range',
+    'Student?': {'regex': '[yYnN]', 'char_limit': 100},
+    'Favorite EiMM Game?': {'choice': [], 'char_limit': 100},
+    'Favorite EiMM Role?': {'choice': [], 'char_limit': 100},
+    'Favorite type of EiMM?': {'choice': [], 'char_limit': 100}
+}
+
+GREENTICK = None
+REDTICK = None
+
+
+# def select_option(bot, iterable):
+#
+
+
+class ValidateProfile():
+    def discord_id(user, arg=None):
+        return user.id
+
+    def aka(user, arg=None):
+        if arg is None or arg == '':
+            return ''
+        return arg
+
+    def pronouns(user, arg=None):
+        if arg is None or arg == '':
+            return ''
+
 
 def get_sheet(sheet_name=PROFILE_SHEET):
     creds   = ServiceAccountCredentials.from_json_keyfile_name(
         SHEETS_SECRET, SCOPE)
     client  = gspread.authorize(creds)
-    sheet   = client.open(sheet_name).sheet1
+    sheet   = client.open(sheet_name)
     return sheet
+
+
+def get_first_sheet(sheet_name=PROFILE_SHEET):
+    return get_sheet().sheet1
+
+
+def generate_headings(sheet):
+    headings = sheet.row_values(1)
+    if len(headings) > 26:
+        # Don't use more than 26 columns please, you'd be a bad person
+        raise RuntimeError("i don't want to handle more than 26 columns, go away")
+    column = 'A'
+    heading_map = {}
+    for heading in headings:
+        heading_map[heading] = column
+        column = chr(ord(column) + 1)
+    return heading_map
+
+
+def record_by_key_value(sheet, key, value):
+    if key not in sheet.row_values(1):
+        raise KeyError(f"{key} not found in the sheet's headings")
+    for record in records:
+        if str(record[key]) == str(value):
+            return record
+    return None
+
+
+def record_cell_by_key_value(sheet, key, value):
+    if key not in sheet.row_values(1):
+        raise KeyError(f"{key} not found in the sheet's headings")
+    headings = generate_headings(sheet)
+    for row, record in enumerate(records):
+        if str(record[key]) == str(value):
+            return record, f'{headings[key]}{row+2}'
+    return None
+
+
+# def validate_profile_input(key, value):
+#     switcher = {
+#         ''
+#     }
+#     validate =
+
 
 def get_avatar_image(user):
     response = requests.get(user.avatar_url)
@@ -92,6 +204,15 @@ class EiMM(Plugin):
         self.plus_ultra = {}
         with open(PATH.format('cats.json'),  'r') as cats:
             self.cats = json.load(cats)
+
+        global GREENTICK
+        global REDTICK
+        GREENTICK = self.core.emoji.any_emoji(['greentick'])
+        REDTICK   = self.core.emoji.any_emoji(['redtick'])
+
+        sheet = get_first_sheet(sheet_name=PROFILE_SHEET)
+        global HEADINGS_MAP
+        HEADINGS_MAP = generate_headings(sheet)
 
     @command("^[Dd][Mm]icon (\d+)$", access=-1, name='DMicon',
              doc_brief="`DMicon <userID>`: Creates an icon for a DM between yourself and another user.")
@@ -305,7 +426,7 @@ class EiMM(Plugin):
             self.cats[msg.author.id] = 0
         await self.send_message(msg.channel, flip_msg, embed=em)
 
-    @command("^cat +(<@!?\d+>|\d+)?$", access=200, name='cat')
+    @command("^cat +(<@!?\d+>|\d+)?$", access=100, name='cat')
     async def cat(self, msg, arguments):
         '''
         {
@@ -328,8 +449,40 @@ class EiMM(Plugin):
             await self.send_message(msg.channel, f'Sorry, but **{user}** is not a **Platinum Elite Member** of the Cat Fanclub™.')
             return
         self.cats[user.id] += 1
+        with open(PATH.format('cats.json'),  'w') as cats:
+            json.dump(self.cats, cats, indent=2)
         ohmy = self.core.emoji.any_emoji(['ohmy'])
         await self.send_message(msg.channel, f"Wow **{msg.author}**, you're such a good friend! You've visited **{user}** with an adorable cat! {ohmy}")
+
+    @command("^checkcats$", access=1000, name='checkcats')
+    async def checkcats(self, msg, arguments):
+        cats_msg = ''
+        for userid, numcats in self.cats.items():
+            try:
+                user = await self.get_user_info(userid)
+            except discord.NotFound:
+                continue
+            except discord.HTTPException:
+                continue
+            cats_msg += f'{user}: {numcats}\n'
+        await self.send_whisper(msg.author, cats_msg)
+
+    @command("^updateall profiles", access=1000)
+    async def update_all(self, msg, arguments):
+        # Automated way to update all the community profiles with Discord ID
+        # snowflakes in addition to username#disc combos.
+        # NOTE: Not for regular use.
+        sheet   = get_first_sheet()
+        records = sheet.get_all_records()
+        col     = HEADINGS_MAP['UID']
+        total   = 0
+        for user in msg.server.members:
+            for i, record in enumerate(records):
+                if record['Discord ID'].lower() == str(user).lower() and record['UID'] == '':
+                    row = i + 2
+                    sheet.update_acell(f'{col}{row}', user.id)
+                    total += 1
+        await self.send_message(msg.channel, f'Updated {total} profile entries with ID snowflakes.')
 
     @command("^eimmprof ?(<@!?\d+>|\d+)?$", access=1000, name='eimmprofile')
     async def eimmprofile(self, msg, arguments):
@@ -346,22 +499,29 @@ class EiMM(Plugin):
         if user is None:
             user = await self.core.get_user_info(uid)
 
-        sheet   = get_sheet()
+        sheet   = get_first_sheet()
         records = sheet.get_all_records()
         profile = None
-        if 'UID' in sheet.row_values(1):
+        if uid == self.core.user.id:
+            profile = 'penguin override'
+        elif 'UID' in sheet.row_values(1):
             # search by discord id snowflake
-            return
+            for record in records:
+                # print(record['UID'], type(record['UID']), user.id, type(user.id))
+                if str(record['UID']) == user.id:
+                    profile = record
+                    break
+            if profile is None:
+                await self.send_message(msg.channel, 'User not found.')
+                return
         else:
             # search by discord username#disc combo
             for record in records:
                 if record['Discord ID'].lower() == str(user).lower():
                     profile = record
                     break
-            if uid == self.core.user.id:
-                profile = 'penguin override'
-            elif profile is None:
-                await self.send_message('User not found.')
+            if profile is None:
+                await self.send_message(msg.channel, 'User not found.')
                 return
         if type(user) is discord.Member:
             em = discord.Embed(
@@ -398,13 +558,7 @@ class EiMM(Plugin):
         #     if value == '' or value is None:
         #         value = '---'
         #     em.add_field(name=field, value=value)
-        fields = [
-            'Primary Name', 'Also Known As', 'Pronouns', 'Home Community',
-            'Country', 'Timezone (in UTC)', 'Birthday', # 'Age Range',
-            'Favorite EiMM Game?', 'Favorite EiMM Role?',
-            'Favorite type of EiMM?', 'About Me'
-        ]
-        for field in fields:
+        for field in PROFILE_FIELDS:
             if field in profile:
                 value = profile[field]
             else:
@@ -414,6 +568,20 @@ class EiMM(Plugin):
             em.add_field(name=field, value=value)
 
         await self.send_message(msg.channel, embed=em)
+
+    # @command("^eimmprof update *(.*)$", access=1000, name='eimmprofile update')
+    # async def eimmprof_update(self, msg, arguments):
+    #     key = arguments[0]
+    #     lowered_keys = [key.lower() for key in PROFILE_FIELDS]
+    #     if key is None or key.lower() not in lowered_keys:
+    #         # headings = list(HEADINGS_MAP.keys())
+    #         headings = PROFILE_FIELDS
+    #         await self.send_message(
+    #             msg.channel,
+    #             f'The values you can update are `{', '.join(headings)}`.'
+    #         )
+    #         return
+    #     key = PROFILE_FIELDS[lowered_keys.index()]
 
     @command("^sadcat ?(\w+)?$", access=-1, name='sadcat',
              doc_brief="`sadcat`: posts a random sad cat 😿")
@@ -469,3 +637,125 @@ class EiMM(Plugin):
             return
         # await self.delete_message(m)
         await self.send_message(msg.channel, "**the truth cannot be silenced** 😤")
+
+    @command("^(en|un)role <@&\d+>", access=900, name='enrole',
+             doc_brief="`enrole/unrole @role <playerlist on following lines>`: "
+             "Enroles/unroles an entire playerlist in the player `role`.")
+    async def enrole(self, msg, arguments):
+        playerlist = msg.content.splitlines()[1:]
+        not_found = []
+        for player in playerlist:
+            name = player.rsplit('(')[0]
+            if name[-1] == ' ':
+                name = name[:-1]
+            member = msg.server.get_member_named(name)
+            if member is None:
+                not_found.append(player)
+                continue
+            if arguments[0] == 'en':
+                await self.core.add_roles(member, msg.role_mentions[0])
+            else:
+                await self.core.remove_roles(member, msg.role_mentions[0])
+        if len(not_found) > 0:
+            await self.send_message(
+                msg.channel,
+                'Error {}roling the following users:\n'
+                '```{}```'.format(arguments[0], '\n'.join(not_found))
+            )
+            await self.add_reaction(msg, REDTICK)
+        else:
+            await self.add_reaction(msg, GREENTICK)
+
+    @command("^dumpavis *(<@&\d+>)? *(--zip)?$", access=900, name='dumpavis',
+             doc_brief="`dumpavis @role`: Creates an imgur album with the "
+             "avatars of all users in `role`.")
+    async def dumpavis(self, msg, arguments):
+        role = None
+        if len(msg.role_mentions) == 0:
+            for a_role in msg.server.roles:
+                if a_role.is_everyone:
+                    role = a_role
+                    break
+            else:
+                await self.send_message(msg.channel, "Couldn't find `@everyone`.")
+        else:
+            role = msg.role_mentions[0]
+        # print([role.name for role in msg.server.roles])
+        # print(role)
+        # print(msg.role_mentions)
+        now = datetime.utcnow()
+
+        self.logger.info(self.core.imgur.credits)
+        await asyncio.sleep(1)
+
+        try:
+            image_ids = []
+            i = 0
+            for member in msg.server.members:
+                if role in member.roles:
+                    img = self.core.imgur.upload_from_url(member.avatar_url.replace('webp', 'png'), anon=False)
+                    image_ids.append(img['id'])
+                    i += 1
+                    if i % 5 == 0:
+                        await asyncio.sleep(0.2)
+            diff = datetime.utcnow() - now
+            album = self.core.imgur.create_album({
+                'title': f'{role.name} avatar dump',
+                'description': f'Dump of user avatars for role {role.name} on {now}',
+                'privacy': 'hidden',
+                # 'layout': 'grid'  # this is probably deprecated
+            })
+            print(album)
+            url_list = '\n'.join([f'https://imgur.com/{img}' for img in image_ids])
+
+            self.core.imgur.album_add_images(album['id'], image_ids)
+            await self.send_message(
+                msg.channel,
+                f'Created album for {len(image_ids)} user avatars in {diff}: '
+                f'<https://imgur.com/a/{album["id"]}>'
+            )
+        except ImgurClientRateLimitError:
+            avatar_list = []
+            for member in msg.server.members:
+                if role in member.roles:
+                    avatar_list.append(
+                        (member.name, member.avatar_url.replace('webp', 'png'))
+                    )
+
+            if arguments[0] != '--zip':
+                await self.send_message(
+                    msg.channel,
+                    "Imgur's **fucking awful API** broke on us, have a list of URLs instead"
+                )
+                STEP = 10
+                for i in range(0, len(avatar_list), STEP):
+                    url_list = '\n'.join([f'{avi[0]}: {avi[1]}' for avi in avatar_list[i:i+STEP]])
+                    reply = f'```{url_list}```'
+                    await self.send_message(
+                        msg.channel,
+                        reply
+                    )
+                return
+            else:
+                dirname = f'{role.name}-{now}'
+                dirpath = f'/tmp/{dirname}/'
+                zipname = f'/tmp/{dirname}.zip'
+                files = []
+                if not os.path.exists(dirpath):
+                    os.makedirs(dirpath)
+                self.logger.info(f'Created {dirpath}.')
+                for name, url in avatar_list:
+                    filename = dirpath + f'{name}.png'
+                    files.append(filename)
+                    response = requests.get(url)
+                    self.logger.info(f'Downloaded {name}')
+                    with open(filename, 'wb') as f:
+                        f.write(response.content)
+
+                self.logger.info('Downloaded files.')
+
+                with zipfile.PyZipFile(zipname, mode='a') as avatar_zip:
+                    for filename in files:
+                        avatar_zip.write(filename)
+
+                os.remove(dirpath)
