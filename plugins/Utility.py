@@ -42,8 +42,11 @@ class Utility(Plugin):
              "or tails. Images of many types of coins are included.")
     async def flip(self, msg, arguments):
         coin = random.randint(0, 10)
-        user = msg.server.get_member(self.core.user.id)
-        em = discord.Embed(color=user.color)
+        if msg.server is not None:
+            user = msg.server.get_member(self.core.user.id)
+            em = discord.Embed(color=user.color)
+        else:
+            em = discord.Embed()
         em.set_footer(
             text="",
             icon_url=user.avatar_url
@@ -154,14 +157,14 @@ class Utility(Plugin):
         random.shuffle(items)
         await self.send_message(msg.channel, items)
 
-    @command("^avatar <@!?([0-9]*)>$", access=-1, name='avatar',
+    @command("^avatar (?:<@!?)?([0-9]+)(?:>)?$", access=-1, name='avatar',
              doc_brief="`avatar @<user>`: posts a link to `<user>`'s avatar")
     async def avatar(self, msg, arguments):
         """`avatar @<user>`: posts a link to `<user>`'s avatar"""
         if (len(msg.mentions) == 0):
             # msg.mentions will be empty if the mentioned user isn't a member
             # of the server
-            user = await self.core.get_user_info(arguments[0])
+            user = msg.server.get_member(arguments[0])
         else:
             user = msg.mentions[0]
         self.logger.info(user.avatar)
@@ -287,8 +290,8 @@ class Utility(Plugin):
         if arguments[0] == 'a':
             em_url = self.core.emoji.gif_url(arguments[2])
             ext = 'gif'
-        dest = "/tmp/{arg[1]}_{arg[2]}-{usr}.{ext}".format(
-            arg=arguments, usr=msg.author.nick, ext=ext
+        dest = "/tmp/{arg}_{uid}-{usr}.{ext}".format(
+            arg=arguments[1], uid=msg.author.id, usr=msg.author.nick, ext=ext
         )
         with open(dest, 'wb') as imgfile:
             req = requests.get(em_url)
