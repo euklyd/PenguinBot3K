@@ -408,7 +408,8 @@ class EiMM(Plugin):
             em.description = 'https://www.youtube.com/watch?v=AH4JiIcDvkc'
         if plus_ultra:
             flip_msg = flip_msg.upper()
-        if msg.author.id in self.cats and self.cats[msg.author.id] > 0 and victim.id in self.cats['cat bearers']:
+        # if msg.author.id in self.cats and self.cats[msg.author.id] > 0 and victim.id in self.cats['cat bearers']:
+        if msg.author.id in self.cats and self.cats[msg.author.id] > 0:
             await self.send_message(msg.channel, f"You're currently immobilized by `{self.cats[msg.author.id]}` adorable, innocent kitties. Do you *really* want to disturb them...? `[y/n]`")
             m = await self.core.wait_for_message(
                 timeout=300,
