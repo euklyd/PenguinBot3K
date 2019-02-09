@@ -1067,6 +1067,6 @@ class Interview(Plugin):
         """
         Checks to see if uid has been interviewed too recently.
         """
-        if uid in self.past_nominees and self.past_nominees[mention.id] > self.interview.reinterview_limit:
+        if uid in self.past_nominees and self.past_nominees[uid] > self.interview.reinterview_limit:
             return True
         return False
