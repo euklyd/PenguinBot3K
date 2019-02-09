@@ -95,7 +95,7 @@ class ACL(Plugin):
             em.add_field(name=plugin, value=plugin_accesses[plugin])
         await self.send_message(msg.channel, embed=em)
 
-    @command("^whoami", access=-1, name='whoami',
+    @command("^whoami$", access=-1, name='whoami',
              doc_brief="`whoami`: prints your own access level.")
     async def whoami(self, msg, arguments):
         access = self.core.ACL.getAccess(msg.author.id)
