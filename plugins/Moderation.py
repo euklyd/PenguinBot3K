@@ -57,13 +57,15 @@ class Moderation(Plugin):
         await self.send_message(msg.channel, arguments[0])
         await self.delete_message(msg)
 
-    @command("^announce <#([0-9]*)> (.*)", access=ACCESS['anonymous'],
+    @command("^(announce <#([0-9]*)> )(.*)", access=ACCESS['anonymous'],
              name='announce',
              doc_brief="`announce #<channel> <message>`: Sends `<message>` "
              "to `<channel>` anonymously.")
     async def announce(self, msg, arguments):
-        channel = self.core.get_channel(arguments[0])
-        await self.send_message(channel, arguments[1])
+        reply = msg.content[len(arguments[0]):]
+        channel = self.core.get_channel(arguments[1])
+        await self.send_message(channel, reply)
+        await self.add_reaction(msg, GREENTICK)
 
     @command("^announce -d <#([0-9]*)> (.*)", access=ACCESS['anonymous'],
              name='announce', doc_brief="`announce -d #<channel> <message>`: "
@@ -74,11 +76,12 @@ class Moderation(Plugin):
         await self.send_message(channel, arguments[1])
         await self.delete_message(msg)
 
-    @command("^whisper (?:<@!?)?([0-9]+)>? (.*)", access=ACCESS['debug'],
+    @command("^(whisper (?:<@!?)?([0-9]+)>? )(.*)", access=ACCESS['debug'],
              name='whisper')
     async def whisper(self, msg, arguments):
-        user = await self.core.get_user_info(arguments[0])
-        await self.send_message(user, arguments[1])
+        reply = msg.content[len(arguments[0]):]
+        user = await self.core.get_user_info(arguments[1])
+        await self.send_message(user, reply)
         await self.add_reaction(msg, GREENTICK)
 
     @command("^imgpost <#([0-9]*)>", access=ACCESS['debug'], name='imgpost')
