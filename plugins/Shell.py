@@ -56,6 +56,11 @@ class Shell(Plugin):
         self.logger.info("fall thru: {}".format(match.groups()[0]))
         return match.groups()[0]
 
+    def check_await(self, cmd):
+        if cmd.startswith('await '):
+            return True
+        return False
+
     def foo(self):
         print("foo")
 
@@ -78,6 +83,8 @@ class Shell(Plugin):
                 channel=msg.channel
             )
             cmd = self.check_cmd(cmd)
+        exec('import discord')
+        exec('import asyncio')
         while (not self.close_shell.done() and not cmd.startswith("exit")):
             # global result
             self.result = None
@@ -85,31 +92,38 @@ class Shell(Plugin):
             # exec(cmd) in globals()
             # meirl = self
             # myvar = "this is my var"
-            rescmd = (
-                "import discord\n"
-                # "global result\n"
-                "self.result = {cmd}\n"
-                # "reply = '```{{}}```'.format(result)\n"
-                # "print(myvar)\n"
-                # "myvar = 'goodbye'\n"
-                # "print(myvar)\n"
-                # "print(meirl)\n"
-                # "print('openshell = {{}}'.format(meirl.openshell))\n"
-                # "meirl.foo()\n"
-                # "print(meirl.__dir__())\n"
-                # "print(meirl.send_message)\n"
-                # "func = meirl.__getattribute__('send_message')\n"
-                # "print(func)\n"
-                # "await self.bar()\n"
-                # "await func(msg.channel, reply)\n"
-                # "await meirl.send_message(msg.channel, reply)\n"
-            ).format(cmd=cmd)
+            # rescmd = (
+            #     "import discord\n"
+            #     "import asyncio\n"
+            #     # "global result\n"
+            #     "self.result = {cmd}\n"
+            #     # "reply = '```{{}}```'.format(result)\n"
+            #     # "print(myvar)\n"
+            #     # "myvar = 'goodbye'\n"
+            #     # "print(myvar)\n"
+            #     # "print(meirl)\n"
+            #     # "print('openshell = {{}}'.format(meirl.openshell))\n"
+            #     # "meirl.foo()\n"
+            #     # "print(meirl.__dir__())\n"
+            #     # "print(meirl.send_message)\n"
+            #     # "func = meirl.__getattribute__('send_message')\n"
+            #     # "print(func)\n"
+            #     # "await self.bar()\n"
+            #     # "await func(msg.channel, reply)\n"
+            #     # "await meirl.send_message(msg.channel, reply)\n"
+            # )
             # self.logger.info(globals())
             # exec(cmd) in globals()
             # self.logger.info(locals())
             # exec(cmd) in locals()
             try:
-                exec(rescmd)
+                if self.check_await(cmd):
+                    print('awaiting!')
+                    self.result = await eval(cmd[6:])
+                else:
+                    print('not awaiting!')
+                    exec(f'self.result = {cmd}')
+                    # result = eval(cmd)
             except Exception as e:
                 try:
                     exec(cmd)
@@ -124,6 +138,13 @@ class Shell(Plugin):
                 except Exception as e:
                     reply = "```py\n{}\n```".format(e)
                     await self.send_message(msg.channel, reply)
+            # else:
+            #     reply = "```py\nNone\n```"
+            #     try:
+            #         await self.send_message(msg.channel, reply)
+            #     except Exception as e:
+            #         reply = "```py\nNone\n```"
+            #         await self.send_message(msg.channel, reply)
             cmd = None
             while (cmd is None):
                 cmd, bad_task = await asyncio.wait(
