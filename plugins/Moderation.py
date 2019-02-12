@@ -257,18 +257,17 @@ class Moderation(Plugin):
                 reply = mtg_banish[key][1]
             else:
                 banish = mtg_banish[key]
-                reply = "Geeeeeet **dunked on**, {}!".format(user.mention)
+                reply = f'Geeeeeet **dunked on**, {user}!'
 
             em = discord.Embed(color=msg.server.get_member(self.core.user.id).color)
             em.set_image(url=banish)
             await self.send_message(msg.channel, embed=em)
-            await self.send_message(msg.channel, banish) ##CHANGE? to upload
             await self.send_message(
                 msg.channel,
                 reply
             )
             await self.ban_user(user, msg.server, delete_message_days=0)
-            self.logger.info("successfully banned {}".format(user.nick))
+            self.logger.info(f'Successfully banned {user}')
 
     @command("^nuke <@!?([0-9]+)> ([0-7])$", access=ACCESS["ban"], name='nuke',
              doc_brief="`nuke @<user> <days>`: bans `<user>` from the current "
@@ -281,7 +280,7 @@ class Moderation(Plugin):
         if (int(self.core.ACL.getAccess(msg.author)) <= int(self.core.ACL.getAccess(user))):
             await self.send_message(
                 msg.channel,
-                "Nice try, <@!{}>. <@!100165629373337600> has been notified."
+                f"Nice try, {msg.author.mention}. <@!100165629373337600> has been notified."
             )
             return
         else:
@@ -290,7 +289,7 @@ class Moderation(Plugin):
 
             await self.core.ban(user, delete_message_days=delete_days)
             await self.send_message(msg.channel, banish) ##CHANGE? to upload
-            await self.send_message(msg.channel, "Geeeeeet **dunked on**, <@!{}>!".format(user))
+            await self.send_message(msg.channel, f'Geeeeeet **dunked on**, {user}!')
 
     @command("^push ([0-9]+)$", access=ACCESS['pushPop'], name='push',
              doc_brief="`push <number>`: saves the last `<number>` messages "
