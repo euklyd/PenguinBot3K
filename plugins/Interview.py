@@ -385,7 +385,7 @@ class Interview(Plugin):
                  )
         await self.send_message(msg.channel, reply)
 
-    @command("^iv setup answers", access=700, name='iv setup answers',
+    @command("^iv setup answers$", access=700, name='iv setup answers',
              doc_brief="`iv setup answers`: Sets the answer channel to the "
              "current channel.")
     async def setup_answer_channel(self, msg, arguments):
@@ -578,7 +578,7 @@ class Interview(Plugin):
             await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
 
 
-    @command("^ans(?:wer)? ?(<@!?\d+>|\d+)?", access=-1, name='interview answer',
+    @command("^ans(?:wer)? ?(<@!?\d+>|\d+)?$", access=-1, name='interview answer',
              doc_brief="`answer`: Answers as many questions as possible from "
              "a single user.")
     async def answer(self, msg, arguments):
