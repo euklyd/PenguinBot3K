@@ -401,7 +401,7 @@ class Interview(Plugin):
                  achn=self.interview.answer_channel.mention)
         await self.send_message(msg.channel, reply)
 
-    @command("^ask[ \n]+(.+)", access=-1, name='ask',
+    @command("^ask[ \n](.+)", access=-1, name='ask',
              doc_brief="`ask <question>`: Submits <question> for the current "
              "interview.")
     async def ask(self, msg, arguments):
@@ -535,6 +535,12 @@ class Interview(Plugin):
         em = interview_embed(composite_question, self.interview, msg)
         await self.send_message(self.interview.question_channel, embed=em)
         await self.add_reaction(msg, GREENTICK)
+
+    @command("^fmk[ \n](.+)", access=-1, name='fmk', doc_detail='yw toren')
+    async def fmk(self, msg, arguments):
+        arguments[0] = 'fmk ' + arguments[0]
+        msg.content = 'ask ' + msg.content
+        self.ask(msg, arguments)
 
     async def post_cluster(self, em, sheet, dest_channel, cluster, answered_qs):
         for n, r in cluster:
