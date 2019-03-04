@@ -540,7 +540,7 @@ class Interview(Plugin):
     async def fmk(self, msg, arguments):
         arguments = ['fmk ' + arguments[0]]
         msg.content = 'ask ' + msg.content
-        self.ask(msg, arguments)
+        await self.ask(msg, arguments)
 
     async def post_cluster(self, em, sheet, dest_channel, cluster, answered_qs):
         for n, r in cluster:
