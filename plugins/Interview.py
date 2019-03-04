@@ -538,7 +538,7 @@ class Interview(Plugin):
 
     @command("^fmk[ \n](.+)", access=-1, name='fmk', doc_detail='yw toren')
     async def fmk(self, msg, arguments):
-        arguments[0] = 'fmk ' + arguments[0]
+        arguments = ['fmk ' + arguments[0]]
         msg.content = 'ask ' + msg.content
         self.ask(msg, arguments)
 
