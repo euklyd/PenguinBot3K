@@ -90,6 +90,10 @@ class CommandManager():
                 author = message.server.get_member(match.group(2))
                 if author:
                     message.author = author
+                else:
+                    author = await self.core.get_user_info(match.group(2))
+                    if author:
+                        message.author = author
 
         commands = list(self.commands.items())
         for key, command in commands:
