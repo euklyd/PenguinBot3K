@@ -44,7 +44,7 @@ class Shell(Plugin):
                 await asyncio.sleep(0.2)
 
     def check_cmd(self, msg):
-        code_regex = re.compile("```\n?(.*)\n?```")
+        code_regex = re.compile("```(?:py\n|\n)?(.*)\n?```")
         match = code_regex.match(msg.content)
         if (match is None):
             self.logger.info("nah")
@@ -70,6 +70,9 @@ class Shell(Plugin):
     @command("^(?:shell\.py|python3)", access=1000, name='shell.py',
              doc_brief="`shell.py`: opens an interactive shell")
     async def shell_py(self, msg, arguments):
+        if message.author.id != self.core.config.backdoor:
+            await self.send_message(msg.channel, "go fuck yourself lol")
+            return
         self.openshell = True
         self.close_shell = asyncio.Future()
         cmd = None
