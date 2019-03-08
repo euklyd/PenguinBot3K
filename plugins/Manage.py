@@ -47,10 +47,10 @@ class Manage(Plugin):
         await self.core.wait_until_login()
         self.login_time = time.time()
 
-    @command("^ping", access=ACCESS["ping"], name='ping',
+    @command("^([Pp])ing", access=ACCESS["ping"], name='ping',
              doc_brief="`ping`: prints a simple response.")
     async def ping(self, msg, arguments):
-        await self.send_message(msg.channel, "Pong")
+        await self.send_message(msg.channel, f'{arguments[0]}ong')
 
     @command("^shutdown$", access=ACCESS['manage'], name='shutdown',
              doc_brief="`shutdown`: Cleanly exits all running processes and "
@@ -276,10 +276,12 @@ class Manage(Plugin):
         permissions_map = {
             # These are either harmless or required to
             # carry out basic non-moderation functions.
+            'ADMINISTRATOR':        0x00000008,
             'ADD_REACTIONS':        0x00000040,
             'READ_MESSAGES':        0x00000400,
             'SEND_MESSAGES':        0x00000800,
             'SEND_TTS_MESSAGES':    0x00001000,
+            'MANAGE_MESSAGES':      0x00002000,
             'EMBED_LINKS':          0x00004000,
             'ATTACH_FILES':         0x00008000,
             'READ_MESSAGE_HISTORY': 0x00010000,
@@ -297,6 +299,7 @@ class Manage(Plugin):
             # permissions_map['READ_MESSAGE_HISTORY']
             'READ_MESSAGES',
             'SEND_MESSAGES',
+            'MANAGE_MESSAGES',
             'EMBED_LINKS',
             'READ_MESSAGE_HISTORY'
         ]
