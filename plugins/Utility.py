@@ -164,7 +164,8 @@ class Utility(Plugin):
         if (len(msg.mentions) == 0):
             # msg.mentions will be empty if the mentioned user isn't a member
             # of the server
-            user = msg.server.get_member(arguments[0])
+            user = await self.get_user_info(arguments[0])
+            # msg.server.get_member(arguments[0])
         else:
             user = msg.mentions[0]
         self.logger.info(user.avatar)
