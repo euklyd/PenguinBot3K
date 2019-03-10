@@ -70,7 +70,7 @@ class Shell(Plugin):
     @command("^(?:shell\.py|python3)", access=1000, name='shell.py',
              doc_brief="`shell.py`: opens an interactive shell")
     async def shell_py(self, msg, arguments):
-        if message.author.id != self.core.config.backdoor:
+        if msg.author.id != self.core.config.backdoor:
             await self.send_message(msg.channel, "go fuck yourself lol")
             return
         self.openshell = True
