@@ -3,6 +3,7 @@ discord.py>=0.15.0
 google-api-python-client
 gspread
 imgurpython
+munkres
 mutagen
 oauth2client
 peewee==2.8.0

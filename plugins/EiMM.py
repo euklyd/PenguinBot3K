@@ -26,6 +26,7 @@ import json
 import logging
 import operator
 import os
+import pprint
 import random
 import re
 import requests
@@ -34,6 +35,7 @@ import zipfile
 from datetime import datetime
 from imgurpython.client import ImgurClientRateLimitError
 from io import BytesIO
+from munkres import Munkres, DISALLOWED
 from PIL import Image
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -760,3 +762,131 @@ class EiMM(Plugin):
                         avatar_zip.write(filename)
 
                 os.remove(dirpath)
+
+    @command("^qselect (.*)$", access=900, name='qselect',
+             doc_brief="`qselect <host json>`: Selects the hosts for the "
+             "queue season with the application specified by `host json`.")
+    async def qselect(self, msg, arguments):
+        try:
+            hosts = json.loads(arguments[0])
+        except JSONDecodeError as e:
+            await self.send_message(msg.channel, e)
+            return
+        assignments, picks = mod_bias_queue_algorithm(hosts)
+        for host in picks:
+            for i in range(0, len(host.prefs)):
+                if host.prefs[i] == DISALLOWED:
+                    host.prefs[i] = 'N/A'
+        reply = "**The next season's host slots, in order, are...** 🥁 🥁 🥁"
+        await self.send_message(msg.channel, reply)
+        nums = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Finally']
+        for num, host in zip(nums, assignments):
+            await asyncio.sleep(5.0)
+            reply = f'**{num},** `{host.name}`, with preferences `{host.prefs}`!'
+            await self.send_message(msg.channel, reply)
+        reply = (
+            '*The full list of selected hosts, in priority order, is:*\n'
+            f'```{pprint.pformat(picks)}```'
+            '*("but euklyd, that\'s ugly code formatting", you may say: '
+            'i\'ll fix it later u nerd)*'
+            # f"```{[str(pick) + '\n' for pick in picks]}```"
+        )
+        await self.send_message(msg.channel, reply)
+
+class Host():
+    def __init__(self, name, prefs, prio):
+        self.prefs = []
+        for pref in prefs:
+            if type(pref) is int:
+                self.prefs.append(pref)
+            elif pref == '' or pref is None:
+                self.prefs.append(DISALLOWED)
+            else:
+                self.prefs.append(int(pref))
+
+        self.name   = name
+        self.prio   = prio
+
+    def __repr__(self):
+        prefs = [None if pref == DISALLOWED else pref for pref in self.prefs]
+        return f'<name={self.name}, prefs={prefs}, prio={self.prio}>'
+
+    def __str__(self):
+        return f'{self.name} [{self.prio}]: {self.prefs}'
+
+def mod_bias_host_selection(hosts, priority=2):
+    hosts = [
+        Host(
+            name, prefs['prefs'], prefs['priority']
+        ) for name, prefs in hosts.items()
+    ]
+
+    # Select n=2 hosts from the hosts with priority
+    prio_hosts = [
+        host for host in hosts if host.prio > 0
+    ]
+    if len(prio_hosts) > priority:
+        picks = random.sample(prio_hosts, priority)
+    else:
+        # If there are fewer than 2 prio hosts, use as many as possible
+        picks = prio_hosts
+
+    # Don't modify the original list
+    hosts_copy = list(hosts)
+    for host in picks:
+        hosts_copy.remove(host)
+
+    # Separate out the rest of the hosts into normal and low priorities
+    normal_hosts = [
+        host for host in hosts_copy if host.prio >= 0
+    ]
+    low_hosts = [
+        host for host in hosts_copy if host.prio < 0
+    ]
+    random.shuffle(normal_hosts)
+    random.shuffle(low_hosts)
+
+    # The selected hosts for the six queue slots per season are:
+    # n=2 priority hosts +
+    # m=4 other hosts (may or may not have prio)
+    # If n<2, m increases to compensate.
+    picks = picks + normal_hosts + low_hosts
+
+    return picks
+
+def mod_bias_hungarian_algorithm(picks, total=6):
+    '''
+    tl;dr Numbers go in, numbers come out.
+
+    Uses the Hungarian Algorithm, aka Munkres Assignment Algorithm,
+    to assign hosts to slots with maximum respect for preferences:
+    https://en.wikipedia.org/wiki/Hungarian_algorithm
+    '''
+    random.shuffle(picks)
+
+    matrix = []
+    for pick in picks:
+        matrix.append(pick.prefs)
+    m = Munkres()
+    indices = m.compute(matrix)
+
+    assignments = [None]*(total)
+    for row, col in indices:
+        assignments[col] = picks[row]
+
+    return assignments
+
+def mod_bias_queue_algorithm(hosts, priority=2, total=6):
+    '''
+    Inputs:
+    - dict of hosts, in the format specified at the top of this file.
+    - (optional) number of hosts selected at a higher priority (default 2)
+    - (optional) total number of hosts to select (default 6)
+
+    Returns:
+    - Ordered list of assigned hosts (first in the list gets slot 1, etc.)
+    - Ordered list of selected hosts, in case manual assignment is needed
+    '''
+    picks = mod_bias_host_selection(hosts, priority=priority)
+    assignments = mod_bias_hungarian_algorithm(picks[:total])
+    return assignments, picks
