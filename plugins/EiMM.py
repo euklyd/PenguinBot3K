@@ -34,6 +34,7 @@ import zipfile
 
 from datetime import datetime
 from imgurpython.client import ImgurClientRateLimitError
+from imgurpython.helpers.error import ImgurClientError
 from io import BytesIO
 from munkres import Munkres, DISALLOWED
 from PIL import Image
@@ -696,7 +697,9 @@ class EiMM(Plugin):
             i = 0
             for member in msg.server.members:
                 if role in member.roles:
-                    img = self.core.imgur.upload_from_url(member.avatar_url.replace('webp', 'png'), anon=False)
+                    avatar_url = member.avatar_url.replace('webp', 'png')
+                    self.logger.info(f'uploading {avatar_url}')
+                    img = self.core.imgur.upload_from_url(avatar_url, anon=False)
                     image_ids.append(img['id'])
                     i += 1
                     if i % 5 == 0:
@@ -717,7 +720,7 @@ class EiMM(Plugin):
                 f'Created album for {len(image_ids)} user avatars in {diff}: '
                 f'<https://imgur.com/a/{album["id"]}>'
             )
-        except ImgurClientRateLimitError:
+        except (ImgurClientRateLimitError, ImgurClientError) as e:
             avatar_list = []
             for member in msg.server.members:
                 if role in member.roles:
@@ -728,7 +731,7 @@ class EiMM(Plugin):
             if arguments[0] != '--zip':
                 await self.send_message(
                     msg.channel,
-                    "Imgur's **fucking awful API** broke on us, have a list of URLs instead"
+                    f"Imgur's **fucking awful API** broke on us: `{e}`\nHave a list of URLs instead:"
                 )
                 STEP = 10
                 for i in range(0, len(avatar_list), STEP):
