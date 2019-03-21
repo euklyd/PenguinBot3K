@@ -454,7 +454,7 @@ class EiMM(Plugin):
             return
         self.cats[user.id] += 1
         with open(PATH.format('cats.json'),  'w') as cats:
-            json.dump(self.cats, cats, indent=2)
+            json.dump(self.cats, cats, indent=4)
         ohmy = self.core.emoji.any_emoji(['ohmy'])
         await self.send_message(msg.channel, f"Wow **{msg.author}**, you're such a good friend! You've visited **{user}** with an adorable cat! {ohmy}")
 
