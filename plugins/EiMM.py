@@ -430,7 +430,7 @@ class EiMM(Plugin):
             self.cats[msg.author.id] = 0
         await self.send_message(msg.channel, flip_msg, embed=em)
 
-    @command("^cat +(<@!?\d+>|\d+)?$", access=100, name='cat')
+    @command("^cat +(<@!?\d+>|\d+)?$", access=-1, name='cat')
     async def cat(self, msg, arguments):
         '''
         {
