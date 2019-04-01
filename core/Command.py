@@ -88,6 +88,8 @@ class CommandManager():
             if match:
                 content = match.group(1)
                 author = message.server.get_member(match.group(2))
+                # strip off the -a mention
+                message.mentions = message.mentions[:-1] 
                 if author:
                     message.author = author
                 else:
