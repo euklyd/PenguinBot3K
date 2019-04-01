@@ -753,7 +753,7 @@ class Interview(Plugin):
              doc_brief="`opt list`: List users opted out of interviews.")
     async def opt_list(self, msg, arguments):
         users = [
-            msg.server.get_member(user) for user in self.interview.opt_outs
+            msg.server.get_member(user) for user in self.interview.opt_outs if msg.server.get_member(user) is not None
         ]
         users = sorted(users, key=lambda x: name_or_default(x).lower())
         reply = '__**Opted-Out Users**__```'
