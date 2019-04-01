@@ -571,7 +571,10 @@ class Interview(Plugin):
         for num, record in answers:
             record['Answer'] = record['Answer'].rstrip()
             char_count += len(record['Question']) + len(record['Answer'])
-            if char_count > 5000:
+            # Embed character limit is 6000c and there's a lot of metadata
+            # There's a maximum embed field count (25, but I'm unsure how
+            # it's shared), and I'd rather not hit it.
+            if char_count > 5000 or len(cluster) > 20:
                 # Post an answer cluster
                 await self.post_cluster(em, sheet, dest_channel, cluster, answered_qs)
                 # Clear the queued cluster after posting
