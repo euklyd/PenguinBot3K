@@ -843,7 +843,7 @@ class Macro(Plugin):
         await self.send_message(msg.channel, d_char)
         # await self.send_message(msg.channel, superweed) # too many characters
 
-    @command("^what ?(\d+)?$", access=-1, name='what',
+    @command("^what ?([A-Za-z\d ]+)?$", access=-1, name='what',
              doc_brief="`what`: posts a random mega man sprite quote")
     async def mmquote(self, msg, arguments):
         with open(macro_path.format('megaman_quotes.json'), 'r') as whatfile:
@@ -894,9 +894,9 @@ class Macro(Plugin):
         )
         await self.send_message(msg.channel, embed=em)
 
-    @command("^what +([A-Za-z ]+)$", access=-1, name='what custom')
-    async def mmquote_custom(self, msg, arguments):
-        await self.mmquote(msg, arguments)
+    # @command("^what +([A-Za-z ]+)$", access=-1, name='what custom')
+    # async def mmquote_custom(self, msg, arguments):
+    #     await self.mmquote(msg, arguments)
 
     @command("^inspireme$", access=-1, name='inspireme')
     async def inspireme(self, msg, arguments):
