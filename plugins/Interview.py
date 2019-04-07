@@ -376,6 +376,8 @@ class Interview(Plugin):
         )
         newsheet.resize(rows=2)
 
+        self.past_nominees[old_interview.interviewee.id] = datetime.utcnow().replace(tzinfo=timezone.utc)
+
         reply = (
             '**New interview setup:**\n'
             'Interviewee: {user}\n'
