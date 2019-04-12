@@ -171,8 +171,8 @@ class Moderation(Plugin):
         perms = me.permissions_in(channel)
         if not perms.administrator and not perms.manage_channels:
             return
-        if arguments[0] == 's':
-            reply = 'Shut the fuck up you nerds'
+        if arguments[0][0] == 's':
+            reply = 'ok seriously chill'
         else:
             reply = f'{channel} muted.'
         await self.send_message(msg.channel, reply)
