@@ -154,14 +154,58 @@ class Moderation(Plugin):
                 reply += role.name + "\n"
         await self.send_message(msg.channel, reply)
 
-    @command("^stfu$", access=ACCESS['ban'],
-             name='no @everyone',
-             doc_brief="`stfu`: lists which roles can mention `@everyone`.")
-    async def stfu(self, msg, arguments):
-        reply = "Roles with `@everyone` permission:\n"
-        for role in msg.server.roles:
-            if role.permissions.mention_everyone:
-                reply += role.name + "\n"
+    @command("^(stfu|shut the fuck up|mute)(?: <#\d+>)?$", access=ACCESS['ban'],
+             name='mute channel',
+             doc_brief="`mute [#channel]`: Silences the current channel, "
+             "or `#channel` if specified.")
+    async def mute(self, msg, arguments):
+        # reply = "Roles with `@everyone` permission:\n"
+        # for role in msg.server.roles:
+        #     if role.permissions.mention_everyone:
+        #         reply += role.name + "\n"
+        # await self.send_message(msg.channel, reply)
+        me = msg.server.get_member(self.core.user.id)
+        channel = msg.channel
+        if len(msg.channel_mentions) > 0:
+            channel = msg.channel_mentions[0]
+        perms = me.permissions_in(channel)
+        if not perms.administrator and not perms.manage_channels:
+            return
+        if arguments[0] == 's':
+            reply = 'Shut the fuck up you nerds'
+        else:
+            reply = f'{channel} muted.'
+        await self.send_message(msg.channel, reply)
+        overwrite = channel.overwrites_for(msg.server.default_role)
+        overwrite.send_messages = False
+        try:
+            await self.core.edit_channel_permissions(
+                channel, msg.server.default_role, overwrite
+            )
+        except Exception as e:
+            await self.send_message(
+                msg.channel, f"jk I can't actually do that: `{e}`"
+            )
+
+    @command("^(unmute)(?: <#\d+>)?$", access=ACCESS['ban'],
+             name='unmute channel',
+             doc_brief="`unmute [#channel]`: Unmutes the current channel, "
+             "or `#channel` if specified.")
+    async def unmute(self, msg, arguments):
+        me = msg.server.get_member(self.core.user.id)
+        channel = msg.channel
+        if len(msg.channel_mentions) > 0:
+            channel = msg.channel_mentions[0]
+        perms = me.permissions_in(channel)
+        print(perms)
+        if not perms.administrator and not perms.manage_channels:
+            return
+        reply = f'{channel} unmuted.'
+        overwrite = channel.overwrites_for(msg.server.default_role)
+        overwrite.send_messages = None
+        await self.core.edit_channel_permissions(
+            channel, msg.server.default_role, overwrite
+        )
         await self.send_message(msg.channel, reply)
 
     @command("^list roles ?(0x[0-9A-Fa-f]*)?$", access=500, name='list roles',
