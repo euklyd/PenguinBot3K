@@ -87,9 +87,18 @@ class CommandManager():
             match = re.search(OVERRIDE, content)
             if match:
                 content = match.group(1)
+                author_id = match.group(2)
                 author = message.server.get_member(match.group(2))
+
                 # strip off the -a mention
-                message.mentions = message.mentions[:-1] 
+                # message.mentions = message.mentions[:-1]
+                index = -1
+                for i, member in enumerate(message.mentions):
+                    if member.id == author_id:
+                        index = i
+                        break
+                message.mentions.pop(i)
+
                 if author:
                     message.author = author
                 else:
