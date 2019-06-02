@@ -376,6 +376,7 @@ class Interview(Plugin):
         )
         newsheet.resize(rows=2)
 
+        # TODO: i think this is fixed now actually???
         self.past_nominees[old_interview.interviewee.id] = datetime.utcnow().replace(tzinfo=timezone.utc)
 
         reply = (
