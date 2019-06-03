@@ -141,6 +141,7 @@ class Passwords(Plugin):
             await self.send_message(msg.channel, reply)
             resp = await self.core.wait_for_message(
                 timeout=3600,
+                author=msg.author,
                 channel=msg.channel
             )
             password = resp.content
@@ -150,6 +151,7 @@ class Passwords(Plugin):
             )
             resp = await self.core.wait_for_message(
                 timeout=3600,
+                author=msg.author,
                 channel=msg.channel
             )
             finished = resp.content
