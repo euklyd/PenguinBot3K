@@ -82,11 +82,11 @@ class Passwords(Plugin):
             self.users[str(record[USER_ID])] = row
 
     def update_sheet(self, user, password):
-        '''
+        """
         user is a discord.User, password is a string
 
         returns None if success, False if fail
-        '''
+        """
         if user.id in self.users:
             cell_list = self.sheet.range(
                 f'{COLS[NAME]}{self.users[user.id]}:{COLS[TIMESTAMP]}{self.users[user.id]}'
@@ -157,4 +157,8 @@ class Passwords(Plugin):
             finished = resp.content
 
         self.update_sheet(msg.author, password)
-        await self.send_message(msg.channel, 'Your password has been updated.')
+        await self.send_message(
+            msg.channel,
+            'Your password has been updated. Your User ID is '
+            f'`{msg.author.id}`. ''Remember this for voting!'
+        )
