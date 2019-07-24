@@ -74,8 +74,8 @@ class Passwords(Plugin):
         REDTICK   = self.core.emoji.any_emoji(['redtick'])
         # This isn't part of interview meta because state can be saved
         # just fine using only the sheet.
-        self.sheet = get_sheet().sheet1
-        records    = self.sheet.get_all_records()
+        sheet = get_sheet().sheet1
+        records    = sheet.get_all_records()
         self.users = {}
         for i, record in enumerate(records):
             row = i+2
@@ -87,14 +87,15 @@ class Passwords(Plugin):
 
         returns None if success, False if fail
         """
+        sheet = get_sheet().sheet1
         if user.id in self.users:
-            cell_list = self.sheet.range(
+            cell_list = sheet.range(
                 f'{COLS[NAME]}{self.users[user.id]}:{COLS[TIMESTAMP]}{self.users[user.id]}'
             )
             cell_list[0].value = str(user)
             cell_list[1].value = password
             cell_list[2].value = datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S')
-            self.sheet.update_cells(cell_list)
+            sheet.update_cells(cell_list)
             logger.info('updated pw')
             # self.sheet.update_acell(
             #     f'{PASSWORD}{self.users[user.id]}',
@@ -109,14 +110,14 @@ class Passwords(Plugin):
             #     datetime.utcnow().timestamp()
             # )
         else:
-            self.sheet.append_row([
+            sheet.append_row([
                 user.id,
                 str(user),
                 password,
                 datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S')
             ])
-            self.sheet = get_sheet().sheet1
-            self.users[user.id] = self.sheet.row_count
+            sheet = get_sheet().sheet1
+            self.users[user.id] = sheet.row_count
         return None
 
 
@@ -155,8 +156,8 @@ class Passwords(Plugin):
                 channel=msg.channel
             )
             finished = resp.content
-            logger.info(f'received confirmation msg {finished}')
-        logger.info(f'updating sheet with p/w {password} for {msg.author}')
+            logger.info(f'received confirmation msg `{finished}`')
+        logger.info(f'updating sheet with p/w `{password}` for {msg.author}')
         self.update_sheet(msg.author, password)
         await self.send_message(
             msg.channel,
