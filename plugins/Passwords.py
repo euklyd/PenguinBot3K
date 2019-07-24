@@ -155,7 +155,8 @@ class Passwords(Plugin):
                 channel=msg.channel
             )
             finished = resp.content
-
+            logger.info(f'received confirmation msg {finished}')
+        logger.info(f'updating sheet with p/w {password} for {msg.author}')
         self.update_sheet(msg.author, password)
         await self.send_message(
             msg.channel,
