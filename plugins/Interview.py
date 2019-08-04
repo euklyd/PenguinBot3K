@@ -23,16 +23,13 @@ import errno
 import gspread
 import json
 import logging
-import operator
 import os
 import random
 import re
 import requests
 
 from datetime import datetime, timezone
-from io import BytesIO
 from oauth2client.service_account import ServiceAccountCredentials
-from PIL import Image
 from pprint import pprint
 
 
@@ -387,6 +384,10 @@ class Interview(Plugin):
                  qchn=self.interview.question_channel.mention
                  )
         await self.send_message(msg.channel, reply)
+        await self.send_message(
+            msg.channel,
+            f'{msg.author.mention}, make sure to update the table of contents!'
+        )
 
     @command("^iv setup answers$", access=700, name='iv setup answers',
              doc_brief="`iv setup answers`: Sets the answer channel to the "
@@ -1066,6 +1067,11 @@ class Interview(Plugin):
             with open(dest, 'w') as votalfile:
                 votalfile.write(txt_reply)
             await self.send_file(msg.channel, dest, content=reply)
+
+    # vanity command for makaze
+    @command("^im sb and this is why makaze shoots me$")
+    async def amy(self, msg, arguments):
+        await self.votals(msg, arguments=['--full'])
 
     # vanity command for amy
     @command("^im amy and i hate these commands$")
