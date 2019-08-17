@@ -428,6 +428,8 @@ class EiMM(Plugin):
             ohno = self.core.emoji.any_emoji(['ohno'])
             await self.send_message(msg.channel, f'{ohno} The kitties all scatter...')
             self.cats[msg.author.id] = 0
+            with open(PATH.format('cats.json'),  'w') as cats:
+                json.dump(self.cats, cats, indent=4)
         await self.send_message(msg.channel, flip_msg, embed=em)
 
     @command("^cat +(<@!?\d+>|\d+)?$", access=-1, name='cat')
