@@ -54,7 +54,9 @@ def generate_add_cmd(record_name, json_file):
             os.makedirs(os.path.dirname(path), exist_ok=True)
             records = {}
         id = arguments[0]
-        memo = arguments[1]
+        memo = None
+        if len(arguments) > 1:
+            memo = arguments[1]
 
         servers = [msg.server.id]
         old = None
@@ -134,42 +136,6 @@ class UserRecords(Plugin):
              doc_brief="`feheroes add <id> [<name>]`: Record or modify your "
              "FE Heroes ID, and, optionally, the name of your avatar.")
     async def feh_add(self, msg, arguments):
-        # id = arguments[0]
-        # memo = arguments[1]
-        #
-        # servers = [msg.server.id]
-        # old = None
-        # if msg.author.id in self.feh:
-        #     old = self.feh[msg.author.id]
-        #     if msg.server.id in old['servers']:
-        #         servers = [server for server in old['servers']]
-        #     else:
-        #         servers += [server for server in old['servers']]
-        #
-        # entry = {
-        #     'uid': msg.author.id,
-        #     'uname': msg.author.name,
-        #     'fehid': id,
-        #     'servers': servers
-        # }
-        # if memo is not None:
-        #     entry['memo'] = memo
-        #
-        # self.feh[msg.author.id] = entry
-        #
-        # with open(path.format("feh.json"), 'w+') as fehfile:
-        #     self.logger.info("updated feh entry for {}: {}".format(msg.author, entry))
-        #     json.dump(self.feh, fehfile, indent=2)
-        # if old is None:
-        #     await self.send_message(
-        #         msg.channel,
-        #         "Added\n    {}\nto the FE Heroes record.".format(recordstr(entry))
-        #     )
-        # else:
-        #     await self.send_message(
-        #         msg.channel,
-        #         "Added\n    {}\nto the FE Heroes record, replacing\n    {}".format(recordstr(entry), recordstr(old))
-        #     )
         cmd = generate_add_cmd('FE Heroes Friend Code', 'feh.json')
         await cmd(self, msg, arguments)
 
@@ -178,23 +144,6 @@ class UserRecords(Plugin):
              doc_brief="`feheroes list`: List stored FE Heroes IDs for this "
              "server.")
     async def feh_list(self, msg, arguments):
-        # reply = "**__FE Heroes Friend Codes:__**\n\n"
-        # fehlist = []
-        # for uid in self.feh:
-        #     if msg.server.id in self.feh[uid]['servers']:
-        #         # only list IDs for users in the same server
-        #         fehlist.append((self.feh[uid]['uname'].lower() + uid, self.feh[uid]))
-        # print(fehlist)
-        # fehlist.sort()
-        # fehlist = [entry for (key, entry) in fehlist]
-        # for entry in fehlist:
-        #     reply += recordstr(entry) + "\n"
-        # reply += (
-        #     "\nTo add or modify your own FE Heroes Friend Code, you can use "
-        #     "`{t}feheroes add <code>`. Optionally, you can add the name of "
-        #     "your avatar as well with `{t}feheroes add <code> <name>`."
-        # ).format(t=self.core.default_trigger)
-        # await self.send_message(msg.channel, reply)
         cmd = generate_list_cmd(
             'FE Heroes Friend Code',
             'feh.json',
@@ -220,5 +169,25 @@ class UserRecords(Plugin):
             'Switch Friend Code',
             'switch_codes.json',
             'switch'
+        )
+        await cmd(self, msg, arguments)
+
+    @command("^parsec add (.*#.*)$",
+             access=-1, name='parsec',
+             doc_brief="`parsec add <username#numbers>`: Record or "
+             "modify your Parsec ID and memo.")
+    async def sw_add(self, msg, arguments):
+        cmd = generate_add_cmd('Parsec IDs', 'parsec.json')
+        await cmd(self, msg, arguments)
+
+    @command("^parsec(?: list)?$",
+             access=-1, name='parsec',
+             doc_brief="`parsec list`: List stored Parsec IDs for "
+             "this server.")
+    async def sw_list(self, msg, arguments):
+        cmd = generate_list_cmd(
+            'Parsec IDs',
+            'parsec.json',
+            'parsec'
         )
         await cmd(self, msg, arguments)
