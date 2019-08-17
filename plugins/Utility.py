@@ -292,7 +292,7 @@ class Utility(Plugin):
             em_url = self.core.emoji.gif_url(arguments[2])
             ext = 'gif'
         dest = "/tmp/{arg}_{uid}-{usr}.{ext}".format(
-            arg=arguments[1], uid=msg.author.id, usr=msg.author.nick, ext=ext
+            arg=arguments[1], uid=msg.author.id, usr=msg.author.name, ext=ext
         )
         with open(dest, 'wb') as imgfile:
             req = requests.get(em_url)
