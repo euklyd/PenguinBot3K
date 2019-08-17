@@ -97,6 +97,7 @@ UPDATABLE_FIELDS = {
 
 GREENTICK = None
 REDTICK = None
+LOADING = None
 
 
 # def select_option(bot, iterable):
@@ -210,8 +211,10 @@ class EiMM(Plugin):
 
         global GREENTICK
         global REDTICK
+        global LOADING
         GREENTICK = self.core.emoji.any_emoji(['greentick'])
         REDTICK   = self.core.emoji.any_emoji(['redtick'])
+        LOADING   = self.core.emoji.any_emoji(['discord_loading_squares'])
 
         sheet = get_first_sheet(sheet_name=PROFILE_SHEET)
         global HEADINGS_MAP
@@ -676,6 +679,7 @@ class EiMM(Plugin):
              doc_brief="`dumpavis @role`: Creates an imgur album with the "
              "avatars of all users in `role`.")
     async def dumpavis(self, msg, arguments):
+        await self.add_reaction(msg, LOADING)
         role = None
         if len(msg.role_mentions) == 0:
             for a_role in msg.server.roles:
@@ -743,7 +747,6 @@ class EiMM(Plugin):
                         msg.channel,
                         reply
                     )
-                return
             else:
                 dirname = f'{role.name}-{now}'
                 dirpath = f'/tmp/{dirname}/'
@@ -767,6 +770,9 @@ class EiMM(Plugin):
                         avatar_zip.write(filename)
 
                 os.remove(dirpath)
+        await asyncio.sleep(1)
+        await self.core.remove_reaction(msg, LOADING, self.core.user)
+        await self.add_reaction(msg, GREENTICK)
 
     @command("^qselect (.*)$", access=900, name='qselect',
              doc_brief="`qselect <host json>`: Selects the hosts for the "
