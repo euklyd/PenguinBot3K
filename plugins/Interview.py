@@ -208,7 +208,7 @@ class InterviewMeta():
         self.user_questions    = {}
         self.votes             = {}
         self.active            = True
-        self.reinterview_limit = datetime.utcfromtimestamp(0)
+        self.reinterview_limit = datetime.utcfromtimestamp(0).replace(tzinfo=timezone.utc)
 
     def to_dict(self):
         meta = {
