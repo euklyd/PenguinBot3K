@@ -93,7 +93,7 @@ def generate_add_cmd(record_name, json_file):
     return add
 
 
-def generate_list_cmd(record_name, json_file, cmd_name):
+def generate_list_cmd(record_name, json_file, cmd_name, memo=True):
     async def lst(self, msg, arguments):
         try:
             with open(path.format(json_file), 'r') as recordfile:
@@ -113,9 +113,13 @@ def generate_list_cmd(record_name, json_file, cmd_name):
             reply += recordstr(entry) + '\n'
         reply += (
             '\nTo add or modify your own {record}, you can use '
-            '`{t}{cmd} add <code>`. Optionally, you can add a memo as well '
-            'with `{t}{cmd} add <code> <name>`.'
+            '`{t}{cmd} add <code>`.'
         ).format(record=record_name, t=self.core.default_trigger, cmd=cmd_name)
+        if memo:
+            reply += (
+                'Optionally, you can add a memo as well with '
+                '`{t}{cmd} add <code> <name>`.'
+            ).format(t=self.core.default_trigger, cmd=cmd_name)
         await self.send_message(msg.channel, reply)
     return lst
 
@@ -176,7 +180,7 @@ class UserRecords(Plugin):
              access=-1, name='parsec',
              doc_brief="`parsec add <username#numbers>`: Record or "
              "modify your Parsec ID and memo.")
-    async def sw_add(self, msg, arguments):
+    async def parsec_add(self, msg, arguments):
         cmd = generate_add_cmd('Parsec IDs', 'parsec.json')
         await cmd(self, msg, arguments)
 
@@ -184,10 +188,11 @@ class UserRecords(Plugin):
              access=-1, name='parsec',
              doc_brief="`parsec list`: List stored Parsec IDs for "
              "this server.")
-    async def sw_list(self, msg, arguments):
+    async def parsec_list(self, msg, arguments):
         cmd = generate_list_cmd(
             'Parsec IDs',
             'parsec.json',
-            'parsec'
+            'parsec',
+            memo=False
         )
         await cmd(self, msg, arguments)
