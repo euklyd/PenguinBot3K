@@ -197,7 +197,7 @@ class UserRecords(Plugin):
         )
         await cmd(self, msg, arguments)
 
-    @command("^masters add (.*#.*)$",
+    @command("^masters add (\d+-\d+-\d+-\d+)$",
              access=-1, name='masters',
              doc_brief="`masters add <code>`: Record or "
              "modify your Pokémon Masters code.")
