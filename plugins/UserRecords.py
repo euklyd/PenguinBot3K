@@ -196,3 +196,24 @@ class UserRecords(Plugin):
             memo=False
         )
         await cmd(self, msg, arguments)
+
+    @command("^masters add (.*#.*)$",
+             access=-1, name='masters',
+             doc_brief="`masters add <code>`: Record or "
+             "modify your Pokémon Masters code.")
+    async def masters_add(self, msg, arguments):
+        cmd = generate_add_cmd('Pokémon Masters IDs', 'pkmn_masters.json')
+        await cmd(self, msg, arguments)
+
+    @command("^masters(?: list)?$",
+             access=-1, name='masters',
+             doc_brief="`masters list`: List stored Pokémon Masters codes for "
+             "this server.")
+    async def masters_list(self, msg, arguments):
+        cmd = generate_list_cmd(
+            'Pokémon Masters IDs',
+            'pkmn_masters.json',
+            'masters',
+            memo=False
+        )
+        await cmd(self, msg, arguments)
