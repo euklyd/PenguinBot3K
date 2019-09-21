@@ -101,7 +101,7 @@ def generate_list_cmd(record_name, json_file, cmd_name, memo=True):
         except FileNotFoundError:
             os.makedirs(os.path.dirname(path), exist_ok=True)
             records = {}
-        reply = f'**__{record_name}s:__**\n\n'
+        reply = f'**__{record_name}:__**\n\n'
         record_list = []
         for uid in records:
             if msg.server.id in records[uid]['servers']:
