@@ -1015,7 +1015,7 @@ class Interview(Plugin):
         txt_reply = reply
         overflow  = False
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
-        if 'full' in arguments[0]:
+        if arguments[0] is not None:
             votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
             for vote in sorted_votals:
                 if vote[0] not in self.interview.opt_outs:
