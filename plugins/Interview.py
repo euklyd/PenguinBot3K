@@ -969,7 +969,7 @@ class Interview(Plugin):
             reply = '**{}**, your vote(s) have been cleared.'
         await self.send_message(msg.channel, reply.format(msg.author))
 
-    @command("^votals ?(--full)?$", access=-1, name='votals (full)',
+    @command("^votals ?((?:-+|\u2014)full)?$", access=-1, name='votals (full)',
              doc_brief="`votals [--full]`: Displays vote totals for the "
              "current period of interview voting.",
              doc_detail="`votals [--full]`: Displays current vote totals for "
@@ -1015,7 +1015,7 @@ class Interview(Plugin):
         txt_reply = reply
         overflow  = False
         access = self.core.ACL.get_final_user_access(msg.author, self.name)
-        if arguments[0] == '--full':
+        if 'full' in arguments[0]:
             votal_fmt = '{{:<{}}} {{}} ({{}})\n'.format(max_len+1)
             for vote in sorted_votals:
                 if vote[0] not in self.interview.opt_outs:
