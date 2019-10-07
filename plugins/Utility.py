@@ -589,7 +589,8 @@ class Utility(Plugin):
             return
         await self.send_message(msg.channel_mentions[0], embed=em)
 
-    @command("memo (.*)", name='memo', doc_brief='`memo <message>`: Whisper a memo to yourself for later~')
+    @command("memo (.*)", name='memo', access=-1,
+             doc_brief='`memo <message>`: Whisper a memo to yourself for later~')
     async def memo(self, msg, arguments):
         await self.send_whisper(msg.author, arguments[0])
         await self.add_reaction(msg, GREENTICK)
