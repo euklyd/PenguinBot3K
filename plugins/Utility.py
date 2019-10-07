@@ -32,10 +32,16 @@ logger = logging.getLogger(__name__)
 
 resource_path = "resources/{}"
 
+GREENTICK = None
+REDTICK = None
+
 
 class Utility(Plugin):
     async def activate(self):
-        pass
+        global GREENTICK
+        global REDTICK
+        GREENTICK = self.core.emoji.any_emoji(['greentick'])
+        REDTICK = self.core.emoji.any_emoji(['redtick'])
 
     @command("^flip$", access=-1, name='flip',
              doc_brief="`flip`: Flips a coin that will come up either heads "
@@ -582,6 +588,11 @@ class Utility(Plugin):
             await self.send_message(msg.channel, "Error: {}".format(e))
             return
         await self.send_message(msg.channel_mentions[0], embed=em)
+
+    @command("memo (.*)", name='memo', doc_brief='`memo <message>`: Whisper a memo to yourself for later~')
+    async def memo(self, msg, arguments):
+        await self.send_whisper(msg.author, arguments[0])
+        await self.add_reaction(msg, GREENTICK)
 
 
 def fe_split(fe):
