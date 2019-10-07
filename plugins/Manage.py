@@ -121,7 +121,7 @@ class Manage(Plugin):
 
         await self.send_message(msg.channel, output)
 
-    @command("^(?:list commands|help) (\w+)", name='list commands', access=-1,
+    @command("^(?:list commands|help) (\w+)$", name='list commands', access=-1,
              doc_brief="`list commands <plugin>`: lists all commands that "
              "you have access to in `<plugin>`.")
     async def list_commands(self, msg, arguments):
@@ -202,8 +202,7 @@ class Manage(Plugin):
             await self.send_message(msg.channel,
                                     "Yeah, we don't do that anymore.")
 
-    @command("^(?:help|command detail) (\w+)\.(\w+)$", access=-1,
-             name='help',
+    @command("^(?:help|command detail) (\w+)\.(\w+)$", access=-1, name='help',
              doc_brief="`command detail <plugin>.<command>`: prints out "
              "specific help for `<command>` in `<plugin>`.")
     async def command_detail(self, msg, arguments):
@@ -216,7 +215,7 @@ class Manage(Plugin):
         else:
             await self.send_message(
                 msg.channel,
-                "There is no command with that name"
+                "There is no command with that name."
             )
 
     @command("^(enable|disable|reload|status) plugin ([A-Za-z]+)$",
