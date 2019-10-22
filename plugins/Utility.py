@@ -595,6 +595,14 @@ class Utility(Plugin):
         await self.send_whisper(msg.author, arguments[0])
         await self.add_reaction(msg, GREENTICK)
 
+    @command("^outline (.*)$", name='outline', access=-1,
+             doc_detail='`outline <url>`: Creates an outline.com link for a given URL.')
+    async def outline(self, msg, arguments):
+        tinyurl = requests.get(f'https://tinyurl.com/api-create.php?url={arguments[0]}').content.decode('utf8')
+        print(tinyurl)
+        outline_url = f'https://outline.com/{tinyurl}'
+        await self.send_message(msg.channel, f'<{outline_url}>')
+
 
 def fe_split(fe):
     if not fe.startswith('FE'):
