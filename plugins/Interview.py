@@ -856,6 +856,14 @@ class Interview(Plugin):
                 'round to begin.')
             return
 
+        join_time = msg.author.joined_at.replace(tzinfo=timezone.utc)
+        if join_time > self.past_nominees[self.interview.interviewee.id]:
+            await self.send_message(
+                msg.channel,
+                "Don't just rejoin servers only to vote, {}, have some respect.".format(msg.author)
+            )
+            return
+
         votes        = []
         penguin_vote = False
         bot_vote     = False
