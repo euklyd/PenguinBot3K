@@ -375,7 +375,8 @@ class Interview(Plugin):
 
         # TODO: i think this is fixed now actually???
         # old_interview is actually a dict now.
-        self.past_nominees[old_interview['interviewee']] = datetime.utcnow().replace(tzinfo=timezone.utc)
+        # self.past_nominees[old_interview['interviewee']] = datetime.utcnow().replace(tzinfo=timezone.utc)
+        self.past_nominees[self.interview.interviewee.id] = datetime.utcnow().replace(tzinfo=timezone.utc)
 
         reply = (
             '**New interview setup:**\n'
@@ -832,6 +833,7 @@ class Interview(Plugin):
              "to three users for interviews. If you've already made votes, "
              "they will all be replaced.")
     async def vote(self, msg, arguments):
+        self.logger.info('{} voting'.format(msg.author))
         # hehe let's bully conq
         if msg.author.id == '237811431712489473' and msg.channel.id == '501536160066174976':
             await self.send_message(
@@ -873,6 +875,8 @@ class Interview(Plugin):
         bots         = []
         reply        = ''
 
+        self.logger.info('checking votes')
+
         for mention in msg.mentions:
             if msg.author.id == self.core.user.id:
                 penguin_vote = True
@@ -897,6 +901,8 @@ class Interview(Plugin):
         opt_outs = list(set(opt_outs))
         self.interview.votes[msg.author.id] = votes
         self.interview.dump()
+
+        self.logger.info('saved votes')
 
         if len(self.interview.votes[msg.author.id]) > 0:
             await self.add_reaction(msg, GREENTICK)
