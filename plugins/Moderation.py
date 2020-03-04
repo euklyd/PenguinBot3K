@@ -13,6 +13,7 @@
         under the terms of the GNU General Public License v3; as published
         by the Free Software Foundation
 """
+import asyncio
 
 from core.Plugin import Plugin
 from core.Decorators import *
@@ -81,6 +82,7 @@ class Moderation(Plugin):
     async def whisper(self, msg, arguments):
         reply = msg.content[len(arguments[0]):]
         user = await self.core.get_user_info(arguments[1])
+        await asyncio.sleep(1)
         await self.send_message(user, reply)
         await self.add_reaction(msg, GREENTICK)
 
