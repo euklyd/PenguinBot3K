@@ -86,7 +86,7 @@ class React(Plugin):
             await asyncio.sleep(5)
             await self.delete_message(tsktsk)
 
-    @filter("^<:(?:harold|GLORY_TO_THRACIA):[0-9]{16,20}>$", name='in america',
+    @filter("^<:(?:harold|GLORY_TO_THRACIA|GLORY_TO_AMERICA)[^\b]*:[0-9]{16,20}>$", name='in america',
             server='190782508105728000')
     async def in_america(self, msg, arguments):
         if (random.randint(0, 17) == 0):
