@@ -188,7 +188,14 @@ class InterviewMeta():
         iv_meta.opt_outs          = set(meta['opt_outs'])
         iv_meta.votes             = meta['votes']
         iv_meta.active            = meta['active']
-        iv_meta.reinterview_limit = datetime.utcfromtimestamp(meta['limit']).replace(tzinfo=timezone.utc)
+        if 'limit' in meta:
+            iv_meta.reinterview_limit = datetime.utcfromtimestamp(meta['limit']).replace(tzinfo=timezone.utc)
+        else:
+            iv_meta.reinterview_limit = datetime.utcfromtimestamp(0).replace(tzinfo=timezone.utc)
+        if 'all_reinterviews' in meta:
+            iv_meta.all_reinterviews_allowed = meta['all_reinterviews']
+        else:
+            iv_meta.all_reinterviews_allowed = False
         return iv_meta
 
     @property
@@ -198,7 +205,7 @@ class InterviewMeta():
             total_qs += user_qs
         return total_qs
 
-    def load_fresh(self, question_channel, interviewee):
+    def load_fresh(self, question_channel, interviewee, reinterview_limit, all_reinterviews_allowed):
         if self.server is None:
             self.server = question_channel.server
         if self.salt is None:
@@ -208,20 +215,22 @@ class InterviewMeta():
         self.user_questions    = {}
         self.votes             = {}
         self.active            = True
-        self.reinterview_limit = datetime.utcfromtimestamp(0).replace(tzinfo=timezone.utc)
+        self.reinterview_limit = reinterview_limit
+        self.all_reinterviews_allowed = all_reinterviews_allowed
 
     def to_dict(self):
         meta = {
-            'server_id':      self.server.id,
-            'q_channel':      self.question_channel.id,
-            'a_channel':      self.answer_channel.id,
-            'interviewee':    self.interviewee.id,
-            'user_questions': self.user_questions,
-            'salt':           self.salt,
-            'opt_outs':       list(self.opt_outs),
-            'votes':          self.votes,
-            'active':         self.active,
-            'limit':          self.reinterview_limit.replace(tzinfo=timezone.utc).timestamp()
+            'server_id':        self.server.id,
+            'q_channel':        self.question_channel.id,
+            'a_channel':        self.answer_channel.id,
+            'interviewee':      self.interviewee.id,
+            'user_questions':   self.user_questions,
+            'salt':             self.salt,
+            'opt_outs':         list(self.opt_outs),
+            'votes':            self.votes,
+            'active':           self.active,
+            'limit':            self.reinterview_limit.replace(tzinfo=timezone.utc).timestamp(),
+            'all_reinterviews': self.all_reinterviews_allowed,
         }
         return meta
 
@@ -295,7 +304,8 @@ class Interview(Plugin):
         sheet = get_sheet()
         self.past_nominees = {}
         for ws in sheet.worksheets():
-            match = re.match('.*\[(\d+)\].*', ws.title)
+            # match = re.match('.*\[(\d+)\].*', ws.title)
+            match = re.match(r'.*\[(\d+)\]-(\d+\.\d*).*', ws.title)
             if match is None:
                 if self.interview.question_channel is not None:
                     await self.send_message(
@@ -306,8 +316,13 @@ class Interview(Plugin):
                     self.logger.error(f'Error in the title format of {ws}.')
             else:
                 uid  = match.groups()[0]
-                time = datetime.utcfromtimestamp(float(ws.row_values(2)[1])).replace(tzinfo=timezone.utc)
-                self.past_nominees[uid] = time
+                ts   = float(match.groups()[1])
+                time = datetime.utcfromtimestamp(ts).replace(tzinfo=timezone.utc)
+                if uid in self.past_nominees:
+                    if time > self.past_nominees[uid]:
+                        self.past_nominees[uid] = time
+                else:
+                    self.past_nominees[uid] = time
         # pprint(self.past_nominees)
 
     @command("^iv setup <@!?\d+>$", access=700, name='iv setup',
@@ -324,8 +339,9 @@ class Interview(Plugin):
                 await self.votals(msg, ['--full'])
                 msg.channel = channel
         if self.interview is None:
-            await self.send_message(msg.channel,
-                'Setting up interviews for the first time.')
+            await self.send_message(msg.channel, 'Setting up interviews for the first time.')
+            reinterview_limit = datetime.utcfromtimestamp(0).replace(tzinfo=timezone.utc)
+            all_reinterviews_allowed = False
             self.interview = InterviewMeta()
         else:
             old_interview = self.interview.to_dict()
@@ -340,25 +356,42 @@ class Interview(Plugin):
                         raise
             with open(filepath, 'w') as archive_file:
                 json.dump(old_interview, archive_file)
+            reinterview_limit = self.interview.reinterview_limit
+            all_reinterviews_allowed = self.interview.all_reinterviews_allowed
 
-        self.interview.load_fresh(msg.channel, msg.mentions[0])
+        self.interview.load_fresh(msg.channel, msg.mentions[0], reinterview_limit, all_reinterviews_allowed)
         filepath = PATH.format(INTERVIEW_META.format(
             self.interview.interviewee.name))
         with open(filepath, 'w') as archive_file:
             json.dump(self.interview.to_dict(), archive_file)
 
+        # all_sheets = get_sheet()
+        # titles = [s.title for s in all_sheets.worksheets()]
+        # found = True
+        # i = 1
+        # sheet_name = '{user.name} [{user.id}]-'.format(user=self.interview.interviewee)
+        # while found:
+        #     if sheet_name in titles:
+        #         i += 1
+        #         sheet_name = '{user.name} [{user.id}]-{i}'.format(user=self.interview.interviewee, i=i)
+
+        now = datetime.utcnow()
+        sheet_name = '{user.name} [{user.id}]-{ts}'.format(user=self.interview.interviewee, ts=now.timestamp())
+
         sheet = get_first_sheet()
         newsheet = sheet.duplicate(
             insert_sheet_index=0,
-            new_sheet_name='{user.name} [{user.id}]'.format(user=self.interview.interviewee)
+            new_sheet_name=sheet_name
         )
         # You can't actually delete all non-frozen rows cuz google is kinda
         # dumb about this. Instead we'll insert a new opening question every
         # time we begin a new interview.
         newsheet.insert_row(
             [
-                datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
-                datetime.utcnow().timestamp(),
+                # datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
+                # datetime.utcnow().timestamp(),
+                now.strftime('%m/%d/%Y %H:%M:%S'),
+                now.timestamp(),
                 str(self.core.user),
                 self.core.user.id,
                 1,
@@ -1100,6 +1133,8 @@ class Interview(Plugin):
         """
         Checks to see if uid has been interviewed too recently.
         """
+        if self.interview.all_reinterviews_allowed == True:
+            return False
         if uid in self.past_nominees and self.past_nominees[uid] > self.interview.reinterview_limit:
             return True
         return False
